@@ -59,7 +59,7 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Docker 이미지 빌드
-        run: docker build -t $${{ secrets.DOCKER_USERNAME }}/$${{ secrets.DOCKER_IMAGENAME }}:latest .
+        run: docker build -t $${{ secrets.DOCKER_USERNAME }}/backend:latest .
 
       - name: Docker Hub에 Push
         run: docker push $${{ secrets.DOCKER_USERNAME }}/$${{ secrets.DOCKER_IMAGENAME }}:latest
