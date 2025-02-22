@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  spring-app:
+    container_name: spring-app
+    image: "seoulmilkteam2/backend:latest"
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - spring-app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
