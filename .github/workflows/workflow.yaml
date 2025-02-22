@@ -10,8 +10,6 @@ on:
       - dev
       - chore/#4-setting-ci-cd
 
-  workflow_dispatch: # 수동으로 실행할 수 있도록
-
 jobs:
   ci:
     name: Run CI
