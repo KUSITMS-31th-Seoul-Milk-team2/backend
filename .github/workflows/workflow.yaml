@@ -45,6 +45,12 @@ jobs:
       - name: 빌드된 JAR 파일 확인
         run: ls -la build/libs
 
+      - name: 빌드된 JAR 파일 저장
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-jar
+          path: build/libs/*.jar
+
       - name: 테스트 실행
         run: ./gradlew test
 
@@ -56,6 +62,12 @@ jobs:
     steps:
       - name: 코드 체크아웃
         uses: actions/checkout@v4
+
+      - name: 빌드된 JAR 파일 다운로드
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-jar
+          path: build/libs
 
       - name: Docker 로그인
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
