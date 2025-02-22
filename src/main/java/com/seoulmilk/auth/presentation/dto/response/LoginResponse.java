@@ -12,14 +12,14 @@ public record LoginResponse(
 
 ) {
     public record UserInfo(
-            @Schema(description = "사용자 ID", example = "1L")
-            Long id,
+            @Schema(description = "사원번호", example = "12341234")
+            String employeeId,
 
             @Schema(description = "사용자 이름", example = "홍길동")
             String name
     ) {
         public static UserInfo from(Emp employee) {
-            return new UserInfo(employee.getId(), employee.getName());
+            return new UserInfo(employee.getEmployeeId(), employee.getName());
         }
     }
 
