@@ -23,6 +23,10 @@ import java.util.Optional;
 @Log4j2
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
+    ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
@@ -49,10 +53,6 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
     private void throwException(HttpServletResponse response, ErrorResponse errorResponse) throws IOException {
         response.setCharacterEncoding("UTF-8");
-        ObjectMapper objectMapper = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(errorResponse.getStatusCode());
         String json = objectMapper.writeValueAsString(errorResponse);
