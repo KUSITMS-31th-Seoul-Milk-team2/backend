@@ -9,6 +9,8 @@ on:
     branches:
       - dev
 
+  workflow_dispatch:
+
 jobs:
   ci:
     name: Run CI
