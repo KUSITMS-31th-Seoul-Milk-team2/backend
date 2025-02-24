@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # 빌드 후 실행
-COPY build/libs/*.jar app.jar
+COPY ./build/libs/*.jar app.jar
 
 # 쉘 명령어
 ENTRYPOINT ["java", "-jar", "app.jar"]

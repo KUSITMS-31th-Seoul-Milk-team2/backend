@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - dev
+      - fix/#13-cicd-fix
 
 jobs:
   ci:
@@ -18,13 +19,20 @@ jobs:
       - name: 코드 체크아웃
         uses: actions/checkout@v4
         with:
-          ref: 'dev'
+          ref: 'fix/#13-cicd-fix'
 
       - name: JDK 설정
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: application.yml 설정
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_YAML_TEST }}" | base64 --decode > src/main/resources/application-test.yml
+          find src
 
       - name: Gradle 캐시 설정
         uses: actions/cache@v3
