@@ -33,7 +33,7 @@ jobs:
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > src/main/resources/application.yml
-          echo "${{ secrets.APPLICATION_YAML_TEST }}" | base64 --decode > src/main/resources/application-test.yml
+          echo "${{ secrets.APPLICATION_YAML_TEST }}" | base64 --decode > src/test/resources/application-test.yml
           find src
 
       - name: Gradle 캐시 설정
@@ -47,7 +47,7 @@ jobs:
             gradle-${{ runner.os }}-
 
       - name: 프로젝트 빌드
-        run: ./gradlew build --no-daemon
+        run: ./gradlew dependencies --refresh-dependencies
 
       - name: 빌드된 JAR 파일 확인
         run: ls -la build/libs
