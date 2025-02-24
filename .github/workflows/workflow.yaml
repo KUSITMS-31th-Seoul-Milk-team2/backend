@@ -10,6 +10,8 @@ on:
       - dev
       - fix/#13-cicd-fix
 
+  workflow_dispatch:
+
 jobs:
   ci:
     name: Run CI
