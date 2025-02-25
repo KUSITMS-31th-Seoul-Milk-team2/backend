@@ -3,6 +3,8 @@ package com.seoulmilk.core.infrastructure.jpa.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,10 +22,10 @@ public abstract class BaseLongIdEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @CreatedDate
+    @CreationTimestamp
     protected LocalDateTime createdAt;
 
-    @LastModifiedDate
+    @UpdateTimestamp
     protected LocalDateTime updatedAt;
 
     @Builder.Default
