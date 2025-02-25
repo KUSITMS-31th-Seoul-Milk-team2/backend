@@ -44,7 +44,7 @@ jobs:
             gradle-${{ runner.os }}-
 
       - name: 프로젝트 빌드
-        run: ./gradlew dependencies --refresh-dependencies
+        run: ./gradlew build --no-daemon
 
       - name: 빌드된 JAR 파일 확인
         run: ls -la build/libs
