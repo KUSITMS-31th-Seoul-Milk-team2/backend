@@ -35,6 +35,7 @@ public class SecurityConfiguration {
                         authorizeRequests
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .requestMatchers("/v1/auth/**").permitAll()
+//                                .requestMatchers("/v1/invoice").permitAll()
                                 .anyRequest().authenticated()
 
                 );
