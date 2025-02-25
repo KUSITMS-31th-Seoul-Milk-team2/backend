@@ -6,6 +6,8 @@ services:
     image: "seoulmilkteam2/backend:latest"
     ports:
       - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
     networks:
       - app-network
 

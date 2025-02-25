@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > src/main/resources/application.yml
-          echo "${{ secrets.APPLICATION_YAML_TEST }}" | base64 --decode > src/main/resources/application-test.yml
+          echo "${{ secrets.APPLICATION_YAML_TEST }}" | base64 --decode > src/test/resources/application.yml
           find src
 
       - name: Gradle 캐시 설정
