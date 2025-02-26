@@ -61,6 +61,7 @@ public class TaxReceiptValidationService {
      */
     public AdditionalAuthResponse validateTaxReceipt(TaxReceiptValidationRequest taxReceiptValidationRequest){
         OAuth2TokenResponse oAuth2TokenResponse = getOAuth2Token();
+
         // 추후 redis 적용시 캐시 참고 예정
         accessToken = oAuth2TokenResponse.accessToken();
 
