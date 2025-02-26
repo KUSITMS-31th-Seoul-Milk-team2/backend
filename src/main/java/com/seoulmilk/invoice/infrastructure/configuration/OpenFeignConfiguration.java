@@ -1,4 +1,4 @@
-package com.seoulmilk.core.configuration.openfeign;
+package com.seoulmilk.invoice.infrastructure.configuration;
 
 import feign.RequestInterceptor;
 import feign.form.spring.SpringFormEncoder;
