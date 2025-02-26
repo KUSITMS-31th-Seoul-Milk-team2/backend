@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -85,18 +86,7 @@ public class TaxReceiptValidationService {
                 .bodyToMono(String.class)
                 .block();
 
-        // URL 인코딩 되어서 날라옴
-        String decodedResponse = URLDecoder.decode(response, StandardCharsets.UTF_8);
-        log.info("[validateTaxReceipt] 받은 데이터 - {}", decodedResponse);
-
-        // data만 뽑아오기
-        Map<String, Object> responseMap = null;
-        try {
-            responseMap = objectMapper.readValue(decodedResponse, Map.class);
-        } catch (Exception e) {
-            log.info("[validateTaxReceipt] - 추가 인증 데이터 전송 실패 - 사유 : {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
+        Map<String, Object> responseMap = getDataFromDecodedResponse(response, "validateTaxReceipt");
 
         log.info("[validateTaxReceipt] - 추가 인증 데이터 전송 완료");
 
@@ -125,18 +115,32 @@ public class TaxReceiptValidationService {
                 .bodyToMono(String.class)
                 .block();
 
-        String decodedResponse = URLDecoder.decode(response, StandardCharsets.UTF_8);
-        log.info("[validationWithAdditionalAuth] 받은 데이터 - {}", decodedResponse);
-
-        Map<String, Object> responseMap = null;
-        try {
-            responseMap = objectMapper.readValue(decodedResponse, Map.class);
-        } catch (Exception e) {
-            log.info("[validationWithAdditionalAuth] - 추가 인증 데이터 전송 실패 - 사유 : {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
+        Map<String, Object> responseMap = getDataFromDecodedResponse(response, "validationWithAdditionalAuth");
 
         log.info("[validationWithAdditionalAuth] 추가 인증 데이터를 포함한 세금계산서 검증 완료");
         return objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class);
+    }
+
+    /**
+     * OPEN API 결과 값에서 data 필드만 빼낸다.
+     * @param response
+     * @param methodName
+     * @return responseMap - data
+     */
+    private Map<String, Object> getDataFromDecodedResponse(String response, String methodName){
+        // response data는 디코딩이 필요함
+        String decodedResponse = URLDecoder.decode(response, StandardCharsets.UTF_8);
+        log.info("[{}] 받은 데이터 - {}", methodName, decodedResponse);
+
+        // 결과값에서 data 필드만 빼온다.
+        Map<String, Object> responseMap = null;
+        try{
+            responseMap = objectMapper.readValue(decodedResponse, Map.class);
+        }catch(Exception e){
+            log.info("[{}}] - 추가 인증 데이터 전송 실패 - 사유 : {}",methodName, e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        return responseMap;
     }
 }
