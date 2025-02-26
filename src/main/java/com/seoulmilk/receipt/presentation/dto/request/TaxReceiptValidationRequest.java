@@ -3,7 +3,8 @@ package com.seoulmilk.receipt.presentation.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-public record TaxValidationRequest(
+// ✅ 첫 번째 요청용 DTO (추가 인증 관련 필드 없음)
+public record TaxReceiptValidationRequest(
         @NotNull(message = "기관명은 필수 입력 항목입니다.")
         @Schema(description = "기관코드", example = "0004(고정값)")
         String organization,
@@ -12,18 +13,12 @@ public record TaxValidationRequest(
         @Schema(description = "로그인 구분", example = "0 -> 인증서 로그인, 5 -> 간편인증")
         String loginType,
 
-        @Schema(
-                description = "사용자 계정을 식별할 수 있는 유일 값 세팅(아이디 또는 주민번호 해시값)",
-                example = "u283-d93j-doe2-3we4"
-        )
+        @Schema(description = "사용자 계정을 식별할 수 있는 유일 값 세팅(아이디 또는 주민번호 해시값)", example = "u283-d93j-doe2-3we4")
         String id,
 
         @NotNull(message = "간편인증시 로그인 구분은 필수 인증 값입니다.")
-        @Schema(
-                description = "간편인증 로그인 구분",
-                example = "1:카카오톡, 2:페이코, 3:삼성패스, 4:KB모바일, 5:통신사(PASS), " +
-                        "6:네이버, 7:신한인증서, 8: toss, 9: 뱅크샐러드"
-        )
+        @Schema(description = "간편인증 로그인 구분", example = "1:카카오톡, 2:페이코, 3:삼성패스, 4:KB모바일, 5:통신사(PASS), " +
+                "6:네이버, 7:신한인증서, 8: toss, 9: 뱅크샐러드")
         String loginTypeLevel,
 
         @NotNull(message = "사용자 이름은 필수 입력 항목입니다.")
@@ -43,7 +38,7 @@ public record TaxValidationRequest(
         String supplierRegNumber,
 
         @NotNull(message = "공급 받는자 등록번호는 필수 입력 항목입니다.")
-        @Schema(description = "공급반든자 등록번호", example = "10자리 숫자 (1234567890)")
+        @Schema(description = "공급받는자 등록번호", example = "10자리 숫자 (1234567890)")
         String contractorRegNumber,
 
         @NotNull(message = "승인번호는 필수 입력 항목입니다.")
@@ -61,38 +56,5 @@ public record TaxValidationRequest(
         @NotNull(message = "간편인증시 통신사는 필수 입력 항목입니다.")
         @Schema(description = "통신사", example = "“0\":SKT(SKT알뜰폰), “1”:KT(KT알뜰폰), “2\":LG U+(LG U+알뜰폰)")
         String telecom
-) {
+) {}
 
-    public record TaxValidationWithAdditionalAuth(
-            @NotNull(message = "간편인증 여부는 필수 입력 항목입니다")
-            @Schema(description = "간편인증 여부", example = "\"0\": cancel , \"1\": ok")
-            String simpleAuth,
-
-            @NotNull(message = "추가 요청 설명값을 입력해주세요(true 고정)")
-            @Schema(description = "추가 요청임을 알려주는 설정값", example = "true값 고정")
-            Boolean is2Way,
-
-            @Schema(description = "1차 요청 응답 값", example = "Object 타입")
-            TwoWayInfo twoWayInfo
-    ){
-        public record TwoWayInfo(
-            @NotNull(message = "잡 인덱스는 필수 입력 값입니다.(응답값과 동일)")
-            @Schema(description = "잡 인덱스", example = "0")
-            Integer jobIndex,
-
-            @NotNull(message = "스레드 인덱스는 필수 입력 값입니다.(응답값과 동일)")
-            @Schema(description = "스레드 인덱스", example = "0")
-            Integer threadIndex,
-
-            @NotNull(message = "트랜잭션 아이디를 필수로 입력해야합니다.(응답값과 동일)")
-            @Schema(description = "트랜잭션 아이디", example = "db55392ae72a44efaa394")
-            String jti,
-
-            @NotNull(message = "추가 인증 시간을 필수로 입력해야합니다.(응답값과 동일)")
-            @Schema(description = "추가 인증 시간", example = "15650663")
-            String twoWayTimestamp
-        ){
-
-        }
-    }
-}

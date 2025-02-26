@@ -1,0 +1,94 @@
+package com.seoulmilk.receipt.application;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seoulmilk.receipt.infrastructure.OAuth2TokenProvider;
+import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
+import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationWithAuthRequest;
+import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
+import com.seoulmilk.receipt.presentation.dto.response.OAuth2TokenResponse;
+import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.Base64;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+@Log4j2
+public class TaxReceiptValidationService {
+    private final OAuth2TokenProvider oAuth2TokenProvider;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private String accessToken;
+    /**
+     * CODEF OPEN API를 사용하기 위한 OAuth2 토큰을 발급 받습니다
+     * @return OAuth2TokenResponse
+     */
+    private OAuth2TokenResponse getOAuth2Token(){
+        String auth = oAuth2TokenProvider.getClientId() + ":" + oAuth2TokenProvider.getClientSecret();
+        byte[] authEncBytes = Base64.getEncoder().encode(auth.getBytes());
+        String authHeader = "Bearer " + new String(authEncBytes);
+
+        log.info("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 시작");
+
+        // OAuth2TokenResponse 반환
+        // 아직 redis 도입 이전이므로 추후 refresh token 저장 방안 고민
+        return WebClient.create()
+                .post()
+                .uri(oAuth2TokenProvider.getOAuth2Url())
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Authorization", authHeader)
+                .bodyValue("grant_type=client_credentials&scope=read")
+                .retrieve()
+                .bodyToMono(OAuth2TokenResponse.class)
+                .block();
+    }
+
+    /**
+     * 제3자 세금계산서 발급 사실 조회 최초 요청시 사용합니다.
+     * @param taxReceiptValidationRequest
+     * @return 추가인증 요청값
+     */
+    public AdditionalAuthResponse validateTaxReceipt(TaxReceiptValidationRequest taxReceiptValidationRequest){
+        OAuth2TokenResponse oAuth2TokenResponse = getOAuth2Token();
+
+        // 추후 redis 적용시 캐시 참고 예정
+        accessToken = oAuth2TokenResponse.accessToken();
+
+        // 객체 -> Map 변환
+        Map<String, Object> map = objectMapper.convertValue(taxReceiptValidationRequest, Map.class);
+
+        return WebClient.builder()
+                .baseUrl(oAuth2TokenProvider.getTaxReceiptUrl())
+                .defaultHeader("Authorization", "Bearer " + accessToken)
+                .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .build()
+                .method(HttpMethod.POST)
+                .bodyValue(map)
+                .retrieve()
+                .bodyToMono(AdditionalAuthResponse.class)
+                .block();
+    }
+
+    public TaxReceiptValidationResponse validationWithAdditionalAuth(
+            TaxReceiptValidationWithAuthRequest taxReceiptValidationWithAuthRequest
+    ){
+        Map<String, Object> map = objectMapper.convertValue(taxReceiptValidationWithAuthRequest, Map.class);
+
+        return WebClient.builder()
+                .baseUrl(oAuth2TokenProvider.getTaxReceiptUrl())
+                .defaultHeader("Authorization", "Bearer " + accessToken)
+                .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .build()
+                .method(HttpMethod.POST)
+                .bodyValue(map)
+                .retrieve()
+                .bodyToMono(TaxReceiptValidationResponse.class)
+                .block();
+    }
+}

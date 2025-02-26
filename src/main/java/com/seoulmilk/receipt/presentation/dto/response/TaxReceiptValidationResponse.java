@@ -2,7 +2,7 @@ package com.seoulmilk.receipt.presentation.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record TaxValidationResponse(
+public record TaxReceiptValidationResponse(
         @Schema(description = "진위확인", example = "(\"0\": false, \"1\": true)")
         String resAuthenticity,
 
