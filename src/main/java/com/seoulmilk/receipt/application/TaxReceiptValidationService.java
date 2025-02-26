@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 
@@ -80,12 +82,21 @@ public class TaxReceiptValidationService {
                 .bodyToMono(String.class)
                 .block();
 
+        // URL 인코딩 되어서 날라옴
+        String decodedResponse = URLDecoder.decode(response, StandardCharsets.UTF_8);
+        log.info("[decodedResponse] - {}", decodedResponse);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> responseMap = null;
+
         try {
-            log.info("[validateTaxReceipt] - 추가 인증 데이터 전송 완료");
-            return objectMapper.readValue(response, AdditionalAuthResponse.class);
+            responseMap = objectMapper.readValue(decodedResponse, Map.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
+        log.info("[validateTaxReceipt] - 추가 인증 데이터 전송 완료");
+
+        return objectMapper.convertValue(responseMap.get("data"), AdditionalAuthResponse.class);
     }
 
     /**
