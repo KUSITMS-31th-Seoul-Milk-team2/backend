@@ -2,7 +2,9 @@ package com.seoulmilk.receipt.presentation.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record AdditionalAuthRequest(
+import java.util.Map;
+
+public record AdditionalAuthResponse(
         @Schema(description = "추가 인증 필요 유무", example = "true")
         Boolean continue2Way,
 
@@ -19,6 +21,9 @@ public record AdditionalAuthRequest(
         String jti,
 
         @Schema(description = "추가 인증 시간", example = "추가 인증 정보, 추가 요청에 사용")
-        String twoWayTimestamp
+        Long twoWayTimestamp,
+
+        @Schema(description = "추가 인증 관련 정보", example = "{\"commSimpleAuth\": \"\"}")
+        Map<String, String> extraInfo
 ) {
 }
