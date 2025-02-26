@@ -52,8 +52,10 @@ public class TaxReceiptValidationService {
                 .block();
 
         try {
+            log.info("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 완료");
             return objectMapper.readValue(response, OAuth2TokenResponse.class);
         } catch (JsonProcessingException e) {
+            log.error("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 실패 - 사유 : {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -71,6 +73,7 @@ public class TaxReceiptValidationService {
         // 객체 -> Map 변환
         Map<String, Object> map = objectMapper.convertValue(taxReceiptValidationRequest, Map.class);
 
+        log.info("[validateTaxReceipt] 세금계산서 진위 여부 검증을 위한 데이터 전송 시작");
         String response = WebClient.builder()
                 .baseUrl(oAuth2TokenProvider.getTaxReceiptUrl())
                 .defaultHeader("Authorization", "Bearer " + accessToken)
@@ -84,13 +87,14 @@ public class TaxReceiptValidationService {
 
         // URL 인코딩 되어서 날라옴
         String decodedResponse = URLDecoder.decode(response, StandardCharsets.UTF_8);
-        log.info("[decodedResponse] - {}", decodedResponse);
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> responseMap = null;
+        log.info("[validateTaxReceipt] 받은 데이터 - {}", decodedResponse);
 
+        // data만 뽑아오기
+        Map<String, Object> responseMap = null;
         try {
             responseMap = objectMapper.readValue(decodedResponse, Map.class);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
+            log.info("[validateTaxReceipt] - 추가 인증 데이터 전송 실패 - 사유 : {}", e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -107,8 +111,9 @@ public class TaxReceiptValidationService {
     public TaxReceiptValidationResponse validationWithAdditionalAuth(
             TaxReceiptValidationWithAuthRequest taxReceiptValidationWithAuthRequest
     ){
-        Map<String, Object> map = objectMapper.convertValue(taxReceiptValidationWithAuthRequest, Map.class);
+        Map map = objectMapper.convertValue(taxReceiptValidationWithAuthRequest, Map.class);
 
+        log.info("[validationWithAdditionalAuth] 추가 인증 데이터를 포함한 세금계산서 검증 시작");
         String response = WebClient.builder()
                 .baseUrl(oAuth2TokenProvider.getTaxReceiptUrl())
                 .defaultHeader("Authorization", "Bearer " + accessToken)
@@ -120,10 +125,18 @@ public class TaxReceiptValidationService {
                 .bodyToMono(String.class)
                 .block();
 
+        String decodedResponse = URLDecoder.decode(response, StandardCharsets.UTF_8);
+        log.info("[validationWithAdditionalAuth] 받은 데이터 - {}", decodedResponse);
+
+        Map<String, Object> responseMap = null;
         try {
-            return objectMapper.readValue(response, TaxReceiptValidationResponse.class);
-        } catch (JsonProcessingException e) {
+            responseMap = objectMapper.readValue(decodedResponse, Map.class);
+        } catch (Exception e) {
+            log.info("[validationWithAdditionalAuth] - 추가 인증 데이터 전송 실패 - 사유 : {}", e.getMessage());
             throw new RuntimeException(e);
         }
+
+        log.info("[validationWithAdditionalAuth] 추가 인증 데이터를 포함한 세금계산서 검증 완료");
+        return objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class);
     }
 }
