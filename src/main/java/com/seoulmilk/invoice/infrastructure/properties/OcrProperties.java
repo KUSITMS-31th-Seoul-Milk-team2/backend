@@ -1,4 +1,4 @@
-package com.seoulmilk.invoice.infrastructure.configuration.properties;
+package com.seoulmilk.invoice.infrastructure.properties;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

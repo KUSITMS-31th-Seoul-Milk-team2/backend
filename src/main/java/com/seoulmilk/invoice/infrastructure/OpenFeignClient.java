@@ -1,6 +1,7 @@
-package com.seoulmilk.invoice.application;
+package com.seoulmilk.invoice.infrastructure;
 
-import com.seoulmilk.core.configuration.openfeign.OpenFeignConfiguration;
+import com.seoulmilk.invoice.infrastructure.configuration.OpenFeignConfiguration;
+import com.seoulmilk.invoice.domain.service.OcrEngine;
 import com.seoulmilk.invoice.dto.response.OcrResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -13,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
         url = "${clova.ocr.ocr-invoke-url}",
         configuration = OpenFeignConfiguration.class
 )
-public interface OpenFeignClient {
+public interface OpenFeignClient extends OcrEngine {
 
     @PostMapping(
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE
