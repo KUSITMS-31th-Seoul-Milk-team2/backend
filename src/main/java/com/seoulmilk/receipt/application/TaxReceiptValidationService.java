@@ -5,7 +5,7 @@ import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.OAuth2TokenProvider;
 import com.seoulmilk.receipt.infrastructure.webclient.TaxReceiptWebClientUtil;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
-import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationWithAuthRequest;
+import com.seoulmilk.receipt.presentation.dto.request.*;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.OAuth2TokenResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
