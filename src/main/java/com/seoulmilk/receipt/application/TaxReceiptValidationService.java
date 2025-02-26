@@ -1,5 +1,6 @@
 package com.seoulmilk.receipt.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.receipt.infrastructure.OAuth2TokenProvider;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
@@ -31,22 +32,28 @@ public class TaxReceiptValidationService {
      */
     private OAuth2TokenResponse getOAuth2Token(){
         String auth = oAuth2TokenProvider.getClientId() + ":" + oAuth2TokenProvider.getClientSecret();
-        byte[] authEncBytes = Base64.getEncoder().encode(auth.getBytes());
-        String authHeader = "Bearer " + new String(authEncBytes);
+        String authEnc = Base64.getEncoder().encodeToString(auth.getBytes());
+        String authHeader = "Basic " + authEnc;
 
         log.info("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 시작");
 
         // OAuth2TokenResponse 반환
         // 아직 redis 도입 이전이므로 추후 refresh token 저장 방안 고민
-        return WebClient.create()
+        String response =  WebClient.create()
                 .post()
                 .uri(oAuth2TokenProvider.getOAuth2Url())
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("Authorization", authHeader)
                 .bodyValue("grant_type=client_credentials&scope=read")
                 .retrieve()
-                .bodyToMono(OAuth2TokenResponse.class)
+                .bodyToMono(String.class)
                 .block();
+
+        try {
+            return objectMapper.readValue(response, OAuth2TokenResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -56,14 +63,13 @@ public class TaxReceiptValidationService {
      */
     public AdditionalAuthResponse validateTaxReceipt(TaxReceiptValidationRequest taxReceiptValidationRequest){
         OAuth2TokenResponse oAuth2TokenResponse = getOAuth2Token();
-
         // 추후 redis 적용시 캐시 참고 예정
         accessToken = oAuth2TokenResponse.accessToken();
 
         // 객체 -> Map 변환
         Map<String, Object> map = objectMapper.convertValue(taxReceiptValidationRequest, Map.class);
 
-        return WebClient.builder()
+        String response = WebClient.builder()
                 .baseUrl(oAuth2TokenProvider.getTaxReceiptUrl())
                 .defaultHeader("Authorization", "Bearer " + accessToken)
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -71,16 +77,28 @@ public class TaxReceiptValidationService {
                 .method(HttpMethod.POST)
                 .bodyValue(map)
                 .retrieve()
-                .bodyToMono(AdditionalAuthResponse.class)
+                .bodyToMono(String.class)
                 .block();
+
+        try {
+            log.info("[validateTaxReceipt] - 추가 인증 데이터 전송 완료");
+            return objectMapper.readValue(response, AdditionalAuthResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    /**
+     * 추가인증 필요시 사용하는 API입니다.
+     * @param taxReceiptValidationWithAuthRequest
+     * @return 세금 계산서 검증 사실 여부
+     */
     public TaxReceiptValidationResponse validationWithAdditionalAuth(
             TaxReceiptValidationWithAuthRequest taxReceiptValidationWithAuthRequest
     ){
         Map<String, Object> map = objectMapper.convertValue(taxReceiptValidationWithAuthRequest, Map.class);
 
-        return WebClient.builder()
+        String response = WebClient.builder()
                 .baseUrl(oAuth2TokenProvider.getTaxReceiptUrl())
                 .defaultHeader("Authorization", "Bearer " + accessToken)
                 .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -88,7 +106,13 @@ public class TaxReceiptValidationService {
                 .method(HttpMethod.POST)
                 .bodyValue(map)
                 .retrieve()
-                .bodyToMono(TaxReceiptValidationResponse.class)
+                .bodyToMono(String.class)
                 .block();
+
+        try {
+            return objectMapper.readValue(response, TaxReceiptValidationResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

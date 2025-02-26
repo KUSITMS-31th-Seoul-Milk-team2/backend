@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ReceiptErrorCode implements BaseErrorCode<DomainException> {
     INVALID_FORMAT_ERROR(HttpStatus.NOT_FOUND, "텍스트의 형식이 일치하지 않습니다."),
-    UNAUHORIZED_USER_ERROR(HttpStatus.UNAUTHORIZED, "권한이 없는 유저가 사용중입니다.");
+    UNAUHORIZED_USER_ERROR(HttpStatus.FORBIDDEN, "권한이 없는 유저가 사용중입니다."),
+    OAUTH2_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "oAuth2 토큰 에러입니다.");
 
     private final HttpStatus httpStatus;
 
