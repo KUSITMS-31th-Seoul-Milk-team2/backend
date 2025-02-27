@@ -2,6 +2,7 @@ package com.seoulmilk.receipt.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.OAuth2TokenProvider;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationWithAuthRequest;
@@ -55,9 +56,9 @@ public class TaxReceiptValidationService {
         try {
             log.info("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 완료");
             return objectMapper.readValue(response, OAuth2TokenResponse.class);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             log.error("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 실패 - 사유 : {}", e.getMessage());
-            throw new RuntimeException(e);
+            throw ReceiptErrorCode.OAUTH2_TOKEN_ERROR.toException();
         }
     }
 
@@ -136,9 +137,12 @@ public class TaxReceiptValidationService {
         Map<String, Object> responseMap = null;
         try{
             responseMap = objectMapper.readValue(decodedResponse, Map.class);
-        }catch(Exception e){
-            log.info("[{}}] - 추가 인증 데이터 전송 실패 - 사유 : {}",methodName, e.getMessage());
-            throw new RuntimeException(e);
+        }catch(JsonProcessingException e){
+            log.info("[{}}] - 추가 인증 데이터 전송 실패 - 사유 : 응답 포맷 이상으로 인한 JSON 역직렬화 실패", methodName);
+            throw ReceiptErrorCode.JSON_DESERIALIZED_ERROR.toException();
+        }catch (Exception e){
+            log.info("[{}}] - 추가 인증 데이터 전송 실패 - 사유 : 요청값 또는 내부 서버 이상으로 인한 오류", methodName);
+            throw ReceiptErrorCode.INVALID_FORMAT_ERROR.toException();
         }
 
         return responseMap;
