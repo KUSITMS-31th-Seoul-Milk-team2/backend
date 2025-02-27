@@ -26,12 +26,12 @@ public record FileMetaData(String filename, String contentType) {
         }
     }
 
-    public String getBaseFilename(String filename) {
+    public static String getBaseFilename(String filename) {
         int lastDotIndex = filename.lastIndexOf('.');
         return lastDotIndex > 0 ? filename.substring(0, lastDotIndex) : filename;
     }
 
-    public String getExtension(String filename) {
+    public static String getExtension(String filename) {
         int lastDotIndex = filename.lastIndexOf('.');
         return lastDotIndex > 0
                 ? filename.substring(lastDotIndex + 1).toLowerCase()
