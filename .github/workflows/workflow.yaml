@@ -93,6 +93,7 @@ jobs:
             set -e  # 오류 발생 시 즉시 중단
             cd ~/backend  # 프로젝트 경로
             git pull
+            docker-compose pull  # 최신 이미지 가져오기
             docker-compose down
             docker-compose up -d --force-recreate --remove-orphans
             docker image prune -f  # 오래된 이미지 정리
