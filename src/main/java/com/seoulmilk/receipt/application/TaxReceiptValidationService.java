@@ -23,23 +23,19 @@ import java.util.Map;
 public class TaxReceiptValidationService {
     private final OAuth2TokenProvider oAuth2TokenProvider;
     private final TaxReceiptWebClientUtil taxReceiptWebClientUtil;
+    private final ObjectMapper objectMapper;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
     private String accessToken;
     /**
      * CODEF OPEN API를 사용하기 위한 OAuth2 토큰을 발급 받습니다
      * @return OAuth2TokenResponse
      */
     private OAuth2TokenResponse getOAuth2Token(){
-        String auth = oAuth2TokenProvider.getClientId() + ":" + oAuth2TokenProvider.getClientSecret();
-        String authEnc = Base64.getEncoder().encodeToString(auth.getBytes());
-        String authHeader = "Basic " + authEnc;
-
         log.info("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 시작");
 
         Map<String, String> headers = Map.of(
                 "Content-Type", "application/x-www-form-urlencoded",
-                "Authorization", authHeader
+                "Authorization", oAuth2TokenProvider.createAuthHeader()
         );
 
         // 아직 redis 도입 이전이므로 추후 access token 저장 방안 고민
