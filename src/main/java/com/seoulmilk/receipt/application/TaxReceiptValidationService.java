@@ -1,9 +1,9 @@
 package com.seoulmilk.receipt.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.OAuth2TokenProvider;
+import com.seoulmilk.receipt.infrastructure.webclient.TaxReceiptWebClientUtil;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationWithAuthRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
@@ -11,15 +11,10 @@ import com.seoulmilk.receipt.presentation.dto.response.OAuth2TokenResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -27,6 +22,7 @@ import java.util.Map;
 @Log4j2
 public class TaxReceiptValidationService {
     private final OAuth2TokenProvider oAuth2TokenProvider;
+    private final TaxReceiptWebClientUtil taxReceiptWebClientUtil;
 
     private ObjectMapper objectMapper = new ObjectMapper();
     private String accessToken;
@@ -41,17 +37,17 @@ public class TaxReceiptValidationService {
 
         log.info("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 시작");
 
-        // OAuth2TokenResponse 반환
-        // 아직 redis 도입 이전이므로 추후 refresh token 저장 방안 고민
-        String response =  WebClient.create()
-                .post()
-                .uri(oAuth2TokenProvider.getOAuth2Url())
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("Authorization", authHeader)
-                .bodyValue("grant_type=client_credentials&scope=read")
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+        Map<String, String> headers = Map.of(
+                "Content-Type", "application/x-www-form-urlencoded",
+                "Authorization", authHeader
+        );
+
+        // 아직 redis 도입 이전이므로 추후 access token 저장 방안 고민
+        String response = taxReceiptWebClientUtil.post(
+                oAuth2TokenProvider.getOAuth2Url(),
+                headers,
+                "grant_type=client_credentials&scope=read"
+        );
 
         try {
             log.info("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 완료");
@@ -73,21 +69,19 @@ public class TaxReceiptValidationService {
         accessToken = oAuth2TokenResponse.accessToken();
 
         // 객체 -> Map 변환
-        Map<String, Object> map = objectMapper.convertValue(taxReceiptValidationRequest, Map.class);
+        Map<String, Object> requestBody = objectMapper.convertValue(taxReceiptValidationRequest, Map.class);
 
         log.info("[validateTaxReceipt] 세금계산서 진위 여부 검증을 위한 데이터 전송 시작");
-        String response = WebClient.builder()
-                .baseUrl(oAuth2TokenProvider.getTaxReceiptUrl())
-                .defaultHeader("Authorization", "Bearer " + accessToken)
-                .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .build()
-                .method(HttpMethod.POST)
-                .bodyValue(map)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+        String response = taxReceiptWebClientUtil.post(
+                oAuth2TokenProvider.getTaxReceiptUrl(),
+                createAuthHeaders(),
+                requestBody
+        );
 
-        Map<String, Object> responseMap = getDataFromDecodedResponse(response, "validateTaxReceipt");
+        Map<String, Object> responseMap = taxReceiptWebClientUtil.decodeResponse(
+                response,
+                "validateTaxReceipt"
+        );
 
         log.info("[validateTaxReceipt] - 추가 인증 데이터 전송 완료");
 
@@ -102,49 +96,28 @@ public class TaxReceiptValidationService {
     public TaxReceiptValidationResponse validationWithAdditionalAuth(
             TaxReceiptValidationWithAuthRequest taxReceiptValidationWithAuthRequest
     ){
-        Map map = objectMapper.convertValue(taxReceiptValidationWithAuthRequest, Map.class);
+        Map requestBody = objectMapper.convertValue(taxReceiptValidationWithAuthRequest, Map.class);
 
         log.info("[validationWithAdditionalAuth] 추가 인증 데이터를 포함한 세금계산서 검증 시작");
-        String response = WebClient.builder()
-                .baseUrl(oAuth2TokenProvider.getTaxReceiptUrl())
-                .defaultHeader("Authorization", "Bearer " + accessToken)
-                .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .build()
-                .method(HttpMethod.POST)
-                .bodyValue(map)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+        String response = taxReceiptWebClientUtil.post(
+                oAuth2TokenProvider.getTaxReceiptUrl(),
+                createAuthHeaders(),
+                requestBody
+        );
 
-        Map<String, Object> responseMap = getDataFromDecodedResponse(response, "validationWithAdditionalAuth");
+        Map<String, Object> responseMap = taxReceiptWebClientUtil.decodeResponse(
+                response,
+                "validationWithAdditionalAuth"
+        );
 
         log.info("[validationWithAdditionalAuth] 추가 인증 데이터를 포함한 세금계산서 검증 완료");
         return objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class);
     }
 
-    /**
-     * OPEN API 결과 값에서 data 필드만 빼낸다.
-     * @param response
-     * @param methodName
-     * @return responseMap - data
-     */
-    private Map<String, Object> getDataFromDecodedResponse(String response, String methodName){
-        // response data는 디코딩이 필요함
-        String decodedResponse = URLDecoder.decode(response, StandardCharsets.UTF_8);
-        log.info("[{}] 받은 데이터 - {}", methodName, decodedResponse);
-
-        // 결과값에서 data 필드만 빼온다.
-        Map<String, Object> responseMap = null;
-        try{
-            responseMap = objectMapper.readValue(decodedResponse, Map.class);
-        }catch(JsonProcessingException e){
-            log.info("[{}] - 추가 인증 데이터 전송 실패 - 사유 : 응답 포맷 이상으로 인한 JSON 역직렬화 실패", methodName);
-            throw ReceiptErrorCode.JSON_DESERIALIZED_ERROR.toException();
-        }catch (Exception e){
-            log.info("[{}] - 추가 인증 데이터 전송 실패 - 사유 : 요청값 또는 내부 서버 이상으로 인한 오류", methodName);
-            throw ReceiptErrorCode.INVALID_FORMAT_ERROR.toException();
-        }
-
-        return responseMap;
+    private Map<String, String> createAuthHeaders(){
+        return Map.of(
+                "Authorization", "Bearer " + accessToken,
+                "Content-Type", MediaType.APPLICATION_JSON_VALUE
+        );
     }
 }
