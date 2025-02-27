@@ -40,21 +40,35 @@ public class TaxReceiptWebClientUtilImpl implements TaxReceiptWebClientUtil {
      * @return WebClient 응답 결과
      */
     private  String sendRequest(HttpMethod method, String url, Map<String, String> headers, Object body) {
-        WebClient.RequestBodySpec requestBodySpec = webClientBuilder
-                .baseUrl(url)
-                .build()
-                .method(method)
-                .headers(httpHeaders -> headers.forEach(httpHeaders::set));
+        WebClient.RequestBodySpec requestSpec = baseRequest(method, url);
+        applyHeaders(requestSpec, headers);
+        createRequestBody(requestSpec, body);
 
-        if (body instanceof String) {
-            requestBodySpec.contentType(MediaType.APPLICATION_FORM_URLENCODED).bodyValue(body);
-        } else {
-            requestBodySpec.contentType(MediaType.APPLICATION_JSON).bodyValue(body);
-        }
-
-        return requestBodySpec.retrieve()
+        return requestSpec.retrieve()
                 .bodyToMono(String.class)
                 .block();
+    }
+
+    // WebClient 기본 설정
+    private WebClient.RequestBodySpec baseRequest(HttpMethod method, String url) {
+        return webClientBuilder
+                .baseUrl(url)
+                .build()
+                .method(method);
+    }
+
+    // 헤더 설정
+    private void applyHeaders(WebClient.RequestBodySpec requestSpec, Map<String, String> headers) {
+        requestSpec.headers(httpHeaders -> headers.forEach(httpHeaders::set));
+    }
+
+    // 바디 설정
+    private void createRequestBody(WebClient.RequestBodySpec requestSpec, Object body) {
+        if (body instanceof String) {
+            requestSpec.contentType(MediaType.APPLICATION_FORM_URLENCODED).bodyValue(body);
+        } else {
+            requestSpec.contentType(MediaType.APPLICATION_JSON).bodyValue(body);
+        }
     }
 
     /**

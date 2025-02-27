@@ -3,7 +3,6 @@ package com.seoulmilk.receipt.presentation.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-// ✅ 첫 번째 요청용 DTO (추가 인증 관련 필드 없음)
 public record TaxReceiptValidationRequest(
         @NotNull(message = "기관명은 필수 입력 항목입니다.")
         @Schema(description = "기관코드", example = "0004(고정값)")
@@ -12,7 +11,8 @@ public record TaxReceiptValidationRequest(
         @NotNull(message = "로그인 구분은 필수 입력 항목입니다.")
         @Schema(description = "로그인 구분", example = "0 -> 인증서 로그인, 5 -> 간편인증")
         String loginType,
-
+        
+        @NotNull(message = "사용자를 구분하기 위한 유일값을 세팅해주세요")
         @Schema(description = "사용자 계정을 식별할 수 있는 유일 값 세팅(아이디 또는 주민번호 해시값)", example = "u283-d93j-doe2-3we4")
         String id,
 
