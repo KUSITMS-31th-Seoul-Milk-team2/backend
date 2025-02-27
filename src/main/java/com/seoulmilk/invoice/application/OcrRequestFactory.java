@@ -20,8 +20,8 @@ public class OcrRequestFactory {
                 System.currentTimeMillis(),
                 ocrProperties.getLang(),
                 List.of(new OcrRequest.ImageInfo(
-                        fileMetaData.getExtension(fileMetaData.filename()),
-                        fileMetaData.getBaseFilename(fileMetaData.filename())
+                        FileMetaData.getExtension(fileMetaData.filename()),
+                        FileMetaData.getBaseFilename(fileMetaData.filename())
                 ))
         );
     }
