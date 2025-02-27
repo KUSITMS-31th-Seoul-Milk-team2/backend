@@ -138,10 +138,10 @@ public class TaxReceiptValidationService {
         try{
             responseMap = objectMapper.readValue(decodedResponse, Map.class);
         }catch(JsonProcessingException e){
-            log.info("[{}}] - 추가 인증 데이터 전송 실패 - 사유 : 응답 포맷 이상으로 인한 JSON 역직렬화 실패", methodName);
+            log.info("[{}] - 추가 인증 데이터 전송 실패 - 사유 : 응답 포맷 이상으로 인한 JSON 역직렬화 실패", methodName);
             throw ReceiptErrorCode.JSON_DESERIALIZED_ERROR.toException();
         }catch (Exception e){
-            log.info("[{}}] - 추가 인증 데이터 전송 실패 - 사유 : 요청값 또는 내부 서버 이상으로 인한 오류", methodName);
+            log.info("[{}] - 추가 인증 데이터 전송 실패 - 사유 : 요청값 또는 내부 서버 이상으로 인한 오류", methodName);
             throw ReceiptErrorCode.INVALID_FORMAT_ERROR.toException();
         }
 
