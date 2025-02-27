@@ -23,7 +23,7 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
     private final TaxReceiptValidationService taxReceiptValidationService;
 
     @Override
-    @PostMapping("/valid")
+    @PostMapping("/validation")
     public ResponseEntity<RestResponse<AdditionalAuthResponse>> validTaxReceipt(
             @RequestBody TaxReceiptValidationRequest request
     ){
@@ -33,7 +33,7 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
     }
 
     @Override
-    @PostMapping("/additional")
+    @PostMapping("/addition")
     public ResponseEntity<RestResponse<TaxReceiptValidationResponse>> additionAuthController(
             @RequestBody TaxReceiptValidationWithAuthRequest request
     ){
