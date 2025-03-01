@@ -34,4 +34,9 @@ public class EmpRepositoryImpl implements EmpRepository {
     public Optional<Emp> findByEmployeeId(String employeeId) {
         return empJpaRepository.findByEmployeeId(employeeId).map(empMapper::toDomainEntity);
     }
+
+    @Override
+    public void deleteAll() {
+        empJpaRepository.deleteAll();
+    }
 }

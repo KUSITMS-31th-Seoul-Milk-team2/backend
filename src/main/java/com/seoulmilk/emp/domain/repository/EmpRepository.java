@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface EmpRepository {
     Emp save(Emp emp);
     Optional<Emp> findByEmployeeId(String employeeId);
+    void deleteAll();
 }
