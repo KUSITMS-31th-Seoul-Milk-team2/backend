@@ -18,7 +18,7 @@ public class EmpInitializationService {
 
     @PostConstruct
     public void init() {
-
+        empRepository.deleteAll();
         for (int i = 0; i < 5; i++) {
             empRepository.save(Emp.create(
                     "관리자" + i,
