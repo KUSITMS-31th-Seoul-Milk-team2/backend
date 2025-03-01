@@ -84,7 +84,7 @@ public class JwtTokenProvider implements TokenProvider {
         Date expiryDate;
         Map<String, ?> claims;
         if (type.equals(Type.ACCESS)) {
-            expiryDate = Date.from(Instant.now().plus(expiration, ChronoUnit.SECONDS));
+            expiryDate = Date.from(Instant.now().plus(expiration, ChronoUnit.MILLIS));
             claims = Map.of(
                     "iss", jwtProperties.getIssuer(),
                     "sub", emp.getId().toString(),
