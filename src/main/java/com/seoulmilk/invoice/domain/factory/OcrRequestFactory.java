@@ -1,4 +1,4 @@
-package com.seoulmilk.invoice.application;
+package com.seoulmilk.invoice.domain.factory;
 
 import com.seoulmilk.invoice.domain.value.FileMetaData;
 import com.seoulmilk.invoice.dto.request.OcrRequest;
