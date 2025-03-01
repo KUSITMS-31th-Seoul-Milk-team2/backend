@@ -4,6 +4,7 @@ import com.seoulmilk.invoice.domain.factory.OcrRequestFactory;
 import com.seoulmilk.invoice.domain.service.OcrEngine;
 import com.seoulmilk.invoice.domain.value.FileMetaData;
 import com.seoulmilk.invoice.dto.response.OcrResponse;
+import com.seoulmilk.invoice.exception.EventErrorCode;
 import com.seoulmilk.invoice.exception.InvoiceErrorCode;
 import com.seoulmilk.invoice.infrastructure.converter.OcrRequestConverter;
 import com.seoulmilk.invoice.infrastructure.converter.OcrResponseConverter;
@@ -31,8 +32,12 @@ public class OpenFeignService {
     }
 
     private void publishOcrEvent(OcrResponse ocrResponse) {
-        OcrValidationRequest ocrValidationRequest = OcrResponseConverter.convert(ocrResponse);
-        ocrEventPublisher.publish(ocrValidationRequest);
+        try {
+            OcrValidationRequest ocrValidationRequest = OcrResponseConverter.convert(ocrResponse);
+            ocrEventPublisher.publish(ocrValidationRequest);
+        } catch (Exception e) {
+            throw EventErrorCode.FAILED_TO_PUBLISH_EVENT.toException();
+        }
     }
 
     private OcrResponse executeOcr(FileMetaData fileMetaData, MultipartFile file) {
