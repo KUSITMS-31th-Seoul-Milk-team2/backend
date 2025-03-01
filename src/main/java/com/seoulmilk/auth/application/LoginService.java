@@ -13,17 +13,14 @@ import org.springframework.stereotype.Service;
 public class LoginService {
 
     private final PasswordHashingService passwordHashingService;
-    private final TokenProvider tokenProvider;
     private final EmpRepository empRepository;
 
     public LoginResponse login(LoginRequest request) {
         Emp employee = empRepository.findByEmployeeId(request.employeeId())
                 .orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
         passwordHashingService.matches(request.password(), employee.getPassword());
-        String accessToken = tokenProvider.provideAccessToken(employee);
         return LoginResponse.of(
-                employee,
-                accessToken
+                employee
         );
     }
 }
