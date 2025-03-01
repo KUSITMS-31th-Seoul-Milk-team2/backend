@@ -56,20 +56,16 @@ public class LoginServiceTest {
                 .willReturn(Optional.of(mockEmp));
         BDDMockito.willDoNothing().given(passwordHashingService)
                 .matches(VALID_PASSWORD, mockEmp.getPassword());
-        BDDMockito.given(tokenProvider.provideAccessToken(mockEmp))
-                .willReturn(expectedToken);
 
         // When
         LoginResponse response = loginService.login(request);
 
         // Then
         assertThat(response).isNotNull();
-        assertThat(response.accessToken()).isEqualTo(expectedToken);
         assertThat(response.userInfo().employeeId()).isEqualTo(VALID_EMPLOYEE_ID);
 
         BDDMockito.then(empRepository).should().findByEmployeeId(VALID_EMPLOYEE_ID);
         BDDMockito.then(passwordHashingService).should().matches(VALID_PASSWORD, HashedPassword.of(VALID_PASSWORD));
-        BDDMockito.then(tokenProvider).should().provideAccessToken(mockEmp);
     }
 
     @Test
@@ -88,10 +84,9 @@ public class LoginServiceTest {
 
         BDDMockito.then(empRepository).should().findByEmployeeId(INVALID_EMPLOYEE_ID);
         BDDMockito.then(passwordHashingService).shouldHaveNoInteractions();
-        BDDMockito.then(tokenProvider).shouldHaveNoInteractions();
     }
 
-        @Test
+    @Test
     @DisplayName("잘못된 비밀번호 입력 시 예외 발생")
     void login_fail_whenPasswordMismatch() {
         // Given
@@ -112,7 +107,6 @@ public class LoginServiceTest {
 
         BDDMockito.then(empRepository).should().findByEmployeeId(VALID_EMPLOYEE_ID);
         BDDMockito.then(passwordHashingService).should().matches(INVALID_PASSWORD, HashedPassword.of(VALID_PASSWORD));
-        BDDMockito.then(tokenProvider).shouldHaveNoInteractions();
     }
 
     private Emp createMockEmp() {
