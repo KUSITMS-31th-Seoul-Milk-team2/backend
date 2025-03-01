@@ -33,9 +33,12 @@ public class LoginController implements LoginSwagger {
     public ResponseEntity<RestResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse loginResponse = loginService.login(request);
         String accessToken = tokenService.provideAccessToken(TokenRequestFactory.create(request.employeeId()));
+        long accessCookieMaxAge = jwtProperties.getAccess().getExpiration() / 1000;
 
         ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
-                .maxAge(jwtProperties.getAccess().getExpiration())
+                .path("/")
+                .httpOnly(true)
+                .maxAge(accessCookieMaxAge)
                 .build();
 
         return ResponseEntity.ok()
