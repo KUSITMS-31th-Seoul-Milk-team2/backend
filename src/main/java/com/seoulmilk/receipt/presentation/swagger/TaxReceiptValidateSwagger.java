@@ -15,6 +15,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Tag(name = "Valid", description = "세금계산서 검증 프로세스")
 public interface TaxReceiptValidateSwagger {
@@ -36,5 +40,25 @@ public interface TaxReceiptValidateSwagger {
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
     ResponseEntity<RestResponse<TaxReceiptValidationResponse>> additionAuthController(
             @RequestBody TaxReceiptValidationWithAuthRequest request
+    );
+
+    @Operation(
+            summary = "세금계산서 발급사실 검증 다건요청 API",
+            description = "여러 정보들을 입력하여 세금계산서 검증 다건 요청을 실시합니다",
+            operationId = "/v1/receipt/multiple-validation"
+    )
+    @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
+    Mono<ResponseEntity<RestResponse<List<AdditionalAuthResponse>>>> validateTaxReceipts(
+            @RequestBody List<TaxReceiptValidationRequest> requestList
+    );
+
+    @Operation(
+            summary = "세금계산서 발급 사실 추가인증 다건 요청 API",
+            description = "세금계산서 검증시 추가 인증 다건 요청을 실시합니다.",
+            operationId = "/v1/receipt/multiple-addition"
+    )
+    @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
+    Mono<ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>>> multipleAdditionAuthController(
+            @RequestBody List<TaxReceiptValidationWithAuthRequest> requestList
     );
 }
