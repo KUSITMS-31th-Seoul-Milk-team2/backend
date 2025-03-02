@@ -1,4 +1,4 @@
-package com.seoulmilk.receipt.infrastructure.webclient;
+package com.seoulmilk.receipt.infrastructure.mono;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,44 +9,44 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
 @Log4j2
-public class TaxReceiptWebClientUtilImpl implements TaxReceiptWebClientUtil {
+@RequiredArgsConstructor
+public class WebClientMonoUtilImpl implements WebClientMonoUtil{
     private final ObjectMapper objectMapper;
     private final WebClient.Builder webClientBuilder;
 
     @Override
-    public String post(String url, Map<String, String> headers, Object body) {
+    public Mono<String> post(String url, Map<String, String> headers, Object body) {
         return sendRequest(HttpMethod.POST, url, headers, body);
     }
 
     @Override
-    public String get(String url, Map<String, String> headers) {
+    public Mono<String> get(String url, Map<String, String> headers) {
         return sendRequest(HttpMethod.GET, url, headers, null);
     }
 
     /**
-     * WebClient를 사용하여 외부 서버에 요청을 보냅니다.
+     * WebClient를 사용하여 외부 서버에 요청을 비동기적으로 보냅니다.
      * @param method
      * @param url
      * @param headers
      * @param body
-     * @return WebClient 응답 결과
+     * @return WebClient 응답 결과(Mono)
      */
-    private String sendRequest(HttpMethod method, String url, Map<String, String> headers, Object body) {
+    private Mono<String> sendRequest(HttpMethod method, String url, Map<String, String> headers, Object body) {
         WebClient.RequestBodySpec requestSpec = baseRequest(method, url);
         applyHeaders(requestSpec, headers);
         createRequestBody(requestSpec, body);
 
         return requestSpec.retrieve()
-                .bodyToMono(String.class)
-                .block();
+                .bodyToMono(String.class);
     }
 
     // WebClient 기본 설정
@@ -71,13 +71,14 @@ public class TaxReceiptWebClientUtilImpl implements TaxReceiptWebClientUtil {
         }
     }
 
+
+
     /**
      * 응답 결과가 URLEncoding 되어 있는 경우 결과값을 디코딩 합니다.
      * @param response
      * @param methodName
      * @return
      */
-
     @Override
     public Map<String, Object> decodeResponse(String response, String methodName) {
         try {
@@ -92,5 +93,4 @@ public class TaxReceiptWebClientUtilImpl implements TaxReceiptWebClientUtil {
             throw ReceiptErrorCode.INVALID_FORMAT_ERROR.toException();
         }
     }
-
 }
