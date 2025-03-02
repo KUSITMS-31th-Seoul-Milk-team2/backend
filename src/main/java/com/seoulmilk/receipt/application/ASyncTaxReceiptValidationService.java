@@ -86,31 +86,6 @@ public class ASyncTaxReceiptValidationService {
     }
 
     public Mono<List<AdditionalAuthResponse>> multipleRecieptValidation(List<TaxReceiptValidationRequest> requests){
-//        // 각 요청마다 새로운 토큰을 가져와서 사용
-//        List<Mono<AdditionalAuthResponse>> requestMonos = requests.stream()
-//                .map(request -> getOAuth2TokenMono() // 매 요청마다 새로운 토큰 가져오기
-//                        .flatMap(token -> {
-//                            // 요청을 보낼 데이터 변환
-//                            Map<String, Object> requestBody = objectMapper.convertValue(request, Map.class);
-//                            log.info("[multipleRecieptValidation] 데이터 확인 - {}", requestBody);
-//
-//                            return webClientMonoUtil.post(
-//                                            oAuth2TokenProvider.getTaxReceiptUrl(),
-//                                            createAuthHeaders(token), // 새 토큰 적용
-//                                            requestBody
-//                                    )
-//                                    .flatMap(response -> {
-//                                        Map<String, Object> responseMap =
-//                                                taxReceiptWebClientUtil.decodeResponse(response, "multipleRecieptValidation");
-//                                        return Mono.just(objectMapper.convertValue(responseMap.get("data"), AdditionalAuthResponse.class));
-//                                    });
-//                        })
-//                )
-//                .collect(Collectors.toList());
-//
-//        // 모든 요청을 병렬 실행하고 결과를 리스트로 반환
-//        return Flux.merge(requestMonos).collectList();
-
         return Flux.fromIterable(requests)
                 .delayElements(Duration.ofMillis(500))  // 0.5초 간격
                 .flatMap(request -> getOAuth2TokenMono()
@@ -139,28 +114,6 @@ public class ASyncTaxReceiptValidationService {
     public Mono<List<TaxReceiptValidationResponse>> multipleValidationWithAuth(
             List<TaxReceiptValidationWithAuthRequest> requests
     ){
-//        List<Mono<TaxReceiptValidationResponse>> requestMonos = requests.stream()
-//                .map(request -> getOAuth2TokenMono()
-//                        .flatMap(token -> {
-//                            Map<String, Object> requestBody = objectMapper.convertValue(request, Map.class);
-//                            log.info("[multipleValidationWithAuth] 추가 인증 데이터를 포함한 세금계산서 다중 검증 시작");
-//
-//                            return webClientMonoUtil.post(
-//                                            oAuth2TokenProvider.getTaxReceiptUrl(),
-//                                            createAuthHeaders(token),
-//                                            requestBody
-//                                    )
-//                                    .flatMap(response -> {
-//                                        Map<String, Object> responseMap =
-//                                                taxReceiptWebClientUtil.decodeResponse(response, "multipleValidationWithAuth");
-//                                        return Mono.just(objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class));
-//                                    });
-//                        })
-//                )
-//                .collect(Collectors.toList());
-//
-//        return Flux.merge(requestMonos).collectList();
-
             return Flux.fromIterable(requests)
                 .delayElements(Duration.ofMillis(500)) // 0.5초 간격으로 요청 전송
                 .flatMap(request -> getOAuth2TokenMono()
