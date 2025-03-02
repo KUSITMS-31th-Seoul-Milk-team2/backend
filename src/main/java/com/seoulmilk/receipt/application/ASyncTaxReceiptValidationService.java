@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,98 +32,91 @@ public class ASyncTaxReceiptValidationService {
     private final WebClientMonoUtil webClientMonoUtil;
     private final ObjectMapper objectMapper;
 
-    private String accessToken;
     /**
-     * CODEF OPEN API를 사용하기 위한 OAuth2 토큰을 발급 받습니다
-     * @return OAuth2TokenResponse
+     * CODEF OPEN API를 사용하기 위한 OAuth2 토큰을 비동기 방식으로 발급 받습니다
+     * @return Mono<OAuth2TokenResponse>
      */
-    private OAuth2TokenResponse getOAuth2Token(){
-        log.info("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 시작");
+    private Mono<String> getOAuth2TokenMono(){
+        log.info("[getOAuth2TokenMono] CODEF OPEN API OAuth2Token 발급 시작");
 
         Map<String, String> headers = Map.of(
                 "Content-Type", "application/x-www-form-urlencoded",
                 "Authorization", oAuth2TokenProvider.createAuthHeader()
         );
 
-        // 아직 redis 도입 이전이므로 추후 access token 저장 방안 고민
-        String response = taxReceiptWebClientUtil.post(
-                oAuth2TokenProvider.getOAuth2Url(),
-                headers,
-                "grant_type=client_credentials&scope=read"
-        );
-
-        try {
-            log.info("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 완료");
-            return objectMapper.readValue(response, OAuth2TokenResponse.class);
-        } catch (Exception e) {
-            log.error("[getOAuth2Token] CODEF OPEN API OAuth2Token 발급 실패 - 사유 : {}", e.getMessage());
-            throw ReceiptErrorCode.OAUTH2_TOKEN_ERROR.toException();
-        }
+        return Mono.fromCallable(() -> taxReceiptWebClientUtil.post(
+                        oAuth2TokenProvider.getOAuth2Url(),
+                        headers,
+                        "grant_type=client_credentials&scope=read"
+                ))
+                .map(response -> {
+                    try {
+                        log.info("[getOAuth2TokenMono] CODEF OPEN API OAuth2Token 발급 완료");
+                        OAuth2TokenResponse tokenResponse = objectMapper.readValue(response, OAuth2TokenResponse.class);
+                        return tokenResponse.accessToken();
+                    } catch (Exception e) {
+                        log.error("[getOAuth2TokenMono] OAuth2Token 발급 실패 - 사유: {}", e.getMessage());
+                        throw ReceiptErrorCode.OAUTH2_TOKEN_ERROR.toException();
+                    }
+                });
     }
 
-
     public Mono<List<AdditionalAuthResponse>> multipleRecieptValidation(List<TaxReceiptValidationRequest> requests){
-        OAuth2TokenResponse oAuth2TokenResponse = getOAuth2Token();
-        String accessToken = oAuth2TokenResponse.accessToken();
+        // 각 요청마다 새로운 토큰을 가져와서 사용
+        List<Mono<AdditionalAuthResponse>> requestMonos = requests.stream()
+                .map(request -> getOAuth2TokenMono() // 매 요청마다 새로운 토큰 가져오기
+                        .flatMap(token -> {
+                            // 요청을 보낼 데이터 변환
+                            Map<String, Object> requestBody = objectMapper.convertValue(request, Map.class);
+                            log.info("[multipleRecieptValidation] 데이터 확인 - {}", requestBody);
 
-        // 비동기 요청 처리 리스트
-        List<Mono<AdditionalAuthResponse>> requestMonos = new ArrayList<>();
+                            return webClientMonoUtil.post(
+                                            oAuth2TokenProvider.getTaxReceiptUrl(),
+                                            createAuthHeaders(token), // 새 토큰 적용
+                                            requestBody
+                                    )
+                                    .flatMap(response -> {
+                                        Map<String, Object> responseMap =
+                                                taxReceiptWebClientUtil.decodeResponse(response, "multipleRecieptValidation");
+                                        return Mono.just(objectMapper.convertValue(responseMap.get("data"), AdditionalAuthResponse.class));
+                                    });
+                        })
+                )
+                .collect(Collectors.toList());
 
-        for (TaxReceiptValidationRequest taxReceiptValidationRequest : requests) {
-            // 객체 -> Map 변환
-            Map<String, Object> requestBody = objectMapper.convertValue(taxReceiptValidationRequest, Map.class);
-
-            // 비동기 요청을 리스트에 추가
-            Mono<AdditionalAuthResponse> requestMono = webClientMonoUtil.post(
-                            oAuth2TokenProvider.getTaxReceiptUrl(),
-                            createAuthHeaders(),
-                            requestBody
-                    )
-                    .flatMap(response -> {
-                        Map<String, Object> responseMap =
-                                taxReceiptWebClientUtil.decodeResponse(response, "multipleRecieptValidation");
-                        return Mono.just(objectMapper.convertValue(responseMap.get("data"), AdditionalAuthResponse.class));
-                    });
-
-            requestMonos.add(requestMono);
-        }
-
-        return Flux.fromIterable(requestMonos)
-                .concatMap(request -> request.delayElement(Duration.ofMillis(500)))
-                .collectList();
+        // 모든 요청을 병렬 실행하고 결과를 리스트로 반환
+        return Flux.merge(requestMonos).collectList();
     }
 
     public Mono<List<TaxReceiptValidationResponse>> multipleValidationWithAuth(
             List<TaxReceiptValidationWithAuthRequest> requests
     ){
-        List<Mono<TaxReceiptValidationResponse>> requestMonos = new ArrayList<>();
+        List<Mono<TaxReceiptValidationResponse>> requestMonos = requests.stream()
+                .map(request -> getOAuth2TokenMono()
+                        .flatMap(token -> {
+                            Map<String, Object> requestBody = objectMapper.convertValue(request, Map.class);
+                            log.info("[multipleValidationWithAuth] 추가 인증 데이터를 포함한 세금계산서 다중 검증 시작");
 
-        for(TaxReceiptValidationWithAuthRequest taxReceiptValidationWithAuthRequest : requests){
-            Map<String, Object> requestBody =
-                    objectMapper.convertValue(taxReceiptValidationWithAuthRequest, Map.class);
+                            return webClientMonoUtil.post(
+                                            oAuth2TokenProvider.getTaxReceiptUrl(),
+                                            createAuthHeaders(token),
+                                            requestBody
+                                    )
+                                    .flatMap(response -> {
+                                        Map<String, Object> responseMap =
+                                                taxReceiptWebClientUtil.decodeResponse(response, "multipleValidationWithAuth");
+                                        return Mono.just(objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class));
+                                    });
+                        })
+                )
+                .collect(Collectors.toList());
 
-            log.info("[multipleValidationWithAuth] 추가 인증 데이터를 포함한 세금계산서 다중 검증 시작");
-            Mono<TaxReceiptValidationResponse> requestMono = webClientMonoUtil.post(
-                    oAuth2TokenProvider.getTaxReceiptUrl(),
-                    createAuthHeaders(),
-                    requestBody
-            ).flatMap(response -> {
-                Map<String, Object> responseMap =
-                        taxReceiptWebClientUtil.decodeResponse(response, "multipleValidationWithAuth");
-                return Mono.just(objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class));
-            });
-
-            requestMonos.add(requestMono);
-        }
-
-        return Flux.fromIterable(requestMonos)
-                .concatMap(request -> request.delayElement(Duration.ofMillis(500)))
-                .collectList();
+        return Flux.merge(requestMonos).collectList();
     }
 
-    private Map<String, String> createAuthHeaders(){
+    private Map<String, String> createAuthHeaders(String token){
         return Map.of(
-                "Authorization", "Bearer " + accessToken,
+                "Authorization", "Bearer " + token,
                 "Content-Type", MediaType.APPLICATION_JSON_VALUE
         );
     }
