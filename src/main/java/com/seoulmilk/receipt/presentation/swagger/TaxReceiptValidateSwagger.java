@@ -30,7 +30,7 @@ public interface TaxReceiptValidateSwagger {
     @Operation(
             summary = "세금계산서 발급사실 검증 API",
             description = "여러 정보들을 입력하여 세금계산서 검증을 실시합니다",
-            operationId = "/v1/receipt/valid"
+            operationId = "/v1/receipt/validation"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
     ResponseEntity<RestResponse<AdditionalAuthResponse>> validateTaxReceipts(
@@ -40,7 +40,7 @@ public interface TaxReceiptValidateSwagger {
     @Operation(
             summary = "세금계산서 발급 사실 추가인증 API",
             description = "세금계산서 검증시 추가 인증을 실시합니다.",
-            operationId = "/v1/receipt/additional"
+            operationId = "/v1/receipt/addition"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
     ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
