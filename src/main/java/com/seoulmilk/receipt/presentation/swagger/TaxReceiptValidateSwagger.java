@@ -33,34 +33,14 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/receipt/valid"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<AdditionalAuthResponse>> validTaxReceipt(
-            @RequestBody TaxReceiptValidationRequest request
+    ResponseEntity<RestResponse<EasyCodefResponse>> validateTaxReceipts(
+            @RequestBody List<TaxReceiptValidationRequest> requestList
     );
 
     @Operation(
             summary = "세금계산서 발급 사실 추가인증 API",
             description = "세금계산서 검증시 추가 인증을 실시합니다.",
             operationId = "/v1/receipt/additional"
-    )
-    @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<TaxReceiptValidationResponse>> additionAuthController(
-            @RequestBody TaxReceiptValidationWithAuthRequest request
-    );
-
-    @Operation(
-            summary = "세금계산서 발급사실 검증 다건요청 API",
-            description = "여러 정보들을 입력하여 세금계산서 검증 다건 요청을 실시합니다",
-            operationId = "/v1/receipt/multiple-validation"
-    )
-    @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<EasyCodefResponse>> validateTaxReceipts(
-            @RequestBody List<TaxReceiptValidationRequest> requestList
-    );
-
-    @Operation(
-            summary = "세금계산서 발급 사실 추가인증 다건 요청 API",
-            description = "세금계산서 검증시 추가 인증 다건 요청을 실시합니다.",
-            operationId = "/v1/receipt/multiple-addition"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
     ResponseEntity<RestResponse<List<EasyCodefResponse>>> multipleAdditionAuthController(
