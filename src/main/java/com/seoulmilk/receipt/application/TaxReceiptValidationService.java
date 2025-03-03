@@ -15,11 +15,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -40,19 +39,19 @@ public class TaxReceiptValidationService {
         List<EasyCodefRequest> easyCodefRequests = new LinkedList<>();
 
         for(TaxReceiptValidationRequest request : requests) {
-            easyCodefRequests.add(easyCodefFactory.createTaxReciptRequest(request));
+            easyCodefRequests.add(easyCodefFactory.createTaxReceiptRequest(request));
         }
 
         EasyCodefResponse response = null;
         try{
             response = easyCodef.requestMultipleProduct(easyCodefRequests);
-        }catch (Exception e){
+        } catch (Exception e){
             throw ReceiptErrorCode.ERROR_TO_CONNECT_CODEF_SERVER.toException();
         }
 
         // 응답 성공시 추가인증 관련 정보를 받는다.
         if(response.code().equals("CF-03002")){
-            HashMap responseMap = objectMapper.convertValue(response, HashMap.class);
+            HashMap<String, Object> responseMap = objectMapper.convertValue(response, HashMap.class);
             return objectMapper.convertValue(responseMap.get("data"), AdditionalAuthResponse.class);
         }else{
             throw ReceiptErrorCode.ERROR_TO_GET_DATA.toException();
@@ -64,14 +63,14 @@ public class TaxReceiptValidationService {
         try{
             easyCodefResponses = easyCodef.requestMultipleSimpleAuthCertification(transactionId);
         }catch (Exception e){
-            throw ReceiptErrorCode.ADDITIONAL_ATHENTICATION_ERROR.toException();
+            throw ReceiptErrorCode.ADDITIONAL_AUTHENTICATION_ERROR.toException();
         }
 
         List<TaxReceiptValidationResponse> validationResponses = new LinkedList<>();
 
         for(EasyCodefResponse easyCodefResponse : easyCodefResponses){
             if(easyCodefResponse.code().equals("CF-00000")){
-                HashMap responseMap = objectMapper.convertValue(easyCodefResponse, HashMap.class);
+                HashMap<String, Object> responseMap = objectMapper.convertValue(easyCodefResponse, HashMap.class);
                 validationResponses.add(objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class));
             }else{
                 // 오류 처리 방안 고민....
