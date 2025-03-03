@@ -25,7 +25,9 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
             @RequestBody List<TaxReceiptValidationRequest> requests
     ){
         log.info("[validateTaxReceipts] 컨트롤러 작동");
-        return ResponseEntity.ok(new RestResponse<>(taxReceiptValidationService.requestAdditionalAuthentication(requests)));
+        return ResponseEntity.ok(
+                new RestResponse<>(taxReceiptValidationService.requestAdditionalAuthentication(requests))
+        );
     }
 
     @Override

@@ -1,0 +1,30 @@
+package com.seoulmilk.receipt.infrastructure;
+
+import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
+import io.codef.api.dto.EasyCodefRequest;
+import io.codef.api.dto.EasyCodefRequestBuilder;
+import org.springframework.stereotype.Component;
+
+@Component
+public class EasyCodefFactory {
+    private final String endpoint = "/v1/kr/public/nt/third-party/tax-invoice-issue";
+
+    public EasyCodefRequest createTaxReciptReQuest(TaxReceiptValidationRequest request){
+        return EasyCodefRequestBuilder.builder()
+                .path(endpoint)
+                .requestBody("organization", request.organization())
+                .requestBody("loginType", request.loginType())
+                .requestBody("id", request.id())
+                .requestBody("loginTypeLevel", request.loginTypeLevel())
+                .requestBody("userName", request.userName())
+                .requestBody("phoneNo", request.phoneNo())
+                .requestBody("identity", request.identity())
+                .requestBody("supplierRegNumber", request.supplierRegNumber())
+                .requestBody("contractorRegNumber", request.contractorRegNumber())
+                .requestBody("approvalNo", request.approvalNo())
+                .requestBody("reportingDate", request.reportingDate())
+                .requestBody("supplyValue", request.supplyValue())
+                .requestBody("telecom", request.telecom())
+                .build();
+    }
+}
