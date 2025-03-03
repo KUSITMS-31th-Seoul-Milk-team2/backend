@@ -2,11 +2,7 @@ package com.seoulmilk.receipt.presentation;
 
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.receipt.application.TaxReceiptValidationServiceImpl;
-import com.seoulmilk.receipt.application.ValidationWithEasyCodefService;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
-import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationWithAuthRequest;
-import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
-import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import com.seoulmilk.receipt.presentation.swagger.TaxReceiptValidateSwagger;
 import io.codef.api.dto.EasyCodefResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,45 +17,25 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class TaxReceiptValidationController implements TaxReceiptValidateSwagger {
-    TaxReceiptValidationServiceImpl taxReceiptValidationService;
-    private final ValidationWithEasyCodefService validationWithEasyCodefService;
+    private final TaxReceiptValidationServiceImpl taxReceiptValidationService;
+
     @Override
     @PostMapping("/validation")
-    public ResponseEntity<RestResponse<AdditionalAuthResponse>> validTaxReceipt(
-            @RequestBody TaxReceiptValidationRequest request
-    ){
-        log.info("[validTaxReceipt] 컨트롤러 작동");
-        AdditionalAuthResponse additionalAuthResponse = taxReceiptValidationService.validateTaxReceipt(request);
-        return ResponseEntity.ok(new RestResponse<>(additionalAuthResponse));
-    }
-
-    @Override
-    @PostMapping("/addition")
-    public ResponseEntity<RestResponse<TaxReceiptValidationResponse>> additionAuthController(
-            @RequestBody TaxReceiptValidationWithAuthRequest request
-    ){
-        log.info("[additionAuthController] 컨트롤러 작동");
-        TaxReceiptValidationResponse taxReceiptValidationResponse =
-                taxReceiptValidationService.validationWithAdditionalAuth(request);
-
-        return ResponseEntity.ok(new RestResponse<>(taxReceiptValidationResponse));
-    }
-
-    @Override
-    @PostMapping("/multiple-validation")
     public ResponseEntity<RestResponse<EasyCodefResponse>> validateTaxReceipts(
             @RequestBody List<TaxReceiptValidationRequest> requests
     ){
         log.info("[validateTaxReceipts] 컨트롤러 작동");
-        return ResponseEntity.ok(new RestResponse<>(validationWithEasyCodefService.getAdditionalAuthResponse(requests)));
+        return ResponseEntity.ok(new RestResponse<>(taxReceiptValidationService.getAdditionalAuthResponse(requests)));
     }
 
     @Override
-    @PostMapping("/multiple-addition")
+    @PostMapping("/addition")
     public ResponseEntity<RestResponse<List<EasyCodefResponse>>> multipleAdditionAuthController(
             @RequestParam String transactionId
     ){
         log.info("[multipleAdditionAuthController] 컨트롤러 작동");
-        return ResponseEntity.ok(new RestResponse<>(validationWithEasyCodefService.getMultipleTaxReceiptValidationResponse(transactionId)));
+        return ResponseEntity.ok(
+                new RestResponse<>(taxReceiptValidationService.getMultipleTaxReceiptValidationResponse(transactionId))
+        );
     }
 }
