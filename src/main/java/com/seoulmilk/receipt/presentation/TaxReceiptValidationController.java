@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.List;
 public class TaxReceiptValidationController implements TaxReceiptValidateSwagger {
     private final TaxReceiptValidationService taxReceiptValidationService;
     private final ASyncTaxReceiptValidationService asyncTaxReceiptValidationService;
-
+//    private final ValidationWithEasyCodefService validationWithEasyCodefService;
     @Override
     @PostMapping("/validation")
     public ResponseEntity<RestResponse<AdditionalAuthResponse>> validTaxReceipt(
@@ -54,21 +53,24 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
     @PostMapping("multiple-validation")
     public Mono<ResponseEntity<RestResponse<List<AdditionalAuthResponse>>>> validateTaxReceipts(
             @RequestBody List<TaxReceiptValidationRequest> requestList
-    ) {
+    ){
+        log.info("[validateTaxReceipts] 컨트롤러 작동");
         return asyncTaxReceiptValidationService.multipleRecieptValidation(requestList)
                 .map(responseList -> ResponseEntity.ok(new RestResponse<>(responseList)))
-                .doOnSuccess(res -> log.info("추가 요청 데이터 전송 성공: {}", res))
-                .doOnError(err -> log.error("추가 요청 데이터 전송 실패", err));
+                .doOnSuccess(res -> log.info("세금계산서 검증 성공: {}", res))
+                .doOnError(err -> log.error("세금계산서 검증 실패", err));
     }
 
     @Override
     @PostMapping("multiple-addition")
-    public Mono<ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>>> multipleAdditionAuthController(
-            @RequestBody List<TaxReceiptValidationWithAuthRequest> requestList
-    ) {
-        return asyncTaxReceiptValidationService.multipleValidationWithAuth(requestList)
-                .map(responseList -> ResponseEntity.ok(new RestResponse<>(responseList)))
-                .doOnSuccess(res -> log.info("세금계산서 인증 성공: {}", res))
-                .doOnError(err -> log.info("세금 계산서 인증 실패", err));
+    public ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
+            @RequestBody List<TaxReceiptValidationWithAuthRequest> request
+    ){
+        log.info("[multipleAdditionAuthController] 컨트롤러 작동");
+        List<TaxReceiptValidationResponse> taxReceiptValidationResponse =
+                asyncTaxReceiptValidationService.multipleValidationWithAuth(request);
+
+        return ResponseEntity.ok(new RestResponse<>(taxReceiptValidationResponse));
     }
+
 }

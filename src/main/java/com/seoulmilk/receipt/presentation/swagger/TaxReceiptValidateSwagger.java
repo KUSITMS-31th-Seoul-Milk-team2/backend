@@ -14,11 +14,14 @@ import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationRespo
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Tag(name = "Valid", description = "세금계산서 검증 프로세스")
 public interface TaxReceiptValidateSwagger {
@@ -58,7 +61,8 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/receipt/multiple-addition"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    Mono<ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>>> multipleAdditionAuthController(
-            @RequestBody List<TaxReceiptValidationWithAuthRequest> requestList
+    ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
+            @RequestBody List<TaxReceiptValidationWithAuthRequest> request
     );
+
 }
