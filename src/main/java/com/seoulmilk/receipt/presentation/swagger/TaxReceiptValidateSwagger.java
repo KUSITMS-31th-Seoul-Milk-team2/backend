@@ -11,11 +11,13 @@ import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationReques
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationWithAuthRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
+import io.codef.api.dto.EasyCodefResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -51,7 +53,7 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/receipt/multiple-validation"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    Mono<ResponseEntity<RestResponse<List<AdditionalAuthResponse>>>> validateTaxReceipts(
+    ResponseEntity<RestResponse<EasyCodefResponse>> validateTaxReceipts(
             @RequestBody List<TaxReceiptValidationRequest> requestList
     );
 
@@ -61,8 +63,8 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/receipt/multiple-addition"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
-            @RequestBody List<TaxReceiptValidationWithAuthRequest> request
+    ResponseEntity<RestResponse<List<EasyCodefResponse>>> multipleAdditionAuthController(
+            @RequestParam String transactionId
     );
 
 }
