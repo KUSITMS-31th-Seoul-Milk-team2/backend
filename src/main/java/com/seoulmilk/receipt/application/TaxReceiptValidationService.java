@@ -1,8 +1,12 @@
 package com.seoulmilk.receipt.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.factory.EasyCodefFactory;
 import com.seoulmilk.receipt.infrastructure.configuration.EasyCodefProvider;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
+import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
+import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import io.codef.api.EasyCodef;
 import io.codef.api.dto.EasyCodefRequest;
 import io.codef.api.dto.EasyCodefResponse;
@@ -11,8 +15,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +27,7 @@ import java.util.List;
 public class TaxReceiptValidationService {
     private final EasyCodefProvider easyCodefProvider;
     private final EasyCodefFactory easyCodefFactory;
+    private final ObjectMapper objectMapper;
 
     private EasyCodef easyCodef;
 
@@ -28,21 +36,49 @@ public class TaxReceiptValidationService {
         easyCodef = easyCodefProvider.getEasyCodef();
     }
 
-    public EasyCodefResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> requests) {
+    public AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> requests) {
         List<EasyCodefRequest> easyCodefRequests = new LinkedList<>();
 
         for(TaxReceiptValidationRequest request : requests) {
             easyCodefRequests.add(easyCodefFactory.createTaxReciptReQuest(request));
         }
 
-        EasyCodefResponse response = easyCodef.requestMultipleProduct(easyCodefRequests);
-        return response;
+        EasyCodefResponse response = null;
+        try{
+            response = easyCodef.requestMultipleProduct(easyCodefRequests);
+        }catch (Exception e){
+            throw ReceiptErrorCode.ERROR_TO_CONNECT_CODEF_SERVER.toException();
+        }
+
+        // 응답 성공시 추가인증 관련 정보를 받는다.
+        if(response.code().equals("CF-03002")){
+            HashMap responseMap = objectMapper.convertValue(response, HashMap.class);
+            return objectMapper.convertValue(responseMap.get("data"), AdditionalAuthResponse.class);
+        }else{
+            throw ReceiptErrorCode.ERROR_TO_GET_DATA.toException();
+        }
     }
 
-    public List<EasyCodefResponse> requestMultipleTaxReceiptValidation (String transactionId) {
-        List<EasyCodefResponse> easyCodefResponses =
-                easyCodef.requestMultipleSimpleAuthCertification(transactionId);
+    public List<TaxReceiptValidationResponse> requestMultipleTaxReceiptValidation (String transactionId) {
+        List<EasyCodefResponse> easyCodefResponses;
+        try{
+            easyCodefResponses = easyCodef.requestMultipleSimpleAuthCertification(transactionId);
+        }catch (Exception e){
+            throw ReceiptErrorCode.ADDITIONAL_ATHENTICATION_ERROR.toException();
+        }
 
-        return easyCodefResponses;
+        List<TaxReceiptValidationResponse> validationResponses = new LinkedList<>();
+
+        for(EasyCodefResponse easyCodefResponse : easyCodefResponses){
+            if(easyCodefResponse.code().equals("CF-00000")){
+                HashMap responseMap = objectMapper.convertValue(easyCodefResponse, HashMap.class);
+                validationResponses.add(objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class));
+            }else{
+                // 오류 처리 방안 고민....
+                throw ReceiptErrorCode.INVALID_FORMAT_ERROR.toException();
+            }
+        }
+
+        return validationResponses;
     }
 }

@@ -9,11 +9,10 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ReceiptErrorCode implements BaseErrorCode<DomainException> {
-    INVALID_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "텍스트의 형식이 일치하지 않습니다."),
-    UNAUTHORIZED_USER_ERROR(HttpStatus.FORBIDDEN, "권한이 없는 유저가 사용중입니다."),
-    OAUTH2_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "oAuth2 토큰 에러입니다."),
-    JSON_DESERIALIZED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,
-            "JSON 역직렬화 에러입니다. 응답 포맷이 맞지 않습니다.");
+    ERROR_TO_CONNECT_CODEF_SERVER(HttpStatus.INTERNAL_SERVER_ERROR, "CODEF 서버와의 연결이 이뤄지지 않았습니다"),
+    ADDITIONAL_ATHENTICATION_ERROR(HttpStatus.NON_AUTHORITATIVE_INFORMATION, "추가인증 정보를 전달하지 못했습니다."),
+    ERROR_TO_GET_DATA(HttpStatus.INTERNAL_SERVER_ERROR, "응답 정보를 받는 것을 실패하였습니다."),
+    INVALID_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "잘못된 형식으로 요청값이 전달되었습니다.");
 
     private final HttpStatus httpStatus;
 
