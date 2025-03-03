@@ -1,4 +1,4 @@
-package com.seoulmilk.receipt.infrastructure;
+package com.seoulmilk.receipt.infrastructure.properties;
 
 import lombok.Getter;
 import lombok.Setter;

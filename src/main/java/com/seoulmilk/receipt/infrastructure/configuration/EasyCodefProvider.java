@@ -1,5 +1,6 @@
-package com.seoulmilk.receipt.infrastructure;
+package com.seoulmilk.receipt.infrastructure.configuration;
 
+import com.seoulmilk.receipt.infrastructure.properties.EasyCodefProperties;
 import io.codef.api.EasyCodef;
 import io.codef.api.EasyCodefBuilder;
 import io.codef.api.constants.CodefClientType;

@@ -1,7 +1,7 @@
 package com.seoulmilk.receipt.application;
 
 import com.seoulmilk.receipt.infrastructure.EasyCodefFactory;
-import com.seoulmilk.receipt.infrastructure.EasyCodefProvider;
+import com.seoulmilk.receipt.infrastructure.configuration.EasyCodefProvider;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
 import io.codef.api.EasyCodef;
 import io.codef.api.dto.EasyCodefRequest;
