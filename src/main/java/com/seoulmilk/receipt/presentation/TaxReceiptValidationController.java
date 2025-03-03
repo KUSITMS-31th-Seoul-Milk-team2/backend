@@ -3,6 +3,8 @@ package com.seoulmilk.receipt.presentation;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.receipt.application.TaxReceiptValidationService;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
+import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
+import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import com.seoulmilk.receipt.presentation.swagger.TaxReceiptValidateSwagger;
 import io.codef.api.dto.EasyCodefResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
 
     @Override
     @PostMapping("/validation")
-    public ResponseEntity<RestResponse<EasyCodefResponse>> validateTaxReceipts(
+    public ResponseEntity<RestResponse<AdditionalAuthResponse>> validateTaxReceipts(
             @RequestBody List<TaxReceiptValidationRequest> requests
     ){
         log.info("[validateTaxReceipts] 컨트롤러 작동");
@@ -32,7 +34,7 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
 
     @Override
     @PostMapping("/addition")
-    public ResponseEntity<RestResponse<List<EasyCodefResponse>>> multipleAdditionAuthController(
+    public ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
             @RequestParam String transactionId
     ){
         log.info("[multipleAdditionAuthController] 컨트롤러 작동");

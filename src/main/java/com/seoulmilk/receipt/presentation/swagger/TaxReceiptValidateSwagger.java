@@ -33,7 +33,7 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/receipt/valid"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<EasyCodefResponse>> validateTaxReceipts(
+    ResponseEntity<RestResponse<AdditionalAuthResponse>> validateTaxReceipts(
             @RequestBody List<TaxReceiptValidationRequest> requestList
     );
 
@@ -43,7 +43,7 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/receipt/additional"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<List<EasyCodefResponse>>> multipleAdditionAuthController(
+    ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
             @RequestParam String transactionId
     );
 
