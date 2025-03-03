@@ -40,7 +40,7 @@ public class TaxReceiptValidationService {
         List<EasyCodefRequest> easyCodefRequests = new LinkedList<>();
 
         for(TaxReceiptValidationRequest request : requests) {
-            easyCodefRequests.add(easyCodefFactory.createTaxReciptReQuest(request));
+            easyCodefRequests.add(easyCodefFactory.createTaxReciptRequest(request));
         }
 
         EasyCodefResponse response = null;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class EasyCodefFactory {
     private final String endpoint = "/v1/kr/public/nt/third-party/tax-invoice-issue";
 
-    public EasyCodefRequest createTaxReciptReQuest(TaxReceiptValidationRequest request){
+    public EasyCodefRequest createTaxReciptRequest(TaxReceiptValidationRequest request){
         return EasyCodefRequestBuilder.builder()
                 .path(endpoint)
                 .requestBody("organization", request.organization())
