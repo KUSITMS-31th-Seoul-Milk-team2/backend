@@ -1,5 +1,6 @@
 package com.seoulmilk.receipt.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.OAuth2TokenProvider;
@@ -10,6 +11,8 @@ import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationWithAu
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.OAuth2TokenResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
+import io.codef.api.EasyCodef;
+import io.codef.api.EasyCodefServiceType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -18,13 +21,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -99,7 +103,6 @@ public class ASyncTaxReceiptValidationService {
                                             requestBody
                                     )
                                     .flatMap(response -> {
-                                        long endTime = System.currentTimeMillis();
                                         log.info("[multipleRecieptValidation] 요청 완료");
 
                                         Map<String, Object> responseMap =
@@ -108,35 +111,42 @@ public class ASyncTaxReceiptValidationService {
                                     });
                         })
                 )
-                .collectList();
+                .collectList();  // 리스트로 반환
     }
 
-    public Mono<List<TaxReceiptValidationResponse>> multipleValidationWithAuth(
+    public List<TaxReceiptValidationResponse> multipleValidationWithAuth(
             List<TaxReceiptValidationWithAuthRequest> requests
     ){
-            return Flux.fromIterable(requests)
-                .delayElements(Duration.ofMillis(500)) // 0.5초 간격으로 요청 전송
-                .flatMap(request -> getOAuth2TokenMono()
-                        .flatMap(token -> {
-                            Map<String, Object> requestBody = objectMapper.convertValue(request, Map.class);
-                            log.info("[multipleValidationWithAuth] 추가 인증 데이터를 포함한 세금계산서 다중 검증 시작");
-                            log.info("[multipleValidationWithAuth] 보낸 데이터 - {}", requestBody);
-                            return webClientMonoUtil.post(
-                                            oAuth2TokenProvider.getTaxReceiptUrl(),
-                                            createAuthHeaders(token),
-                                            requestBody
-                                    )
-                                    .flatMap(response -> {
-                                        long endTime = System.currentTimeMillis();
-                                        log.info("[multipleValidationWithAuth] 요청 완료");
+        List<TaxReceiptValidationResponse> responses = new ArrayList<>();
 
-                                        Map<String, Object> responseMap =
-                                                taxReceiptWebClientUtil.decodeResponse(response, "multipleValidationWithAuth");
-                                        return Mono.just(objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class));
-                                    });
-                        })
-                )
-                .collectList();
+        EasyCodef easyCodef = new EasyCodef();
+        easyCodef.setPublicKey(oAuth2TokenProvider.getPublicKey());
+        easyCodef.setClientInfoForDemo(oAuth2TokenProvider.getClientId(), oAuth2TokenProvider.getClientSecret());
+        String endPoint = "/v1/kr/public/nt/third-party/tax-invoice-issue";
+
+        for(TaxReceiptValidationWithAuthRequest request : requests){
+            HashMap<String, Object> requestBody = objectMapper.convertValue(request, HashMap.class);
+
+            log.info("[getAdditionalAuthResponses] 보낸 데이터 - {}", requestBody);
+            String response = null;
+            try {
+                response = easyCodef.requestCertification(endPoint, EasyCodefServiceType.DEMO, requestBody);
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            log.info("[getAdditionalAuthResponses] 받은 데이터 - {}", response);
+            Map<String, Object> decodedResponse = taxReceiptWebClientUtil.decodeResponse(
+                    response,
+                    "getAdditionalAuthResponses"
+            );
+
+            objectMapper.convertValue(decodedResponse.get("data"), TaxReceiptValidationResponse.class);
+        }
+        return responses;
     }
 
     private Map<String, String> createAuthHeaders(String token){

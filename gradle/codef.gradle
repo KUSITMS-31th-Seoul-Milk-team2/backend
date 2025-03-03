@@ -1,0 +1,4 @@
+dependencies {
+    // codef 관련 의존성
+    implementation 'io.codef.api:easycodef-java:1.0.6'
+}

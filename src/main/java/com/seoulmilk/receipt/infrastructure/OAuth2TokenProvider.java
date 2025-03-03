@@ -12,6 +12,7 @@ import java.util.Base64;
 public class OAuth2TokenProvider {
     private final String clientId;
     private final String clientSecret;
+    private final String publicKey;
     private final String oAuth2Url;
     private final String taxReceiptUrl;
 
