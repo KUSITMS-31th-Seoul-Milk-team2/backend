@@ -1,7 +1,7 @@
 package com.seoulmilk.receipt.presentation;
 
 import com.seoulmilk.core.presentation.RestResponse;
-import com.seoulmilk.receipt.application.TaxReceiptValidationService;
+import com.seoulmilk.receipt.application.TaxReceiptValidationServiceImpl;
 import com.seoulmilk.receipt.application.ValidationWithEasyCodefService;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationWithAuthRequest;
@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class TaxReceiptValidationController implements TaxReceiptValidateSwagger {
-    private final TaxReceiptValidationService taxReceiptValidationService;
+    TaxReceiptValidationServiceImpl taxReceiptValidationService;
     private final ValidationWithEasyCodefService validationWithEasyCodefService;
     @Override
     @PostMapping("/validation")
