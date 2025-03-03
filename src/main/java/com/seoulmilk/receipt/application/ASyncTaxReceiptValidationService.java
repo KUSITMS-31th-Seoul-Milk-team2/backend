@@ -12,7 +12,6 @@ import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.OAuth2TokenResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import io.codef.api.EasyCodef;
-import io.codef.api.EasyCodefServiceType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -117,36 +116,37 @@ public class ASyncTaxReceiptValidationService {
     public List<TaxReceiptValidationResponse> multipleValidationWithAuth(
             List<TaxReceiptValidationWithAuthRequest> requests
     ){
-        List<TaxReceiptValidationResponse> responses = new ArrayList<>();
-
-        EasyCodef easyCodef = new EasyCodef();
-        easyCodef.setPublicKey(oAuth2TokenProvider.getPublicKey());
-        easyCodef.setClientInfoForDemo(oAuth2TokenProvider.getClientId(), oAuth2TokenProvider.getClientSecret());
-        String endPoint = "/v1/kr/public/nt/third-party/tax-invoice-issue";
-
-        for(TaxReceiptValidationWithAuthRequest request : requests){
-            HashMap<String, Object> requestBody = objectMapper.convertValue(request, HashMap.class);
-
-            log.info("[getAdditionalAuthResponses] 보낸 데이터 - {}", requestBody);
-            String response = null;
-            try {
-                response = easyCodef.requestCertification(endPoint, EasyCodefServiceType.DEMO, requestBody);
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            log.info("[getAdditionalAuthResponses] 받은 데이터 - {}", response);
-            Map<String, Object> decodedResponse = taxReceiptWebClientUtil.decodeResponse(
-                    response,
-                    "getAdditionalAuthResponses"
-            );
-
-            objectMapper.convertValue(decodedResponse.get("data"), TaxReceiptValidationResponse.class);
-        }
-        return responses;
+//        List<TaxReceiptValidationResponse> responses = new ArrayList<>();
+//
+//        EasyCodef easyCodef = new EasyCodef();
+//        easyCodef.setPublicKey(oAuth2TokenProvider.getPublicKey());
+//        easyCodef.setClientInfoForDemo(oAuth2TokenProvider.getClientId(), oAuth2TokenProvider.getClientSecret());
+//        String endPoint = "/v1/kr/public/nt/third-party/tax-invoice-issue";
+//
+//        for(TaxReceiptValidationWithAuthRequest request : requests){
+//            HashMap<String, Object> requestBody = objectMapper.convertValue(request, HashMap.class);
+//
+//            log.info("[getAdditionalAuthResponses] 보낸 데이터 - {}", requestBody);
+//            String response = null;
+//            try {
+//                response = easyCodef.requestCertification(endPoint, EasyCodefServiceType.DEMO, requestBody);
+//            } catch (UnsupportedEncodingException e) {
+//                throw new RuntimeException(e);
+//            } catch (JsonProcessingException e) {
+//                throw new RuntimeException(e);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//            log.info("[getAdditionalAuthResponses] 받은 데이터 - {}", response);
+//            Map<String, Object> decodedResponse = taxReceiptWebClientUtil.decodeResponse(
+//                    response,
+//                    "getAdditionalAuthResponses"
+//            );
+//
+//            objectMapper.convertValue(decodedResponse.get("data"), TaxReceiptValidationResponse.class);
+//        }
+//        return responses;
+        return null;
     }
 
     private Map<String, String> createAuthHeaders(String token){
