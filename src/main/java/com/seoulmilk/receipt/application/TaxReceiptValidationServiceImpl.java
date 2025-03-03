@@ -19,12 +19,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class ValidationWithEasyCodefService {
+public class TaxReceiptValidationServiceImpl implements TaxReceiptValidationService {
     private final TaxReceiptWebClientUtil taxReceiptWebClientUtil;
     private final OAuth2TokenProvider oAuth2TokenProvider;
 
     private EasyCodef easyCodef;
 
+    @Override
     public EasyCodefResponse getAdditionalAuthResponse(List<TaxReceiptValidationRequest> requests) {
         easyCodef = getEasyCodef();
         List<EasyCodefRequest> easyCodefRequests = new LinkedList<>();
@@ -38,6 +39,7 @@ public class ValidationWithEasyCodefService {
         return response;
     }
 
+    @Override
     public List<EasyCodefResponse> getMultipleTaxReceiptValidationResponse(String transactionId) {
         List<EasyCodefResponse> easyCodefResponses = easyCodef.requestMultipleSimpleAuthCertification(
                 transactionId
