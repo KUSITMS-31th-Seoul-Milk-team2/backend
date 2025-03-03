@@ -3,18 +3,19 @@ package com.seoulmilk.receipt.presentation;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.receipt.application.ASyncTaxReceiptValidationService;
 import com.seoulmilk.receipt.application.TaxReceiptValidationService;
+import com.seoulmilk.receipt.application.ValidationWithEasyCodefService;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationWithAuthRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import com.seoulmilk.receipt.presentation.swagger.TaxReceiptValidateSwagger;
+import io.codef.api.EasyCodef;
+import io.codef.api.dto.EasyCodefRequest;
+import io.codef.api.dto.EasyCodefResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
     private final TaxReceiptValidationService taxReceiptValidationService;
     private final ASyncTaxReceiptValidationService asyncTaxReceiptValidationService;
 //    private final ValidationWithEasyCodefService validationWithEasyCodefService;
+    private final ValidationWithEasyCodefService validationWithEasyCodefService;
     @Override
     @PostMapping("/validation")
     public ResponseEntity<RestResponse<AdditionalAuthResponse>> validTaxReceipt(
@@ -73,4 +75,19 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
         return ResponseEntity.ok(new RestResponse<>(taxReceiptValidationResponse));
     }
 
+
+    @PostMapping("/test")
+    public ResponseEntity<RestResponse<EasyCodefResponse>> test(
+            @RequestBody List<TaxReceiptValidationRequest> requests
+    ){
+        return ResponseEntity.ok(new RestResponse<>(validationWithEasyCodefService.getAdditionalAuthResponse(requests)));
+    }
+
+
+    @PostMapping("/test2")
+    public ResponseEntity<RestResponse<List<EasyCodefResponse>>> test2(
+            @RequestParam String transactionId
+    ){
+        return ResponseEntity.ok(new RestResponse<>(validationWithEasyCodefService.getMultipleTaxReceiptValidationResponse(transactionId)));
+    }
 }
