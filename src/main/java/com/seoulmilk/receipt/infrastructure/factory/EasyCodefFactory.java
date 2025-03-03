@@ -1,4 +1,4 @@
-package com.seoulmilk.receipt.infrastructure;
+package com.seoulmilk.receipt.infrastructure.factory;
 
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
 import io.codef.api.dto.EasyCodefRequest;
