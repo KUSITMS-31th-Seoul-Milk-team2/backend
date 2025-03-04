@@ -5,6 +5,7 @@ import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.ValidReceiptJpaEntity;
 import com.seoulmilk.receipt.infrastructure.persistence.mapper.ValidReceiptMapper;
+import com.seoulmilk.receipt.infrastructure.persistence.repository.ValidReceiptJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
@@ -14,9 +15,9 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 @Log4j2
-public class ValidValidReceiptRepositoryImpl implements ValidReceiptRepository {
+public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
     private final ValidReceiptMapper validReceiptMapper;
-    private final com.seoulmilk.receipt.infrastructure.persistence.repository.ValidReceiptRepository validReceiptRepository;
+    private final ValidReceiptJpaRepository validReceiptJpaRepository;
 
 
     @Override
@@ -25,17 +26,17 @@ public class ValidValidReceiptRepositoryImpl implements ValidReceiptRepository {
         if(validReceiptJpaEntity == null) {
             throw ReceiptErrorCode.FAILED_TO_SAVE_RECEIPT.toException();
         }
-        validReceiptRepository.save(validReceiptJpaEntity);
+        validReceiptJpaRepository.save(validReceiptJpaEntity);
         return validReceiptMapper.toDomainEntity(validReceiptJpaEntity);
     }
 
     @Override
     public Optional<ValidReceipt> findById(String issueId) {
-        return validReceiptRepository.findByIssueId(issueId).map(validReceiptMapper::toDomainEntity);
+        return validReceiptJpaRepository.findByIssueId(issueId).map(validReceiptMapper::toDomainEntity);
     }
 
     @Override
     public void deleteAll() {
-        validReceiptRepository.deleteAll();
+        validReceiptJpaRepository.deleteAll();
     }
 }
