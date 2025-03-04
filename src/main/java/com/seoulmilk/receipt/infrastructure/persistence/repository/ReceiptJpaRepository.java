@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface RecieptJpaRepository extends JpaRepository<ReceiptJpaEntity, Long> {
+public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, Long> {
     Optional<ReceiptJpaEntity> findByIssueId(String issueId);
 }

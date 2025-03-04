@@ -6,6 +6,6 @@ import java.util.Optional;
 
 public interface ReceiptRepository {
     Receipt save(Receipt receipt);
-    Optional<Receipt> findById(Long id);
+    Optional<Receipt> findById(String issueId);
     void deleteAll();
 }
