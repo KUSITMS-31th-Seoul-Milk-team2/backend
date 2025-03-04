@@ -2,6 +2,7 @@ package com.seoulmilk.receipt.infrastructure.repository;
 
 import com.seoulmilk.receipt.domain.ReceiptRepository;
 import com.seoulmilk.receipt.domain.entity.Receipt;
+import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.ReceiptJpaEntity;
 import com.seoulmilk.receipt.infrastructure.persistence.mapper.ReceiptMapper;
 import com.seoulmilk.receipt.infrastructure.persistence.repository.ReceiptJpaRepository;
@@ -23,7 +24,7 @@ public class ReceiptRepositoryImpl implements ReceiptRepository {
     public Receipt save(Receipt receipt) {
         ReceiptJpaEntity receiptJpaEntity = receiptMapper.toJpaEntity(receipt);
         if(receiptJpaEntity == null) {
-            return null;
+            throw ReceiptErrorCode.FAILED_TO_SAVE_RECEIPT.toException();
         }
         receiptJpaRepository.save(receiptJpaEntity);
         return receiptMapper.toDomainEntity(receiptJpaEntity);

@@ -2,7 +2,7 @@ package com.seoulmilk.receipt.infrastructure.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.receipt.application.TaxReceiptValidationProvider;
-import com.seoulmilk.receipt.exception.ReceiptErrorCode;
+import com.seoulmilk.receipt.exception.ReceiptValidationErrorCode;
 import com.seoulmilk.receipt.infrastructure.configuration.EasyCodefProvider;
 import com.seoulmilk.receipt.infrastructure.factory.EasyCodefRequestFactory;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
@@ -47,7 +47,7 @@ public class EasyCodefValidationProvider implements TaxReceiptValidationProvider
         try{
             response = easyCodef.requestMultipleProduct(easyCodefRequests);
         } catch (Exception e){
-            throw ReceiptErrorCode.ERROR_TO_CONNECT_CODEF_SERVER.toException();
+            throw ReceiptValidationErrorCode.ERROR_TO_CONNECT_CODEF_SERVER.toException();
         }
 
         // 응답 성공시 추가인증 관련 정보를 받는다.
@@ -55,7 +55,7 @@ public class EasyCodefValidationProvider implements TaxReceiptValidationProvider
             HashMap<String, Object> responseMap = objectMapper.convertValue(response, HashMap.class);
             return objectMapper.convertValue(responseMap.get("data"), AdditionalAuthResponse.class);
         }else{
-            throw ReceiptErrorCode.ERROR_TO_GET_DATA.toException();
+            throw ReceiptValidationErrorCode.ERROR_TO_GET_DATA.toException();
         }
     }
 
@@ -65,7 +65,7 @@ public class EasyCodefValidationProvider implements TaxReceiptValidationProvider
         try{
             easyCodefResponses = easyCodef.requestMultipleSimpleAuthCertification(transactionId);
         }catch (Exception e){
-            throw ReceiptErrorCode.ADDITIONAL_AUTHENTICATION_ERROR.toException();
+            throw ReceiptValidationErrorCode.ADDITIONAL_AUTHENTICATION_ERROR.toException();
         }
 
         List<TaxReceiptValidationResponse> validationResponses = new LinkedList<>();
@@ -76,7 +76,7 @@ public class EasyCodefValidationProvider implements TaxReceiptValidationProvider
                 validationResponses.add(objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class));
             }else{
                 // 오류 처리 방안 고민....
-                throw ReceiptErrorCode.INVALID_FORMAT_ERROR.toException();
+                throw ReceiptValidationErrorCode.INVALID_FORMAT_ERROR.toException();
             }
         }
 
