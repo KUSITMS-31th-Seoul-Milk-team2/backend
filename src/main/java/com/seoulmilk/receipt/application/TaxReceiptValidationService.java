@@ -2,8 +2,8 @@ package com.seoulmilk.receipt.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.receipt.exception.ReceiptErrorCode;
-import com.seoulmilk.receipt.infrastructure.factory.EasyCodefFactory;
 import com.seoulmilk.receipt.infrastructure.configuration.EasyCodefProvider;
+import com.seoulmilk.receipt.infrastructure.factory.EasyCodefRequestFactory;
 import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
@@ -25,7 +25,7 @@ import java.util.List;
 @Log4j2
 public class TaxReceiptValidationService {
     private final EasyCodefProvider easyCodefProvider;
-    private final EasyCodefFactory easyCodefFactory;
+    private final EasyCodefRequestFactory easyCodefRequestFactory;
     private final ObjectMapper objectMapper;
 
     private EasyCodef easyCodef;
@@ -39,7 +39,7 @@ public class TaxReceiptValidationService {
         List<EasyCodefRequest> easyCodefRequests = new LinkedList<>();
 
         for(TaxReceiptValidationRequest request : requests) {
-            easyCodefRequests.add(easyCodefFactory.createTaxReceiptRequest(request));
+            easyCodefRequests.add(easyCodefRequestFactory.createTaxReceiptRequest(request));
         }
 
         EasyCodefResponse response = null;
@@ -58,7 +58,7 @@ public class TaxReceiptValidationService {
         }
     }
 
-    public List<TaxReceiptValidationResponse> requestMultipleTaxReceiptValidation (String transactionId) {
+    public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceipts  (String transactionId) {
         List<EasyCodefResponse> easyCodefResponses;
         try{
             easyCodefResponses = easyCodef.requestMultipleSimpleAuthCertification(transactionId);
