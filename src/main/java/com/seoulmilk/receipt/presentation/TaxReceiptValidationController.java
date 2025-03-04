@@ -39,7 +39,7 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
     ){
         log.info("[multipleAdditionAuthController] 컨트롤러 작동");
         return ResponseEntity.ok(
-                new RestResponse<>(taxReceiptValidationService.requestMultipleTaxReceiptValidation(transactionId))
+                new RestResponse<>(taxReceiptValidationService.retrieveValidatedTaxReceipts(transactionId))
         );
     }
 }
