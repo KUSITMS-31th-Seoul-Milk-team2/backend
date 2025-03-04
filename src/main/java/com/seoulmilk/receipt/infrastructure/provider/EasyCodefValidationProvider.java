@@ -51,7 +51,7 @@ public class EasyCodefValidationProvider implements TaxReceiptValidationProvider
         }
 
         // 응답 성공시 추가인증 관련 정보를 받는다.
-        if(response.code().equals("CF-03002")){
+        if(isSuccess(response.code())){
             HashMap<String, Object> responseMap = objectMapper.convertValue(response, HashMap.class);
             return objectMapper.convertValue(responseMap.get("data"), AdditionalAuthResponse.class);
         }else{
@@ -71,7 +71,7 @@ public class EasyCodefValidationProvider implements TaxReceiptValidationProvider
         List<TaxReceiptValidationResponse> validationResponses = new LinkedList<>();
 
         for(EasyCodefResponse easyCodefResponse : easyCodefResponses){
-            if(easyCodefResponse.code().equals("CF-00000")){
+            if(isSuccess(easyCodefResponse.code())){
                 HashMap<String, Object> responseMap = objectMapper.convertValue(easyCodefResponse, HashMap.class);
                 validationResponses.add(objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class));
             }else{
@@ -81,5 +81,14 @@ public class EasyCodefValidationProvider implements TaxReceiptValidationProvider
         }
 
         return validationResponses;
+    }
+
+    private boolean isSuccess(String code){
+        if(code.equals("CF-00000"))
+            return true;
+        else if(code.equals("CF-03002"))
+            return true;
+        else
+            return false;
     }
 }
