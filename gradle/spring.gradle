@@ -11,4 +11,7 @@ dependencies {
 
     // Web-flux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
