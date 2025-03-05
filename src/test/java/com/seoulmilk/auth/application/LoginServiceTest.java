@@ -1,6 +1,6 @@
 package com.seoulmilk.auth.application;
 
-import com.seoulmilk.auth.domain.entity.HashedPassword;
+import com.seoulmilk.emp.domain.entity.HashedPassword;
 import com.seoulmilk.auth.exception.AuthenticationErrorCode;
 import com.seoulmilk.auth.presentation.dto.request.LoginRequest;
 import com.seoulmilk.auth.presentation.dto.response.LoginResponse;
