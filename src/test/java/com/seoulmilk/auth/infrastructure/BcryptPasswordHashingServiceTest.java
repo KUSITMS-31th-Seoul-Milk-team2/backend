@@ -1,7 +1,7 @@
 package com.seoulmilk.auth.infrastructure;
 
-import com.seoulmilk.auth.domain.entity.HashedPassword;
-import com.seoulmilk.auth.domain.entity.Password;
+import com.seoulmilk.emp.domain.entity.HashedPassword;
+import com.seoulmilk.emp.domain.entity.Password;
 import com.seoulmilk.auth.exception.AuthenticationErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

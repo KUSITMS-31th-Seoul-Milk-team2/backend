@@ -1,6 +1,5 @@
 package com.seoulmilk.emp.domain.entity;
 
-import com.seoulmilk.auth.domain.entity.HashedPassword;
 import com.seoulmilk.emp.domain.value.Role;
 import com.seoulmilk.emp.infrastructure.persistence.jpa.entity.EmpJpaEntity;
 import lombok.Builder;
