@@ -4,7 +4,7 @@ import com.seoulmilk.core.configuration.swagger.ApiErrorCode;
 import com.seoulmilk.core.exception.error.GlobalErrorCode;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
-import com.seoulmilk.emp.dto.reqeust.UpdatePasswordRequest;
+import com.seoulmilk.emp.dto.request.UpdatePasswordRequest;
 import com.seoulmilk.emp.exception.EmpErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
