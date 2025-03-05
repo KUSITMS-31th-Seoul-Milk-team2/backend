@@ -3,7 +3,7 @@ package com.seoulmilk.emp.presentation;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.emp.application.UpdatePasswordService;
-import com.seoulmilk.emp.dto.reqeust.UpdatePasswordRequest;
+import com.seoulmilk.emp.dto.request.UpdatePasswordRequest;
 import com.seoulmilk.emp.presentation.swagger.UpdatePasswordSwagger;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

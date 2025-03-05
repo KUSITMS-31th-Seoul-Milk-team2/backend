@@ -2,7 +2,7 @@ package com.seoulmilk.emp.domain.service;
 
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
-import com.seoulmilk.emp.dto.reqeust.UpdatePasswordRequest;
+import com.seoulmilk.emp.dto.request.UpdatePasswordRequest;
 import com.seoulmilk.emp.exception.EmpErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
