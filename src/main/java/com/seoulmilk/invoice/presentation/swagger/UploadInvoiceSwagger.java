@@ -13,6 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Flux;
+
+import java.util.List;
 
 @Tag(name = "Invoice", description = "세금계산서")
 public interface UploadInvoiceSwagger {
@@ -23,13 +26,13 @@ public interface UploadInvoiceSwagger {
             operationId = "/v1/invoice"
     )
     @ApiErrorCode({GlobalErrorCode.class, InvoiceErrorCode.class})
-    ResponseEntity<RestResponse<OcrResponse>> upload(
+    ResponseEntity<RestResponse<Flux<OcrResponse>>> upload(
             @Parameter(
-                    name = "file",
-                    description = "업로드할 세금계산서 이미지 파일",
+                    name = "files",
+                    description = "업로드할 세금계산서 이미지 파일들",
                     required = true,
                     content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE),
                     schema = @Schema(type = "string", format = "binary")
-            ) MultipartFile file
+            ) List<MultipartFile> files
     );
 }
