@@ -1,12 +1,17 @@
 package com.seoulmilk.invoice.domain.service;
 
 import com.seoulmilk.invoice.dto.response.OcrResponse;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 public interface OcrEngine {
-    OcrResponse extractText(
+
+    @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Mono<OcrResponse> extractText(
             @RequestPart("message") String message,
-            @RequestPart("file") MultipartFile file
+            @RequestPart("file") byte[] fileByte,
+            String fileName
     );
 }
