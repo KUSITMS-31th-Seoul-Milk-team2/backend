@@ -30,7 +30,7 @@ public class WebClientOcrEngine implements OcrEngine {
         bodyBuilder.part("file", new ByteArrayResource(fileBytes) {
             @Override
             public String getFilename() {
-                return fileName; // 파일 메타데이터에서 파일명을 가져올 수 있다면 더 좋습니다
+                return fileName;
             }
         });
 
