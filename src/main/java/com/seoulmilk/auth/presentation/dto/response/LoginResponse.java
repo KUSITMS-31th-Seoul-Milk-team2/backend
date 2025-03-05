@@ -15,7 +15,7 @@ public record LoginResponse(
             @Schema(description = "사용자 이름", example = "홍길동")
             String name,
 
-            @Schema(description = "사용자 권한", example = "ROLE_USER")
+            @Schema(description = "사용자 권한", example = "ADMIN")
             Role role
     ) {
         public static UserInfo from(Emp employee) {
