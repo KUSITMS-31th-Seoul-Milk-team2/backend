@@ -80,6 +80,10 @@ public class JwtTokenProvider implements TokenProvider {
         }
     }
 
+    public Long getEmpId(String token) {
+        return Long.parseLong(getPayload(token).getSubject());
+    }
+
     private String createToken(Emp emp, Type type, long expiration) {
         Date expiryDate;
         Map<String, ?> claims;
