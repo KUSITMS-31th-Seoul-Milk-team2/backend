@@ -3,13 +3,13 @@ package com.seoulmilk.invoice.infrastructure.converter;
 import com.seoulmilk.invoice.dto.response.OcrResponse;
 import com.seoulmilk.invoice.exception.InvoiceErrorCode;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
+@Log4j2
 public class OcrResponseConverter {
 
     public static List<String> REQUIRED_FIELDS = List.of(
@@ -19,7 +19,6 @@ public class OcrResponseConverter {
 
     public static OcrValidationRequest convert(OcrResponse response) {
         Map<String, String> fieldMap = extractFieldMap(response);
-
         REQUIRED_FIELDS.forEach(field -> {
             if (fieldMap.get(field) == null) {
                 log.error("국세청 검증을 위한 필수 필드 누락: {}", field);
@@ -28,8 +27,8 @@ public class OcrResponseConverter {
         });
 
         return new OcrValidationRequest(
-                normalizeRegNumber(fieldMap.get("공급자 사업자등록번호")),
-                normalizeRegNumber(fieldMap.get("공급받는자 사업자등록번호")),
+                normalizeRegisterNumber(fieldMap.get("공급자 사업자등록번호")),
+                normalizeRegisterNumber(fieldMap.get("공급받는자 사업자등록번호")),
                 formatApprovalNo(fieldMap.get("승인번호").replaceAll("\\s+", "")),
                 formatDate(fieldMap.get("전자세금계산서 작성일자")),
                 normalizeSupplyValue(fieldMap.get("총 공급가액"))
@@ -50,23 +49,24 @@ public class OcrResponseConverter {
                 );
     }
 
-    private static String normalizeRegNumber(String raw) {
-        String cleaned = raw.replaceAll("[^0-9]", "");
-        if (!cleaned.matches("^\\d{10}$")) {
+    private static String normalizeRegisterNumber(String raw) {
+        String cleaned = raw.replaceAll(InvoiceRegexPatterns.NON_DIGIT, "");
+        if (!cleaned.matches(InvoiceRegexPatterns.BUSINESS_REGISTER_NUMBER)) {
             throw InvoiceErrorCode.INVALID_SUPPLIER_NUMBER_FORMAT.toException();
         }
         return cleaned;
     }
 
     private static String formatApprovalNo(String raw) {
-        return raw.replaceAll("-", "").replaceAll("\\s+", "");
+        return raw.replaceAll(InvoiceRegexPatterns.HYPHEN, "")
+                .replaceAll(InvoiceRegexPatterns.WHITESPACE, "");
     }
 
     private static String formatDate(String rawDate) {
-        return rawDate.replaceAll("\\s+", "");
+        return rawDate.replaceAll(InvoiceRegexPatterns.WHITESPACE, "");
     }
 
     private static String normalizeSupplyValue(String raw) {
-        return raw.replaceAll("[^0-9]", "");
+        return raw.replaceAll(InvoiceRegexPatterns.NON_DIGIT, "");
     }
 }
