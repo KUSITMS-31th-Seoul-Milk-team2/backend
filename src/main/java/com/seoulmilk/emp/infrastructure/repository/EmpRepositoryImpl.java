@@ -31,12 +31,27 @@ public class EmpRepositoryImpl implements EmpRepository {
     }
 
     @Override
+    public Optional<Emp> findByid(Long id) {
+        return empJpaRepository.findById(id).map(empMapper::toDomainEntity);
+    }
+
+    @Override
     public Optional<Emp> findByEmployeeId(String employeeId) {
         return empJpaRepository.findByEmployeeId(employeeId).map(empMapper::toDomainEntity);
     }
 
     @Override
+    public Optional<Emp> findByEmployeeName(String employeeName) {
+        return empJpaRepository.findByName(employeeName).map(empMapper::toDomainEntity);
+    }
+
+    @Override
     public void deleteAll() {
         empJpaRepository.deleteAll();
+    }
+
+    @Override
+    public void updatePassword(Long id, String newPassword) {
+        empJpaRepository.updatePassword(id, newPassword);
     }
 }
