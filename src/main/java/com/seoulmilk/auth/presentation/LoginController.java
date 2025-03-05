@@ -10,7 +10,6 @@ import com.seoulmilk.auth.presentation.swagger.LoginSwagger;
 import com.seoulmilk.core.presentation.RestResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
