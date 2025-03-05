@@ -55,7 +55,5 @@ public record OcrResponse(
                 double height
         ) {
         }
-
-
     }
 }
