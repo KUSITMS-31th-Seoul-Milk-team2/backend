@@ -6,6 +6,9 @@ import java.util.Optional;
 
 public interface EmpRepository {
     Emp save(Emp emp);
+    Optional<Emp> findByid(Long id);
     Optional<Emp> findByEmployeeId(String employeeId);
+    Optional<Emp> findByEmployeeName(String employeeName);
     void deleteAll();
+    void updatePassword(Long id, String newPassword);
 }
