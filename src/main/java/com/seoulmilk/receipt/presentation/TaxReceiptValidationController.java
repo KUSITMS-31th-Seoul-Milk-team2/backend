@@ -2,11 +2,10 @@ package com.seoulmilk.receipt.presentation;
 
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.receipt.application.TaxReceiptValidationService;
-import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
+import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import com.seoulmilk.receipt.presentation.swagger.TaxReceiptValidateSwagger;
-import io.codef.api.dto.EasyCodefResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;

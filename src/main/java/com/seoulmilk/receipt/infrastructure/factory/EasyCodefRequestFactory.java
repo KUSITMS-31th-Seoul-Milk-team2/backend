@@ -1,7 +1,7 @@
 package com.seoulmilk.receipt.infrastructure.factory;
 
 import com.seoulmilk.receipt.infrastructure.properties.EasyCodefProperties;
-import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
+import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 import io.codef.api.dto.EasyCodefRequest;
 import io.codef.api.dto.EasyCodefRequestBuilder;
 import lombok.RequiredArgsConstructor;
