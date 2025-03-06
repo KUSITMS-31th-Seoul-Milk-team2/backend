@@ -15,7 +15,7 @@ public class KafkaTopicConfiguration {
     @Bean
     public NewTopic ocrResultTopic() {
         return TopicBuilder.name(kafkaProperties.getTopic())
-                .partitions(1)
+                .partitions(3)
                 .replicas(1)
                 .build();
     }
