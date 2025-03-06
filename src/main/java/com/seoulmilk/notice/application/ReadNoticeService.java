@@ -36,7 +36,7 @@ public class ReadNoticeService {
     }
 
     public PageNoticeResponse<NoticeSummaryResponse> getNoticesByPage(Pageable pageable) {
-        Page<Notice> notices = noticeRepository.findAllWithAuthor(pageable);
+        Page<Notice> notices = noticeRepository.findAllOrderByIdDesc(pageable);
 
         List<NoticeSummaryResponse> content = notices.getContent().stream()
                 .map(notice -> {
