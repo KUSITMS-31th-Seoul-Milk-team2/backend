@@ -24,7 +24,7 @@ public class WebClientOcrEngine implements OcrEngine {
     private String ocrInvokeUrl;
 
     @Override
-    public Mono<OcrResponse> extractText(String message, byte[] fileBytes, String fileName) {
+    public Mono<OcrResponse> extractText(Long empPk, String message, byte[] fileBytes, String fileName) {
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("message", message);
         bodyBuilder.part("file", new ByteArrayResource(fileBytes) {

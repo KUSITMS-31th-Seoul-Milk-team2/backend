@@ -10,6 +10,7 @@ public interface OcrEngine {
 
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Mono<OcrResponse> extractText(
+            Long empPk,
             @RequestPart("message") String message,
             @RequestPart("file") byte[] fileByte,
             String fileName

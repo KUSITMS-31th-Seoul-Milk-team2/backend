@@ -1,6 +1,6 @@
-package com.seoulmilk.core.util.factory;
+package com.seoulmilk.core.util.emailUtil.factory;
 
-import com.seoulmilk.core.util.dto.SendEmailRequest;
+import com.seoulmilk.core.util.emailUtil.dto.SendEmailRequest;
 
 public class SendEmailRequestFactory {
     private static final String TITLE = "서울우유 비밀번호 변경 안내";

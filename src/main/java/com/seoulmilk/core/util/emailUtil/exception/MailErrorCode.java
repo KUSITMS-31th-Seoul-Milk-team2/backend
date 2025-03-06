@@ -1,4 +1,4 @@
-package com.seoulmilk.core.util.exception;
+package com.seoulmilk.core.util.emailUtil.exception;
 
 
 import com.seoulmilk.core.exception.DomainException;

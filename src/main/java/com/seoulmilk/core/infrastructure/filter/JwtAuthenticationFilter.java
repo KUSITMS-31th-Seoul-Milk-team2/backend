@@ -25,8 +25,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService userDetailsService;
-    //    private static final String BEARER = "Bearer ";
-//    private static final String AUTHORIZATION = "Authorization";
     private static final String ACCESS_TOKEN_COOKIE = "accessToken";
 
     @Override
@@ -52,10 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private Authentication createAuthentication(String token) {
         Long empPk = jwtTokenProvider.getEmpId(token);
-        log.info("JwtAuthenticationFilter 속 token : {}", token);
-        log.info("JwtAuthenticationFilter 속 empId : {}", empPk);
         UserDetails userDetails = userDetailsService.loadUserById(empPk);
-        log.info("JwtAuthenticationFilter 속 userDetails : {}", userDetails);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 }

@@ -1,0 +1,43 @@
+package com.seoulmilk.notice.presentation;
+
+import com.seoulmilk.core.presentation.RestResponse;
+import com.seoulmilk.notice.application.ReadNoticeService;
+import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
+import com.seoulmilk.notice.dto.response.PageNoticeResponse;
+import com.seoulmilk.notice.dto.response.ReadNoticeResponse;
+import com.seoulmilk.notice.presentation.swagger.ReadNoticeSwagger;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.data.domain.Pageable;
+
+@RestController
+@RequiredArgsConstructor
+@Log4j2
+@RequestMapping("/v1/notice")
+public class ReadNoticeController implements ReadNoticeSwagger {
+
+    private final ReadNoticeService readNoticeService;
+
+    @GetMapping
+    public ResponseEntity<RestResponse<ReadNoticeResponse>> get(
+            @RequestParam Long id) {
+        ReadNoticeResponse readNoticeResponse = readNoticeService.readOneNotice(id);
+        return ResponseEntity.ok(new RestResponse<>(readNoticeResponse));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> getNoticesByPage(
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        PageNoticeResponse<NoticeSummaryResponse> response = readNoticeService.getNoticesByPage(pageable);
+        return ResponseEntity.ok(new RestResponse<>(response));
+    }
+}

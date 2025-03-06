@@ -1,4 +1,4 @@
-package com.seoulmilk.emp.dto.reqeust;
+package com.seoulmilk.emp.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;

@@ -1,8 +1,9 @@
 package com.seoulmilk.core.util;
 
 import com.seoulmilk.core.exception.DomainException;
-import com.seoulmilk.core.util.dto.SendEmailRequest;
-import com.seoulmilk.core.util.exception.MailErrorCode;
+import com.seoulmilk.core.util.emailUtil.EmailUtil;
+import com.seoulmilk.core.util.emailUtil.dto.SendEmailRequest;
+import com.seoulmilk.core.util.emailUtil.exception.MailErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

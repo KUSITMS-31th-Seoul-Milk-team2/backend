@@ -1,4 +1,4 @@
-package com.seoulmilk.core.util.dto;
+package com.seoulmilk.core.util.emailUtil.dto;
 
 public record SendEmailRequest(
         String receiver,
