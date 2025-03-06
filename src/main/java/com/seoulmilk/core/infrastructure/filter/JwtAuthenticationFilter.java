@@ -50,10 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private Authentication createAuthentication(String token) {
         Long empPk = jwtTokenProvider.getEmpId(token);
-        log.info("JwtAuthenticationFilter 속 token : {}", token);
-        log.info("JwtAuthenticationFilter 속 empId : {}", empPk);
         UserDetails userDetails = userDetailsService.loadUserById(empPk);
-        log.info("JwtAuthenticationFilter 속 userDetails : {}", userDetails);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 }
