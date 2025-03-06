@@ -43,3 +43,4 @@ src/test/resources/application.yml
 
 ### docker-compose ###
 docker-compose-kafka.yaml
+data
