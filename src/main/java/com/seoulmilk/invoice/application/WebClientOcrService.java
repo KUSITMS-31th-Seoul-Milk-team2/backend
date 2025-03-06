@@ -1,5 +1,6 @@
 package com.seoulmilk.invoice.application;
 
+import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.invoice.domain.factory.OcrRequestFactory;
 import com.seoulmilk.invoice.domain.service.OcrEngine;
 import com.seoulmilk.invoice.domain.value.FileMetaData;
@@ -27,17 +28,19 @@ public class WebClientOcrService {
     private final OcrRequestFactory requestFactory;
     private final OcrEventPublisher ocrEventPublisher;
 
-    public Mono<String> processFile(MultipartFile file) {
+    public Mono<String> processFile(CustomUserDetails customUserDetails, MultipartFile file) {
         return Mono.fromCallable(() -> {
                     try {
-                        return extractFileProcessData(file);
+                        return extractFileProcessData(
+                                customUserDetails.getId(),
+                                file);
                     } catch (IOException e) {
                         log.error("파일 변환 도중 에러가 발생했습니다.", e);
                         throw InvoiceErrorCode.FAILED_TO_PROCESS_FILE.toException();
                     }
                 })
                 .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(data -> processImg(data.fileMetaData, data.fileBytes, file.getName()))
+                .flatMap(data -> processImg(data.empPk, data.fileMetaData, data.fileBytes, file.getName()))
                 .map(OcrResponse::toString)
                 .doOnError(e -> {
                     log.error("파일 변환 도중 에러가 발생했습니다.", e);
@@ -45,31 +48,33 @@ public class WebClientOcrService {
                 });
     }
 
-    private FileProcessData extractFileProcessData(MultipartFile file) throws IOException {
+    private FileProcessData extractFileProcessData(Long empPk, MultipartFile file) throws IOException {
         validateFilePresence(file);
         FileMetaData fileMetaData = createFileMetaData(file);
         byte[] fileBytes = file.getBytes();
-        return new FileProcessData(fileMetaData, fileBytes);
-
+        return new FileProcessData(empPk, fileMetaData, fileBytes);
     }
 
-    public Mono<OcrResponse> processImg(FileMetaData fileMetaData, byte[] fileBytes, String fileName) {
-        return executeOcr(fileMetaData, fileBytes, fileName)
-                .doOnSuccess(this::publishOcrEvent);
+    public Mono<OcrResponse> processImg(Long empPk, FileMetaData fileMetaData, byte[] fileBytes, String fileName) {
+        return executeOcr(empPk, fileMetaData, fileBytes, fileName)
+                .flatMap(ocrResponse ->
+                        Mono.fromRunnable(() -> publishOcrEvent(empPk, ocrResponse))
+                                .thenReturn(ocrResponse)
+                );
     }
 
-    private void publishOcrEvent(OcrResponse ocrResponse) {
+    private void publishOcrEvent(Long empPk, OcrResponse ocrResponse) {
         try {
-            OcrValidationRequest ocrValidationRequest = OcrResponseConverter.convert(ocrResponse);
+            OcrValidationRequest ocrValidationRequest = OcrResponseConverter.convert(empPk, ocrResponse);
             ocrEventPublisher.publish(ocrValidationRequest);
         } catch (Exception e) {
             throw EventErrorCode.FAILED_TO_PUBLISH_EVENT.toException();
         }
     }
 
-    private Mono<OcrResponse> executeOcr(FileMetaData fileMetaData, byte[] fileBytes, String fileName) {
+    private Mono<OcrResponse> executeOcr(Long empPk, FileMetaData fileMetaData, byte[] fileBytes, String fileName) {
         String requestMessage = createRequestMessage(fileMetaData);
-        return webClientOcrEngine.extractText(requestMessage, fileBytes, fileName);
+        return webClientOcrEngine.extractText(empPk, requestMessage, fileBytes, fileName);
     }
 
     private FileMetaData createFileMetaData(MultipartFile file) {
@@ -89,6 +94,6 @@ public class WebClientOcrService {
         return requestConverter.toJson(requestFactory.create(metaData));
     }
 
-    private record FileProcessData(FileMetaData fileMetaData, byte[] fileBytes) {
+    private record FileProcessData(Long empPk, FileMetaData fileMetaData, byte[] fileBytes) {
     }
 }
