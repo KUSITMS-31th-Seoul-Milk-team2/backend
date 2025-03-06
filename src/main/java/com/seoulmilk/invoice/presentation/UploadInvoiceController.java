@@ -34,7 +34,7 @@ public class UploadInvoiceController implements UploadInvoiceSwagger {
             @RequestPart("files") List<MultipartFile> files) {
 
         for (MultipartFile file : files) {
-            webClientOcrService.processFile(file)
+            webClientOcrService.processFile(customUserDetails, file)
                     .subscribe(
                             response -> log.info("OCR 결과: {}", response),
                             error -> log.error("OCR 처리 중 오류 발생", error)
