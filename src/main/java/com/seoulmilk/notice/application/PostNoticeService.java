@@ -9,6 +9,7 @@ import com.seoulmilk.notice.dto.response.PostNoticeResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -19,6 +20,7 @@ public class PostNoticeService {
     private final NoticeRepository noticeRepository;
     private final FileUtil fileUtil;
 
+    @Transactional
     public PostNoticeResponse post(CustomUserDetails customUserDetails, PostNoticeRequest postNoticeRequest, MultipartFile file) {
         String employeeId = customUserDetails.emp().getEmployeeId();
         String fileUrl = fileUtil.uploadFile(file);
