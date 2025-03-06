@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 public class OcrResponseConverter {
 
     public static List<String> REQUIRED_FIELDS = List.of(
-        "공급자 사업자등록번호", "공급받는자 사업자등록번호",
-        "승인번호", "전자세금계산서 작성일자", "총 공급가액"
+        "공급자 사업자등록번호", "공급받는자 사업자등록번호", "총 세액 합계",
+        "승인번호", "전자세금계산서 작성일자", "총 공급가액", "총액", "공급자 사업체명", "공급받는자 사업체명"
     );
 
-    public static OcrValidationRequest convert(OcrResponse response) {
+    public static OcrValidationRequest convert(Long empPk, OcrResponse response) {
         Map<String, String> fieldMap = extractFieldMap(response);
         REQUIRED_FIELDS.forEach(field -> {
             if (fieldMap.get(field) == null) {
@@ -27,11 +27,16 @@ public class OcrResponseConverter {
         });
 
         return new OcrValidationRequest(
+                empPk,
                 normalizeRegisterNumber(fieldMap.get("공급자 사업자등록번호")),
                 normalizeRegisterNumber(fieldMap.get("공급받는자 사업자등록번호")),
-                formatApprovalNo(fieldMap.get("승인번호").replaceAll("\\s+", "")),
+                formatApprovalNo(fieldMap.get("승인번호")),
                 formatDate(fieldMap.get("전자세금계산서 작성일자")),
-                normalizeSupplyValue(fieldMap.get("총 공급가액"))
+                normalizeNumericValue(fieldMap.get("총 공급가액")),
+                fieldMap.get("공급자 사업체명"),
+                fieldMap.get("공급받는자 사업체명"),
+                normalizeNumericValue(fieldMap.get("총 세액 합계")),
+                normalizeNumericValue(fieldMap.get("총액"))
         );
     }
 
@@ -69,4 +74,9 @@ public class OcrResponseConverter {
     private static String normalizeSupplyValue(String raw) {
         return raw.replaceAll(InvoiceRegexPatterns.NON_DIGIT, "");
     }
+
+    private static String normalizeNumericValue(String raw) {
+        return raw.replaceAll("[^0-9]", ""); // 숫자가 아닌 문자 제거
+    }
+
 }
