@@ -2,6 +2,7 @@ package com.seoulmilk.notice.infrastructure.persistence.jpa.entity;
 
 import com.seoulmilk.core.infrastructure.jpa.entity.BaseLongIdEntity;
 import com.seoulmilk.notice.domain.entity.Notice;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -23,6 +24,7 @@ public class NoticeJpaEntity extends BaseLongIdEntity {
 
     private String content;
 
+    @Column(length = 512)
     private String fileUrl;
 
     public static NoticeJpaEntity toJpaEntity(Notice notice) {
