@@ -15,7 +15,7 @@ public interface NoticeRepository {
 
     void delete(Notice notice);
 
-    Page<Notice> findAllWithAuthor(Pageable pageable);
+    Page<Notice> findAllOrderByIdDesc(Pageable pageable);
 
     Notice updateNotice(UpdateNoticeRequest updateNoticeRequest, String fileUrl);
 

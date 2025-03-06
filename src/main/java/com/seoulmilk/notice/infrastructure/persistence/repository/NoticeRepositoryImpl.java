@@ -45,8 +45,8 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     }
 
     @Override
-    public Page<Notice> findAllWithAuthor(Pageable pageable) {
-        Page<NoticeJpaEntity> noticeJpaEntities = noticeJpaRepository.findAllWithAuthor(pageable);
+    public Page<Notice> findAllOrderByIdDesc(Pageable pageable) {
+        Page<NoticeJpaEntity> noticeJpaEntities = noticeJpaRepository.findAllOrderByIdDesc(pageable);
         return noticeJpaEntities.map(noticeMapper::toDomainEntity);
     }
 

@@ -14,10 +14,10 @@ public interface NoticeJpaRepository extends JpaRepository<NoticeJpaEntity, Long
 
     @Transactional
     @Query("SELECT n FROM NoticeJpaEntity n ORDER BY n.id DESC")
-    Page<NoticeJpaEntity> findAllWithAuthor(Pageable pageable);
+    Page<NoticeJpaEntity> findAllOrderByIdDesc(Pageable pageable);
 
     @Modifying(clearAutomatically = true)
     @Transactional
-    @Query("UPDATE NoticeJpaEntity n SET n.title = :#{#updateNoticeRequest.title}, n.content = :#{#updateNoticeRequest.content} WHERE n.id = :id")
+    @Query("UPDATE NoticeJpaEntity n SET n.title = :#{#updateNoticeRequest.title}, n.content = :#{#updateNoticeRequest.content} WHERE n.id = :#{#updateNoticeRequest.id}")
     int update(UpdateNoticeRequest updateNoticeRequest);
 }
