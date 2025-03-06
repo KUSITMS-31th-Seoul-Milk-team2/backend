@@ -23,7 +23,7 @@ public class DeleteNoticeService {
                 .orElseThrow(NoticeErrorCode.NOT_EXISTS_NOTICE::toException);
 
         if (!notice.isAuthor(customUserDetails.getEmployeeId())) {
-            throw NoticeErrorCode.NOT_A_AUTHOR.toException();
+            throw NoticeErrorCode.NOT_AN_AUTHOR.toException();
         }
 
         noticeRepository.delete(notice);
