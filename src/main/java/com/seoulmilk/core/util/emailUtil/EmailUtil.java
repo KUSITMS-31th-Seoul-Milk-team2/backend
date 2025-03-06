@@ -1,7 +1,7 @@
-package com.seoulmilk.core.util;
+package com.seoulmilk.core.util.emailUtil;
 
-import com.seoulmilk.core.util.dto.SendEmailRequest;
-import com.seoulmilk.core.util.exception.MailErrorCode;
+import com.seoulmilk.core.util.emailUtil.dto.SendEmailRequest;
+import com.seoulmilk.core.util.emailUtil.exception.MailErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
