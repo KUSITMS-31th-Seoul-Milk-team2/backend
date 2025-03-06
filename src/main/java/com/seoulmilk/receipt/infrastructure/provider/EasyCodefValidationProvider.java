@@ -5,7 +5,7 @@ import com.seoulmilk.receipt.application.TaxReceiptValidationProvider;
 import com.seoulmilk.receipt.exception.ReceiptValidationErrorCode;
 import com.seoulmilk.receipt.infrastructure.configuration.EasyCodefProvider;
 import com.seoulmilk.receipt.infrastructure.factory.EasyCodefRequestFactory;
-import com.seoulmilk.receipt.presentation.dto.request.TaxReceiptValidationRequest;
+import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import io.codef.api.EasyCodef;

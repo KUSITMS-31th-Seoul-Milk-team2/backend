@@ -26,9 +26,9 @@ public class EmpInitializationService {
 //                    "test" + i + "@test.com",
                     "abc29887@naver.com",
                     Role.ADMIN,
-                    "010-1234-1234",
-                    "SKT",
-                    "19000101",
+                    "01027475990",
+                    "0",
+                    "20020219",
                     HashedPassword.of(passwordHashingService.hash(Password.from("12341234")).getValue())
             ));
         }
