@@ -26,7 +26,7 @@ public class EmpInitializationService {
 //                    "test" + i + "@test.com",
                     "abc29887@naver.com",
                     Role.ADMIN,
-                    "01027475990",
+                    "010-1234-5678",
                     "0",
                     "20020219",
                     HashedPassword.of(passwordHashingService.hash(Password.from("12341234")).getValue())
@@ -46,5 +46,17 @@ public class EmpInitializationService {
                     HashedPassword.of(passwordHashingService.hash(Password.from("12341234")).getValue())
             ));
         }
+
+        empRepository.save(Emp.create(
+                "윤창현",
+                "43211234",
+//                    "test" + i + "@test.com",
+                "abc29887@naver.com",
+                Role.ADMIN,
+                "01027475990",
+                "0",
+                "20020219",
+                HashedPassword.of(passwordHashingService.hash(Password.from("12344321")).getValue())
+        ));
     }
 }

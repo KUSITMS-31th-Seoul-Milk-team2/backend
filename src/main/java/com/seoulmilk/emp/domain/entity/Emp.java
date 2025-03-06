@@ -59,6 +59,7 @@ public class Emp {
                 .email(empJpaEntity.getEmail())
                 .role(empJpaEntity.getRole())
                 .phoneNumber(empJpaEntity.getPhoneNumber())
+                .birthday(empJpaEntity.getBirthday())
                 .password(HashedPassword.of(empJpaEntity.getPassword()))
                 .createdAt(empJpaEntity.getCreatedAt())
                 .updatedAt(empJpaEntity.getUpdatedAt())

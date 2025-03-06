@@ -18,7 +18,7 @@ public class TaxReceiptValidationRequestFactory {
                 uuid,
                 "1",
                 emp.getName(),
-                emp.getBirthday(),
+                emp.getPhoneNumber(),
                 emp.getBirthday(),
                 ocrValidationRequest.supplierRegNumber(),
                 ocrValidationRequest.contractorRegNumber(),
