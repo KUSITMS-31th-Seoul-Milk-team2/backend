@@ -22,6 +22,10 @@ public class Emp {
 
     private String phoneNumber;
 
+    private String telecom;
+
+    private String birthday;
+
     private HashedPassword password;
 
     private LocalDateTime createdAt;
@@ -30,7 +34,10 @@ public class Emp {
 
     private Boolean deleted;
 
-    public static Emp create(String name, String employeeId, String email, Role role, String phoneNumber, HashedPassword hashedPassword) {
+    public static Emp create(
+            String name, String employeeId, String email, Role role, String phoneNumber,
+             String telecom, String birthday,HashedPassword hashedPassword
+    ) {
         return Emp.builder()
                 .id(null)
                 .employeeId(employeeId)
@@ -38,6 +45,8 @@ public class Emp {
                 .email(email)
                 .role(role)
                 .phoneNumber(phoneNumber)
+                .telecom(telecom)
+                .birthday(birthday)
                 .password(hashedPassword)
                 .build();
     }

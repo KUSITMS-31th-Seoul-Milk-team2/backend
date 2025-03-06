@@ -27,6 +27,8 @@ public class EmpInitializationService {
                     "abc29887@naver.com",
                     Role.ADMIN,
                     "010-1234-1234",
+                    "SKT",
+                    "19000101",
                     HashedPassword.of(passwordHashingService.hash(Password.from("12341234")).getValue())
             ));
         }
@@ -39,6 +41,8 @@ public class EmpInitializationService {
                     "abc29887@naver.com",
                     Role.EMPLOYEE,
                     "010-1234-1234",
+                    "SKT",
+                    "19000101",
                     HashedPassword.of(passwordHashingService.hash(Password.from("12341234")).getValue())
             ));
         }
