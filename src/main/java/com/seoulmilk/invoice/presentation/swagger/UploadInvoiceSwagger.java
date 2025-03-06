@@ -2,6 +2,7 @@ package com.seoulmilk.invoice.presentation.swagger;
 
 import com.seoulmilk.core.configuration.swagger.ApiErrorCode;
 import com.seoulmilk.core.exception.error.GlobalErrorCode;
+import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.invoice.dto.response.OcrResponse;
 import com.seoulmilk.invoice.exception.InvoiceErrorCode;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
@@ -27,6 +29,8 @@ public interface UploadInvoiceSwagger {
     )
     @ApiErrorCode({GlobalErrorCode.class, InvoiceErrorCode.class})
     ResponseEntity<RestResponse<Flux<OcrResponse>>> upload(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Parameter(
                     name = "files",
                     description = "업로드할 세금계산서 이미지 파일들",

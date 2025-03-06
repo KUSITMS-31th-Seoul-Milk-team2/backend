@@ -1,5 +1,6 @@
 package com.seoulmilk.invoice.presentation;
 
+import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.invoice.application.WebClientOcrService;
 import com.seoulmilk.invoice.dto.response.OcrResponse;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -27,7 +29,9 @@ public class UploadInvoiceController implements UploadInvoiceSwagger {
 
     @Override
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<RestResponse<Flux<OcrResponse>>> upload(@RequestPart("files") List<MultipartFile> files) {
+    public ResponseEntity<RestResponse<Flux<OcrResponse>>> upload(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestPart("files") List<MultipartFile> files) {
 
         for (MultipartFile file : files) {
             webClientOcrService.processFile(file)
