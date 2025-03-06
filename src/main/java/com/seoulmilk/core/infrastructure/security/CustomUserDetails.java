@@ -43,6 +43,14 @@ public record CustomUserDetails(Emp emp) implements UserDetails {
         return emp.getName();
     }
 
+    public String getEmployeeId() {
+        return emp.getEmployeeId();
+    }
+
+    public Long getId() {
+        return emp.getId();
+    }
+
     public String getEmail() {
         return emp.getEmail();
     }

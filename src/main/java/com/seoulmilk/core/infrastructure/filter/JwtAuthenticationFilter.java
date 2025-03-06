@@ -25,8 +25,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService userDetailsService;
-    //    private static final String BEARER = "Bearer ";
-//    private static final String AUTHORIZATION = "Authorization";
     private static final String ACCESS_TOKEN_COOKIE = "accessToken";
 
     @Override
