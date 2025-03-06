@@ -1,14 +1,18 @@
 package com.seoulmilk.receipt.presentation;
 
+import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.receipt.application.TaxReceiptValidationService;
 import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import com.seoulmilk.receipt.presentation.swagger.TaxReceiptValidateSwagger;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +38,7 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
     @Override
     @PostMapping("/addition")
     public ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam String transactionId
     ){
         log.info("[multipleAdditionAuthController] 컨트롤러 작동");
@@ -41,4 +46,18 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
                 new RestResponse<>(taxReceiptValidationService.retrieveValidatedTaxReceipts(transactionId))
         );
     }
+
+    @Override
+    @PostMapping("/addition2")
+    public ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        log.info("[multipleAdditionAuthController] 컨트롤러 작동");
+        return ResponseEntity.ok(
+                new RestResponse<>(taxReceiptValidationService.retrieveValidatedTaxReceiptsWithTransactionId(customUserDetails))
+        );
+    }
+
+
 }

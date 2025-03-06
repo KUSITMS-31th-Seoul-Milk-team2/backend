@@ -1,10 +1,14 @@
 package com.seoulmilk.receipt.application;
 
+import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.exception.EmpErrorCode;
+import com.seoulmilk.receipt.domain.InValidReceiptRepository;
+import com.seoulmilk.receipt.domain.ValidReceiptRepository;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
+import com.seoulmilk.receipt.exception.ReceiptValidationErrorCode;
 import com.seoulmilk.receipt.infrastructure.factory.TaxReceiptValidationRequestFactory;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
@@ -25,6 +29,8 @@ public class TaxReceiptValidationService {
     private final TaxReceiptValidationProvider taxReceiptValidationProvider;
     private final EmpRepository empRepository;
     private final RedisTemplate redisTemplate;
+    private final InValidReceiptRepository invalidReceiptRepository;
+    private final ValidReceiptRepository validReceiptRepository;
 
     @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}")
     public void listen(OcrValidationRequest ocrValidationRequest) {
@@ -32,7 +38,6 @@ public class TaxReceiptValidationService {
 
         String uuid = getUUID("uuid:" + ocrValidationRequest.empPk());
         TaxReceiptValidationRequest taxReceiptValidationRequest = createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
-
 
         AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(List.of(taxReceiptValidationRequest));
 
@@ -66,6 +71,19 @@ public class TaxReceiptValidationService {
 
     public AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> requests) {
         return taxReceiptValidationProvider.requestAdditionalAuthentication(requests);
+    }
+
+    public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceiptsWithTransactionId(CustomUserDetails customUserDetails){
+        String transactionCacheKey = "transactionId:" + customUserDetails.getId();
+        String transactionId = (String) redisTemplate.opsForValue().get(transactionCacheKey);
+        if (redisTemplate.opsForValue().get(transactionCacheKey) == null) {
+            throw ReceiptValidationErrorCode.NOT_EXIST_TXID.toException();
+        }
+        return taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
+//        List<TaxReceiptValidationResponse> responses =
+//        for(TaxReceiptValidationResponse response : responses){
+//
+//        }
     }
 
     public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceipts(String transactionId) {
