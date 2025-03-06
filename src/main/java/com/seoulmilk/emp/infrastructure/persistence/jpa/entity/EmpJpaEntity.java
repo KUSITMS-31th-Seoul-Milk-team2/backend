@@ -33,6 +33,10 @@ public class EmpJpaEntity extends BaseLongIdEntity {
 
     private String password;
 
+    private String birthday;
+
+    private String telecom;
+
     public static EmpJpaEntity toJpaEntity(Emp emp) {
         return EmpJpaEntity.builder()
                 .id(emp.getId())
@@ -42,6 +46,8 @@ public class EmpJpaEntity extends BaseLongIdEntity {
                 .email(emp.getEmail())
                 .phoneNumber(emp.getPhoneNumber())
                 .password(emp.getPassword().getValue())
+                .birthday(emp.getBirthday())
+                .telecom(emp.getTelecom())
                 .createdAt(emp.getCreatedAt())
                 .updatedAt(emp.getUpdatedAt())
                 .deleted(Optional.ofNullable(emp.getDeleted()).orElse(false))
