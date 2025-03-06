@@ -6,6 +6,9 @@ import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.exception.EmpErrorCode;
 import com.seoulmilk.receipt.domain.InValidReceiptRepository;
 import com.seoulmilk.receipt.domain.ValidReceiptRepository;
+import com.seoulmilk.receipt.domain.entity.InValidReceipt;
+import com.seoulmilk.receipt.domain.entity.ValidReceipt;
+import com.seoulmilk.receipt.domain.value.Arap;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.exception.ReceiptValidationErrorCode;
@@ -19,6 +22,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,12 +42,13 @@ public class TaxReceiptValidationService {
     public void listen(OcrValidationRequest ocrValidationRequest) {
         Emp emp = getEmployee(ocrValidationRequest.empPk());
 
-        String uuid = getUUID("uuid:" + ocrValidationRequest.empPk());
+        String uuid = getUUID("uuid:" + emp.getId());
         TaxReceiptValidationRequest taxReceiptValidationRequest = createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
 
         AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(List.of(taxReceiptValidationRequest));
 
-        handleTransactionId(ocrValidationRequest.empPk(), additionalAuthResponse.jti());
+        handleTransactionId(emp.getId(), additionalAuthResponse.jti());
+        hadleRequestData(emp.getId(), List.of(ocrValidationRequest));
     }
 
     private Emp getEmployee(Long empPk) {
@@ -56,7 +63,14 @@ public class TaxReceiptValidationService {
     private void handleTransactionId(Long empPk, String transactionId) {
         String transactionCacheKey = "transactionId:" + empPk;
         if (redisTemplate.opsForValue().get(transactionCacheKey) == null) {
-            redisTemplate.opsForValue().set(transactionCacheKey, transactionId, Duration.ofMinutes(5));
+            redisTemplate.opsForValue().set(transactionCacheKey, transactionId, Duration.ofMinutes(3));
+        }
+    }
+
+    private void hadleRequestData(Long pk, List<OcrValidationRequest> requests) {
+        String dataCacheKey = "requestData:" + pk;
+        if (redisTemplate.opsForValue().get(dataCacheKey) == null) {
+            redisTemplate.opsForValue().set(dataCacheKey, requests, Duration.ofMinutes(3));
         }
     }
 
@@ -74,19 +88,80 @@ public class TaxReceiptValidationService {
     }
 
     public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceiptsWithTransactionId(CustomUserDetails customUserDetails){
+        Emp emp = getEmployee(customUserDetails.getId());
+
         String transactionCacheKey = "transactionId:" + customUserDetails.getId();
         String transactionId = (String) redisTemplate.opsForValue().get(transactionCacheKey);
+
         if (redisTemplate.opsForValue().get(transactionCacheKey) == null) {
             throw ReceiptValidationErrorCode.NOT_EXIST_TXID.toException();
         }
-        return taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
-//        List<TaxReceiptValidationResponse> responses =
-//        for(TaxReceiptValidationResponse response : responses){
-//
-//        }
+        String dataCacheKey = "requestData:" + customUserDetails.getId();
+        List<OcrValidationRequest> requestsData = (List<OcrValidationRequest>) redisTemplate.opsForValue().get(dataCacheKey);
+
+        List<TaxReceiptValidationResponse> responses = taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
+
+        saveRecieptData(emp, requestsData, responses);
+
+        return responses;
     }
 
-    public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceipts(String transactionId) {
-        return taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
+    private void saveRecieptData(Emp emp, List<OcrValidationRequest> requestsData, List<TaxReceiptValidationResponse> responses){
+        String fileUrl = null;
+        LocalDateTime now = LocalDateTime.now();
+        String erdat = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String erzet = now.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+
+        for(int i = 0; i < responses.size(); i++) {
+            OcrValidationRequest ocrValidationRequest = requestsData.get(i);
+            if(responses.get(i).resAuthenticity().equals("1")){
+                validReceiptRepository.save(ValidReceipt.create(
+                        emp.getEmployeeId(),
+                        Arap.AR,
+                        ocrValidationRequest.approvalNo(),
+                        ocrValidationRequest.reportingDate(),
+                        ocrValidationRequest.supplierRegNumber(),
+                        ocrValidationRequest.supplierName(),
+                        ocrValidationRequest.contractorRegNumber(),
+                        ocrValidationRequest.contractorName(),
+                        getChargeTotal(ocrValidationRequest.grandTotal(), ocrValidationRequest.taxTotal()),
+                        Integer.parseInt(ocrValidationRequest.taxTotal()),
+                        Integer.parseInt(ocrValidationRequest.grandTotal()),
+                        erdat,
+                        erzet,
+                        null
+                ));
+            }else if(responses.get(i).resAuthenticity().equals("0")){
+                invalidReceiptRepository.save(InValidReceipt.create(
+                        emp.getEmployeeId(),
+                        Arap.AR,
+                        ocrValidationRequest.approvalNo(),
+                        ocrValidationRequest.reportingDate(),
+                        ocrValidationRequest.supplierRegNumber(),
+                        ocrValidationRequest.supplierName(),
+                        ocrValidationRequest.contractorRegNumber(),
+                        ocrValidationRequest.contractorName(),
+                        getChargeTotal(ocrValidationRequest.grandTotal(), ocrValidationRequest.taxTotal()),
+                        Integer.parseInt(ocrValidationRequest.taxTotal()),
+                        Integer.parseInt(ocrValidationRequest.grandTotal()),
+                        erdat,
+                        erzet,
+                        null
+                ));
+            }
+        }
+    }
+
+    private Integer getChargeTotal(String grandTotal, String taxTotal) {
+        return Integer.parseInt(grandTotal) - Integer.parseInt(taxTotal);
+    }
+
+    public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceipts(Long empPk, List<OcrValidationRequest> requestsData, String transactionId) {
+        List<TaxReceiptValidationResponse> responses =
+                taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
+
+        saveRecieptData(getEmployee(empPk), requestsData, responses);
+
+        return responses;
     }
 }

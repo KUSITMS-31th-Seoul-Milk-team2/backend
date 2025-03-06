@@ -3,6 +3,7 @@ package com.seoulmilk.receipt.presentation;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.receipt.application.TaxReceiptValidationService;
+import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
@@ -38,17 +39,19 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
     @Override
     @PostMapping("/addition")
     public ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
+            @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestParam String transactionId
+            @RequestParam String transactionId,
+            @RequestBody List<OcrValidationRequest> requests
     ){
         log.info("[multipleAdditionAuthController] 컨트롤러 작동");
         return ResponseEntity.ok(
-                new RestResponse<>(taxReceiptValidationService.retrieveValidatedTaxReceipts(transactionId))
+                new RestResponse<>(taxReceiptValidationService.retrieveValidatedTaxReceipts(customUserDetails.getId(), requests, transactionId))
         );
     }
 
     @Override
-    @PostMapping("/addition2")
+    @PostMapping("/upload/addition")
     public ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails
