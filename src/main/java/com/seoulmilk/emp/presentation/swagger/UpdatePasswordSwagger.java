@@ -19,7 +19,7 @@ public interface UpdatePasswordSwagger {
     @Operation(
             summary = "비밀번호 변경 API",
             description = "비밀번호를 변경합니다.",
-            operationId = "/mypage/update-password"
+            operationId = "/v1/emp/update-password"
     )
     @ApiErrorCode({GlobalErrorCode.class, EmpErrorCode.class})
     ResponseEntity<RestResponse<String>> updatePassword(

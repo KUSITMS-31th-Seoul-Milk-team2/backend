@@ -1,9 +1,9 @@
 package com.seoulmilk.emp.application;
 
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
-import com.seoulmilk.core.util.EmailUtil;
-import com.seoulmilk.core.util.dto.SendEmailRequest;
-import com.seoulmilk.core.util.factory.SendEmailRequestFactory;
+import com.seoulmilk.core.util.emailUtil.EmailUtil;
+import com.seoulmilk.core.util.emailUtil.dto.SendEmailRequest;
+import com.seoulmilk.core.util.emailUtil.factory.SendEmailRequestFactory;
 import com.seoulmilk.emp.domain.service.PasswordService;
 import com.seoulmilk.emp.dto.request.UpdatePasswordRequest;
 import lombok.RequiredArgsConstructor;
