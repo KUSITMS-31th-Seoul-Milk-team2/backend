@@ -16,47 +16,47 @@ public class EmpInitializationService {
     private final EmpRepository empRepository;
     private final PasswordHashingService passwordHashingService;
 
-//    @PostConstruct
-//    public void init() {
-//        empRepository.deleteAll();
-//        for (int i = 0; i < 5; i++) {
-//            empRepository.save(Emp.create(
-//                    "관리자" + i,
-//                    "12341234" + i,
-////                    "test" + i + "@test.com",
-//                    "abc29887@naver.com",
-//                    Role.ADMIN,
-//                    "010-1234-5678",
-//                    "0",
-//                    "20020219",
-//                    HashedPassword.of(passwordHashingService.hash(Password.from("12341234")).getValue())
-//            ));
-//        }
-//
-//        for (int i = 0; i < 10; i++) {
-//            empRepository.save(Emp.create(
-//                    "사원" + i,
-//                    "43214321" + i,
-////                    "test" + i + "@test.com",
-//                    "abc29887@naver.com",
-//                    Role.EMPLOYEE,
-//                    "010-1234-1234",
-//                    "SKT",
-//                    "19000101",
-//                    HashedPassword.of(passwordHashingService.hash(Password.from("12341234")).getValue())
-//            ));
-//        }
-//
-//        empRepository.save(Emp.create(
-//                "윤창현",
-//                "43211234",
-////                    "test" + i + "@test.com",
-//                "abc29887@naver.com",
-//                Role.ADMIN,
-//                "01027475990",
-//                "0",
-//                "20020219",
-//                HashedPassword.of(passwordHashingService.hash(Password.from("12344321")).getValue())
-//        ));
-//    }
+    @PostConstruct
+    public void init() {
+        empRepository.deleteAll();
+        for (int i = 0; i < 5; i++) {
+            empRepository.save(Emp.create(
+                    "관리자" + i,
+                    "12341234" + i,
+//                    "test" + i + "@test.com",
+                    "abc29887@naver.com",
+                    Role.ADMIN,
+                    "010-1234-5678",
+                    "0",
+                    "20020219",
+                    HashedPassword.of(passwordHashingService.hash(Password.from("12341234")).getValue())
+            ));
+        }
+
+        for (int i = 0; i < 10; i++) {
+            empRepository.save(Emp.create(
+                    "사원" + i,
+                    "43214321" + i,
+//                    "test" + i + "@test.com",
+                    "abc29887@naver.com",
+                    Role.EMPLOYEE,
+                    "010-1234-1234",
+                    "SKT",
+                    "19000101",
+                    HashedPassword.of(passwordHashingService.hash(Password.from("12341234")).getValue())
+            ));
+        }
+
+        empRepository.save(Emp.create(
+                "윤창현",
+                "43211234",
+//                    "test" + i + "@test.com",
+                "abc29887@naver.com",
+                Role.ADMIN,
+                "01027475990",
+                "0",
+                "20020219",
+                HashedPassword.of(passwordHashingService.hash(Password.from("12344321")).getValue())
+        ));
+    }
 }

@@ -16,10 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 public interface OpenFeignClient {
 
     @PostMapping(
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
     )
     OcrResponse extractText(
             @RequestPart("message") String message,
             @RequestPart("file") MultipartFile file
     );
 }
+
+
