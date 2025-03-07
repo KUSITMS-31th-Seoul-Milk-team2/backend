@@ -1,7 +1,7 @@
 package com.seoulmilk.auth.application;
 
-import com.seoulmilk.emp.domain.entity.HashedPassword;
-import com.seoulmilk.emp.domain.entity.Password;
+import com.seoulmilk.emp.domain.value.HashedPassword;
+import com.seoulmilk.emp.domain.value.Password;
 
 public interface PasswordHashingService {
     HashedPassword hash(Password password);

@@ -1,4 +1,4 @@
-package com.seoulmilk.emp.domain.entity;
+package com.seoulmilk.emp.domain.value;
 
 import lombok.Value;
 

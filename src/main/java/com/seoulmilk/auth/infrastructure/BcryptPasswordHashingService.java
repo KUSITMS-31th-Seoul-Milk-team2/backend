@@ -1,8 +1,8 @@
 package com.seoulmilk.auth.infrastructure;
 
 import com.seoulmilk.auth.application.PasswordHashingService;
-import com.seoulmilk.emp.domain.entity.HashedPassword;
-import com.seoulmilk.emp.domain.entity.Password;
+import com.seoulmilk.emp.domain.value.HashedPassword;
+import com.seoulmilk.emp.domain.value.Password;
 import com.seoulmilk.auth.exception.AuthenticationErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
