@@ -9,10 +9,9 @@ import com.seoulmilk.receipt.infrastructure.persistence.mapper.ValidReceiptMappe
 import com.seoulmilk.receipt.infrastructure.persistence.repository.ValidReceiptJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -43,15 +42,14 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
     }
 
     @Override
-    public Page<ValidReceipt> findAllBySpecification(
-            ValidResponseSearchRequest validResponseSearchRequest, Pageable pageable
+    public List<ValidReceipt> findAllBySpecification(
+            ValidResponseSearchRequest validResponseSearchRequest
     ) {
        return validReceiptJpaRepository.findAll(
             ValidReceiptSpecification.search(
                     validResponseSearchRequest
-            ),
-               pageable
-       ).map(validReceiptMapper::toDomainEntity);
+            )
+       ).stream().map(ValidReceipt::toDomainEntity).toList();
     }
 
 
