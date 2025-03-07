@@ -4,10 +4,7 @@ import com.seoulmilk.core.infrastructure.jpa.entity.BaseLongIdEntity;
 import com.seoulmilk.receipt.domain.entity.InValidReceipt;
 import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.domain.value.Arap;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,6 +45,7 @@ public class InValidReceiptJpaEntity extends BaseLongIdEntity {
 
     private String erzet;
 
+    @Column(length = 512)
     private String fileUrl;
 
     public static InValidReceiptJpaEntity toJpaEntity(InValidReceipt inValidReceipt) {
