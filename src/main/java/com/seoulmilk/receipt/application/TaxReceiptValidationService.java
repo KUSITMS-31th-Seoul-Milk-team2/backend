@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,18 +39,32 @@ public class TaxReceiptValidationService {
     private final ValidReceiptRepository validReceiptRepository;
 
     @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}")
-    public void listen(List<OcrValidationRequest> ocrValidationRequest) {
-        log.info(ocrValidationRequest.toString());
-//        Emp emp = getEmployee(ocrValidationRequest.empPk());
-//
-//        String uuid = getUUID("uuid:" + emp.getId());
-//        TaxReceiptValidationRequest taxReceiptValidationRequest = createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
-//
-//        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(List.of(taxReceiptValidationRequest));
-//
-//        handleTransactionId(emp.getId(), additionalAuthResponse.jti());
-//        hadleRequestData(emp.getId(), List.of(ocrValidationRequest));
+    public void listen(List<List<OcrValidationRequest>> nestedList) {
+        log.info("Received nested list: {}", nestedList);
+
+        // 중첩 리스트 풀어서 사용
+        List<OcrValidationRequest> ocrValidationRequests = nestedList.get(0);
+
+        Long pk = ocrValidationRequests.get(0).empPk();
+        log.info("현재 사용자 pk - {}", pk);
+
+        Emp emp = getEmployee(pk);
+        log.info("현재 사용자 - {}", emp);
+
+        String uuid = getUUID("uuid:" + emp.getId());
+        List<TaxReceiptValidationRequest> taxReceiptValidationRequests = new ArrayList<>();
+
+        for (OcrValidationRequest ocrValidationRequest : ocrValidationRequests) {
+            TaxReceiptValidationRequest taxReceiptValidationRequest =
+                    createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
+            taxReceiptValidationRequests.add(taxReceiptValidationRequest);
+        }
+
+        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(taxReceiptValidationRequests);
+        handleTransactionId(emp.getId(), additionalAuthResponse.jti());
+        hadleRequestData(emp.getId(), ocrValidationRequests);
     }
+
 
     private Emp getEmployee(Long empPk) {
         return empRepository.findByid(empPk)
@@ -75,7 +90,7 @@ public class TaxReceiptValidationService {
     }
 
     private String getUUID(String cacheKey) {
-        String uuid = (String) redisTemplate.opsForValue().get(cacheKey);
+        String uuid = (String) redisTemplate.opsForValue().getAndDelete(cacheKey);
         if (uuid == null) {
             uuid = UUID.randomUUID().toString();
             redisTemplate.opsForValue().set(cacheKey, uuid, Duration.ofMinutes(3));
@@ -88,16 +103,17 @@ public class TaxReceiptValidationService {
     }
 
     public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceiptsWithTransactionId(CustomUserDetails customUserDetails){
+        log.info("현재 사용자 pk - {}", customUserDetails.getId());
         Emp emp = getEmployee(customUserDetails.getId());
 
         String transactionCacheKey = "transactionId:" + customUserDetails.getId();
-        String transactionId = (String) redisTemplate.opsForValue().get(transactionCacheKey);
-
         if (redisTemplate.opsForValue().get(transactionCacheKey) == null) {
             throw ReceiptValidationErrorCode.NOT_EXIST_TXID.toException();
         }
+        String transactionId = (String) redisTemplate.opsForValue().getAndDelete(transactionCacheKey);
+
         String dataCacheKey = "requestData:" + customUserDetails.getId();
-        List<OcrValidationRequest> requestsData = (List<OcrValidationRequest>) redisTemplate.opsForValue().get(dataCacheKey);
+        List<OcrValidationRequest> requestsData = (List<OcrValidationRequest>) redisTemplate.opsForValue().getAndDelete(dataCacheKey);
 
         List<TaxReceiptValidationResponse> responses = taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
 
