@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,16 +38,16 @@ public class TaxReceiptValidationService {
     private final ValidReceiptRepository validReceiptRepository;
 
     @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}")
-    public void listen(OcrValidationRequest ocrValidationRequest) {
-        Emp emp = getEmployee(ocrValidationRequest.empPk());
-
-        String uuid = getUUID("uuid:" + emp.getId());
-        TaxReceiptValidationRequest taxReceiptValidationRequest = createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
-
-        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(List.of(taxReceiptValidationRequest));
-
-        handleTransactionId(emp.getId(), additionalAuthResponse.jti());
-        hadleRequestData(emp.getId(), List.of(ocrValidationRequest));
+    public void listen(List<OcrValidationRequest> ocrValidationRequest) {
+//        Emp emp = getEmployee(ocrValidationRequest.empPk());
+//
+//        String uuid = getUUID("uuid:" + emp.getId());
+//        TaxReceiptValidationRequest taxReceiptValidationRequest = createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
+//
+//        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(List.of(taxReceiptValidationRequest));
+//
+//        handleTransactionId(emp.getId(), additionalAuthResponse.jti());
+//        hadleRequestData(emp.getId(), List.of(ocrValidationRequest));
     }
 
     private Emp getEmployee(Long empPk) {
@@ -118,35 +117,35 @@ public class TaxReceiptValidationService {
                 validReceiptRepository.save(ValidReceipt.create(
                         emp.getEmployeeId(),
                         Arap.AR,
-                        ocrValidationRequest.approvalNo(),
-                        ocrValidationRequest.reportingDate(),
-                        ocrValidationRequest.supplierRegNumber(),
-                        ocrValidationRequest.supplierName(),
-                        ocrValidationRequest.contractorRegNumber(),
-                        ocrValidationRequest.contractorName(),
-                        getChargeTotal(ocrValidationRequest.grandTotal(), ocrValidationRequest.taxTotal()),
-                        Integer.parseInt(ocrValidationRequest.taxTotal()),
-                        Integer.parseInt(ocrValidationRequest.grandTotal()),
+                        ocrValidationRequest.taxValidationInfo().approvalNo(),
+                        ocrValidationRequest.taxValidationInfo().reportingDate(),
+                        ocrValidationRequest.taxValidationInfo().supplierRegNumber(),
+                        ocrValidationRequest.taxValidationInfo().supplierName(),
+                        ocrValidationRequest.taxValidationInfo().contractorRegNumber(),
+                        ocrValidationRequest.taxValidationInfo().contractorName(),
+                        getChargeTotal(ocrValidationRequest.taxValidationInfo().grandTotal(), ocrValidationRequest.taxValidationInfo().taxTotal()),
+                        Integer.parseInt(ocrValidationRequest.taxValidationInfo().taxTotal()),
+                        Integer.parseInt(ocrValidationRequest.taxValidationInfo().grandTotal()),
                         erdat,
                         erzet,
-                        null
+                        ocrValidationRequest.fileUrl()
                 ));
             }else if(responses.get(i).resAuthenticity().equals("0")){
                 invalidReceiptRepository.save(InValidReceipt.create(
                         emp.getEmployeeId(),
                         Arap.AR,
-                        ocrValidationRequest.approvalNo(),
-                        ocrValidationRequest.reportingDate(),
-                        ocrValidationRequest.supplierRegNumber(),
-                        ocrValidationRequest.supplierName(),
-                        ocrValidationRequest.contractorRegNumber(),
-                        ocrValidationRequest.contractorName(),
-                        getChargeTotal(ocrValidationRequest.grandTotal(), ocrValidationRequest.taxTotal()),
-                        Integer.parseInt(ocrValidationRequest.taxTotal()),
-                        Integer.parseInt(ocrValidationRequest.grandTotal()),
+                        ocrValidationRequest.taxValidationInfo().approvalNo(),
+                        ocrValidationRequest.taxValidationInfo().reportingDate(),
+                        ocrValidationRequest.taxValidationInfo().supplierRegNumber(),
+                        ocrValidationRequest.taxValidationInfo().supplierName(),
+                        ocrValidationRequest.taxValidationInfo().contractorRegNumber(),
+                        ocrValidationRequest.taxValidationInfo().contractorName(),
+                        Integer.parseInt(ocrValidationRequest.taxValidationInfo().supplyValue()),
+                        Integer.parseInt(ocrValidationRequest.taxValidationInfo().taxTotal()),
+                        Integer.parseInt(ocrValidationRequest.taxValidationInfo().grandTotal()),
                         erdat,
                         erzet,
-                        null
+                        ocrValidationRequest.fileUrl()
                 ));
             }
         }

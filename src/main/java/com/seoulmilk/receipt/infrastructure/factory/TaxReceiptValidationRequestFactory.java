@@ -2,7 +2,6 @@ package com.seoulmilk.receipt.infrastructure.factory;
 
 
 import com.seoulmilk.emp.domain.entity.Emp;
-import com.seoulmilk.invoice.dto.request.OcrRequest;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 
@@ -20,11 +19,11 @@ public class TaxReceiptValidationRequestFactory {
                 emp.getName(),
                 emp.getPhoneNumber(),
                 emp.getBirthday(),
-                ocrValidationRequest.supplierRegNumber(),
-                ocrValidationRequest.contractorRegNumber(),
-                ocrValidationRequest.approvalNo(),
-                ocrValidationRequest.reportingDate(),
-                ocrValidationRequest.supplyValue(),
+                ocrValidationRequest.taxValidationInfo().supplierRegNumber(),
+                ocrValidationRequest.taxValidationInfo().contractorRegNumber(),
+                ocrValidationRequest.taxValidationInfo().approvalNo(),
+                ocrValidationRequest.taxValidationInfo().reportingDate(),
+                ocrValidationRequest.taxValidationInfo().supplyValue(),
                 emp.getTelecom()
         );
     }

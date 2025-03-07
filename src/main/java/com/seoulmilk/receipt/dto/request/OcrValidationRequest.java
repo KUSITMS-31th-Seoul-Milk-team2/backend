@@ -9,33 +9,66 @@ public record OcrValidationRequest(
         @NotNull(message = "사용자 PK는 필수입니다.")
         Long empPk,
 
-        @Schema(description = "공급자 등록번호", example = "1234567890")
-        @Pattern(regexp = "^[0-9]{10}$")
-        String supplierRegNumber,
+        @Schema(description = "파일 URL", example = "http://localhost:8080/ocr/1")
+        @NotNull(message = "파일 URL은 필수입니다.")
+        String fileUrl,
 
-        @Schema(description = "공급받는자 등록번호", example = "1234567890")
-        @Pattern(regexp = "^[0-9]{10}$")
-        String contractorRegNumber,
+        @Schema(description = "국세청 검증을 위한 정보")
+        TaxValidationInfo taxValidationInfo
 
-        @Schema(description = "승인번호", example = "1234567890")
-        String approvalNo,
-
-        @Schema(description = "작성일자", example = "20210101")
-        String reportingDate,
-
-        @Schema(description = "공급가액", example = "100000")
-        String supplyValue,
-
-        @Schema(description =  "공급자 사업체명", example = "서울우유협동조합 보문고객센타")
-        String supplierName,
-
-        @Schema(description = "공급받는자 사업체명", example = "로쏘(주)")
-        String contractorName,
-
-        @Schema(description = "세액", example = "100")
-        String taxTotal,
-
-        @Schema(description = "총액(공급가액 + 세액)", example = "100100")
-        String grandTotal
 ) {
+    public record TaxValidationInfo(
+            @Schema(description = "공급자 등록번호", example = "1234567890")
+            @Pattern(regexp = "^[0-9]{10}$")
+            String supplierRegNumber,
+
+            @Schema(description = "공급받는자 등록번호", example = "1234567890")
+            @Pattern(regexp = "^[0-9]{10}$")
+            String contractorRegNumber,
+
+            @Schema(description = "승인번호", example = "1234567890")
+            String approvalNo,
+
+            @Schema(description = "작성일자", example = "20210101")
+            String reportingDate,
+
+            @Schema(description = "공급가액", example = "100000")
+            String supplyValue,
+
+            @Schema(description = "공급자 사업체명", example = "서울우유협동조합 보문고객센타")
+            String supplierName,
+
+            @Schema(description = "공급받는자 사업체명", example = "로쏘(주)")
+            String contractorName,
+
+            @Schema(description = "세액", example = "100")
+            String taxTotal,
+
+            @Schema(description = "총액(공급가액 + 세액)", example = "100100")
+            String grandTotal
+    ) {
+            public static TaxValidationInfo from(
+                    String supplierRegNumber,
+                    String contractorRegNumber,
+                    String approvalNo,
+                    String reportingDate,
+                    String supplyValue,
+                    String supplierName,
+                    String contractorName,
+                    String taxTotal,
+                    String grandTotal
+            ) {
+                return new TaxValidationInfo(
+                        supplierRegNumber,
+                        contractorRegNumber,
+                        approvalNo,
+                        reportingDate,
+                        supplyValue,
+                        supplierName,
+                        contractorName,
+                        taxTotal,
+                        grandTotal
+                );
+            }
+    }
 }
