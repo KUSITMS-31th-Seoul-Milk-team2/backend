@@ -1,5 +1,7 @@
 package com.seoulmilk.core.configuration.kafka;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -14,49 +16,66 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
 @EnableKafka
 public class KafkaConfiguration {
+
     @Value("${spring.kafka.bootstrap-servers}")
     private String BOOTSTRAP_SERVERS;
+
     @Value("${spring.kafka.consumer.group-id}")
-    private String GROUP_ID;
+    private String CONSUMER_GROUP_ID;
+
     @Value("${spring.kafka.consumer.properties.spring.json.trusted.packages}")
     private String TRUSTED_PACKAGES;
 
     @Bean
-    public ProducerFactory<String, Object> producerFactory() {
-        Map<String, Object> configMap = new HashMap<>();
-        configMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-        configMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<>(configMap);
+    public ProducerFactory<String, List<OcrValidationRequest>> producerFactory() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        config.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, true);
+        return new DefaultKafkaProducerFactory<>(config);
     }
 
     @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate() {
+    public KafkaTemplate<String, List<OcrValidationRequest>> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
     @Bean
-    public ConsumerFactory<String, Object> consumerFactory() {
-        Map<String, Object> configMap = new HashMap<>();
-        configMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-        configMap.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
-        configMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        configMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        configMap.put(JsonDeserializer.TRUSTED_PACKAGES, TRUSTED_PACKAGES);
+    public ConsumerFactory<String, List<OcrValidationRequest>> consumerFactory() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
+        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
-        return new DefaultKafkaConsumerFactory<>(configMap);
+        JsonDeserializer<List<OcrValidationRequest>> deserializer = new JsonDeserializer<>();
+        deserializer.addTrustedPackages(TRUSTED_PACKAGES);
+        deserializer.setUseTypeHeaders(true);
+        deserializer.setTypeFunction((topic, data) ->
+                TypeFactory.defaultInstance().constructCollectionType(List.class, OcrValidationRequest.class)
+        );
+
+        return new DefaultKafkaConsumerFactory<>(
+                config,
+                new StringDeserializer(),
+                deserializer
+        );
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, List<OcrValidationRequest>> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, List<OcrValidationRequest>> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-
+        factory.setBatchListener(true);
+        factory.setConcurrency(3);
         return factory;
     }
 }
