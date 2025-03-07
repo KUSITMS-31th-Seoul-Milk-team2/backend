@@ -16,8 +16,8 @@ public class ValidReceiptSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
             // 직원 ID 검색
-            if (validResponseSearchRequest.employeeId() != null && !validResponseSearchRequest.employeeId().isEmpty()) {
-                predicates.add(root.get("employeeId").in(validResponseSearchRequest.employeeId()));
+            if (validResponseSearchRequest.employeeName() != null && !validResponseSearchRequest.employeeName().isEmpty()) {
+                predicates.add(root.get("employeeId").in(validResponseSearchRequest.employeeName()));
             }
 
             // 공급업체 이름 여러 개 (IN 절)
