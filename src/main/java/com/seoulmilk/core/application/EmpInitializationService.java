@@ -1,8 +1,8 @@
 package com.seoulmilk.core.application;
 
 import com.seoulmilk.auth.application.PasswordHashingService;
-import com.seoulmilk.emp.domain.entity.HashedPassword;
-import com.seoulmilk.emp.domain.entity.Password;
+import com.seoulmilk.emp.domain.value.HashedPassword;
+import com.seoulmilk.emp.domain.value.Password;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.domain.value.Role;
