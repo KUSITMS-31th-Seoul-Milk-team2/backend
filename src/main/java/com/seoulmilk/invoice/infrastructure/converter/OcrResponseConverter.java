@@ -17,27 +17,35 @@ public class OcrResponseConverter {
         "승인번호", "전자세금계산서 작성일자", "총 공급가액", "총액", "공급자 사업체명", "공급받는자 사업체명"
     );
 
-    public static OcrValidationRequest convert(Long empPk, OcrResponse response) {
+    public static OcrValidationRequest convert(Long empPk, String fileUrl, OcrResponse response) {
         Map<String, String> fieldMap = extractFieldMap(response);
         REQUIRED_FIELDS.forEach(field -> {
             if (fieldMap.get(field) == null) {
                 log.error("국세청 검증을 위한 필수 필드 누락: {}", field);
-                throw InvoiceErrorCode.MISSING_REQUIRED_FIELD.toException();
+                fieldMap.put(field, "0");
             }
         });
 
-        return new OcrValidationRequest(
+        OcrValidationRequest ocrValidationRequest = new OcrValidationRequest(
                 empPk,
-                normalizeRegisterNumber(fieldMap.get("공급자 사업자등록번호")),
-                normalizeRegisterNumber(fieldMap.get("공급받는자 사업자등록번호")),
-                formatApprovalNo(fieldMap.get("승인번호")),
-                formatDate(fieldMap.get("전자세금계산서 작성일자")),
-                normalizeNumericValue(fieldMap.get("총 공급가액")),
-                fieldMap.get("공급자 사업체명"),
-                fieldMap.get("공급받는자 사업체명"),
-                normalizeNumericValue(fieldMap.get("총 세액 합계")),
-                normalizeNumericValue(fieldMap.get("총액"))
+                fileUrl,
+                OcrValidationRequest.TaxValidationInfo.from(
+                        normalizeRegisterNumber(fieldMap.get("공급자 사업자등록번호")),
+                        normalizeRegisterNumber(fieldMap.get("공급받는자 사업자등록번호")),
+                        formatApprovalNo(fieldMap.get("승인번호")),
+                        formatDate(fieldMap.get("전자세금계산서 작성일자")),
+                        normalizeSupplyValue(fieldMap.get("총 공급가액")),
+                        fieldMap.get("공급자 사업체명"),
+                        fieldMap.get("공급받는자 사업체명"),
+                        normalizeNumericValue(fieldMap.get("총 세액 합계")),
+                        normalizeNumericValue(fieldMap.get("총액"))
+                )
         );
+
+        log.info("OCR 검증 요청: {}", ocrValidationRequest);
+
+
+        return ocrValidationRequest;
     }
 
     private static Map<String, String> extractFieldMap(OcrResponse response) {
@@ -68,7 +76,8 @@ public class OcrResponseConverter {
     }
 
     private static String formatDate(String rawDate) {
-        return rawDate.replaceAll(InvoiceRegexPatterns.WHITESPACE, "");
+        return rawDate.replaceAll(InvoiceRegexPatterns.HYPHEN, "")
+                .replaceAll(InvoiceRegexPatterns.WHITESPACE, "");
     }
 
     private static String normalizeSupplyValue(String raw) {
@@ -76,7 +85,7 @@ public class OcrResponseConverter {
     }
 
     private static String normalizeNumericValue(String raw) {
-        return raw.replaceAll("[^0-9]", ""); // 숫자가 아닌 문자 제거
+        return raw.replaceAll("[^0-9]", "");
     }
 
 }
