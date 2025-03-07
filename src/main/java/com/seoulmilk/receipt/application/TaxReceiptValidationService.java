@@ -39,6 +39,7 @@ public class TaxReceiptValidationService {
 
     @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}")
     public void listen(List<OcrValidationRequest> ocrValidationRequest) {
+        log.info(ocrValidationRequest.toString());
 //        Emp emp = getEmployee(ocrValidationRequest.empPk());
 //
 //        String uuid = getUUID("uuid:" + emp.getId());

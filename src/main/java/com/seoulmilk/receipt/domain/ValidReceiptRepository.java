@@ -1,5 +1,6 @@
 package com.seoulmilk.receipt.domain;
 
+import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.dto.request.ValidResponseSearchRequest;
 

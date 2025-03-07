@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -53,5 +55,13 @@ public class EmpRepositoryImpl implements EmpRepository {
     @Override
     public void updatePassword(Long id, String newPassword) {
         empJpaRepository.updatePassword(id, newPassword);
+    }
+
+    @Override
+    public List<Emp> findAllByName(String employeeName) {
+        return empJpaRepository.findAllByName(employeeName) // List<EmpJpaEntity>
+                .stream()
+                .map(empMapper::toDomainEntity) // EmpJpaEntity -> Emp 변환
+                .collect(Collectors.toList()); // 리스트로 변환
     }
 }
