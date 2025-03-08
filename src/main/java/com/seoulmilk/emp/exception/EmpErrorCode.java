@@ -11,8 +11,11 @@ import org.springframework.http.HttpStatus;
 public enum EmpErrorCode implements BaseErrorCode<DomainException> {
     FAILED_TO_SAVE_EMPLOYEE(HttpStatus.INTERNAL_SERVER_ERROR, "사원 정보를 저장하는데 실패하였습니다."),
     NOT_EXIST_EMPLOYEE(HttpStatus.NOT_FOUND, "사원이 존재하지 않습니다."),
+    CAN_NOT_FIND_EMPLOYEE_WITH_NAME(HttpStatus.NOT_FOUND, "이름에 해당하는 사원을 찾을 수 없습니다."),
+    CAN_NOT_FIND_EMPLOYEE_WITH_EMPLOYEE_ID(HttpStatus.NOT_FOUND, "사번에 해당하는 사원을 찾을 수 없습니다."),
     WRONG_PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
-    SAME_PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "기존 비밀번호와 새 비밀번호가 동일합니다.");
+    SAME_PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "기존 비밀번호와 새 비밀번호가 동일합니다."),
+    INVALID_NAME_AND_EMPLOYEE_ID(HttpStatus.BAD_REQUEST, "이름과 사번이 일치하지 않습니다."),;
 
     private final HttpStatus httpStatus;
 
