@@ -1,6 +1,6 @@
-package com.seoulmilk.batch.infra;
+package com.seoulmilk.invoice.infrastructure;
 
-import com.seoulmilk.batch.infra.configuration.OpenFeignConfiguration;
+import com.seoulmilk.invoice.infrastructure.configuration.OpenFeignConfiguration;
 import com.seoulmilk.invoice.dto.response.OcrResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

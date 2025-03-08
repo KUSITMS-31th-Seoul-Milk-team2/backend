@@ -1,4 +1,4 @@
-package com.seoulmilk.invoice.exception;
+package com.seoulmilk.invoice.application.exception;
 
 import com.seoulmilk.core.exception.DomainException;
 import com.seoulmilk.core.exception.error.BaseErrorCode;

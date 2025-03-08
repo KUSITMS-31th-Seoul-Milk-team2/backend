@@ -1,4 +1,4 @@
-package com.seoulmilk.batch.infra.configuration;
+package com.seoulmilk.invoice.infrastructure.configuration;
 
 import feign.RequestInterceptor;
 import feign.form.spring.SpringFormEncoder;

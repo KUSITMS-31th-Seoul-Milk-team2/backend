@@ -2,7 +2,7 @@ package com.seoulmilk.invoice.infrastructure.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seoulmilk.invoice.dto.request.OcrRequest;
-import com.seoulmilk.invoice.exception.InvoiceErrorCode;
+import com.seoulmilk.invoice.application.exception.InvoiceErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
