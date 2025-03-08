@@ -32,6 +32,9 @@ public class KafkaConfiguration {
     @Value("${spring.kafka.consumer.properties.spring.json.trusted.packages}")
     private String TRUSTED_PACKAGES;
 
+    @Value("${spring.kafka.consumer.value-deserializer}")
+    private String CONSUMER_VALUE_DESERIALIZER;
+
     @Bean
     public ProducerFactory<String, List<OcrValidationRequest>> producerFactory() {
         Map<String, Object> config = new HashMap<>();
@@ -53,7 +56,7 @@ public class KafkaConfiguration {
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
         config.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CONSUMER_VALUE_DESERIALIZER);
 
         JsonDeserializer<List<OcrValidationRequest>> deserializer = new JsonDeserializer<>();
         deserializer.addTrustedPackages(TRUSTED_PACKAGES);
@@ -74,7 +77,7 @@ public class KafkaConfiguration {
         ConcurrentKafkaListenerContainerFactory<String, List<OcrValidationRequest>> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        factory.setBatchListener(true);
+        factory.setBatchListener(false);
         factory.setConcurrency(3);
         return factory;
     }
