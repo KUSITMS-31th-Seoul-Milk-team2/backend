@@ -75,6 +75,10 @@ public class EmpRepositoryImpl implements EmpRepository {
     public void grantPrivilege(Emp emp) {
         try {
             EmpJpaEntity empJpaEntity = empMapper.toJpaEntity(emp);
+            if (empJpaEntity == null) {
+                log.error("[EmpRepositoryImpl] 사원 엔티티를 JPA 엔티티로 변환 도중 에러 발생 ");
+                throw EmpErrorCode.FAILED_TO_SAVE_EMPLOYEE.toException();
+            }
             empJpaRepository.grantPrivilege(empJpaEntity.getId());
         } catch (Exception e) {
             log.error("[EmpRepositoryImpl] grantPrivilege 쿼리 실행 중 에러 발생 : {}", e.getMessage());
