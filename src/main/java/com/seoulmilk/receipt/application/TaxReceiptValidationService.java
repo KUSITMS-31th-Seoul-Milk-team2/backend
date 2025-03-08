@@ -39,30 +39,31 @@ public class TaxReceiptValidationService {
     private final ValidReceiptRepository validReceiptRepository;
 
     @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}")
-    public void listen(List<List<OcrValidationRequest>> nestedList) {
-        log.info("Received nested list: {}", nestedList);
+    public void listen(List<OcrValidationRequest> nestedList) {
+        log.info("이벤트 결과:  " + nestedList);
+        //        log.info("Received nested list: {}", nestedList);
 
-        // 중첩 리스트 풀어서 사용
-        List<OcrValidationRequest> ocrValidationRequests = nestedList.get(0);
-
-        Long pk = ocrValidationRequests.get(0).empPk();
-        log.info("현재 사용자 pk - {}", pk);
-
-        Emp emp = getEmployee(pk);
-        log.info("현재 사용자 - {}", emp);
-
-        String uuid = getUUID("uuid:" + emp.getId());
-        List<TaxReceiptValidationRequest> taxReceiptValidationRequests = new ArrayList<>();
-
-        for (OcrValidationRequest ocrValidationRequest : ocrValidationRequests) {
-            TaxReceiptValidationRequest taxReceiptValidationRequest =
-                    createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
-            taxReceiptValidationRequests.add(taxReceiptValidationRequest);
-        }
-
-        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(taxReceiptValidationRequests);
-        handleTransactionId(emp.getId(), additionalAuthResponse.jti());
-        hadleRequestData(emp.getId(), ocrValidationRequests);
+//        // 중첩 리스트 풀어서 사용
+//        List<OcrValidationRequest> ocrValidationRequests = nestedList.get(0);
+//
+//        Long pk = ocrValidationRequests.get(0).empPk();
+//        log.info("현재 사용자 pk - {}", pk);
+//
+//        Emp emp = getEmployee(pk);
+//        log.info("현재 사용자 - {}", emp);
+//
+//        String uuid = getUUID("uuid:" + emp.getId());
+//        List<TaxReceiptValidationRequest> taxReceiptValidationRequests = new ArrayList<>();
+//
+//        for (OcrValidationRequest ocrValidationRequest : ocrValidationRequests) {
+//            TaxReceiptValidationRequest taxReceiptValidationRequest =
+//                    createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
+//            taxReceiptValidationRequests.add(taxReceiptValidationRequest);
+//        }
+//
+//        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(taxReceiptValidationRequests);
+//        handleTransactionId(emp.getId(), additionalAuthResponse.jti());
+//        hadleRequestData(emp.getId(), ocrValidationRequests);
     }
 
 
