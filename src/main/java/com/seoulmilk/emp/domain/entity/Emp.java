@@ -31,7 +31,7 @@ public class Emp {
 
     private String hometax;
 
-    private boolean is_signedin;
+    private Boolean isSignedIn;
 
     private LocalDateTime createdAt;
 
@@ -45,8 +45,7 @@ public class Emp {
 
     public static Emp create(
             String name, String employeeId, String email, Role role, String phoneNumber,
-            String telecom, String birthday, HashedPassword hashedPassword, String hometax,
-            boolean is_signedin) {
+            String telecom, String birthday, HashedPassword hashedPassword, String hometax) {
         {
             return Emp.builder()
                     .id(null)
@@ -59,7 +58,7 @@ public class Emp {
                     .birthday(birthday)
                     .password(hashedPassword)
                     .hometax(hometax)
-                    .is_signedin(is_signedin)
+                    .isSignedIn(false)
                     .build();
         }
     }
@@ -74,6 +73,9 @@ public class Emp {
                 .phoneNumber(empJpaEntity.getPhoneNumber())
                 .birthday(empJpaEntity.getBirthday())
                 .password(HashedPassword.of(empJpaEntity.getPassword()))
+                .telecom(empJpaEntity.getTelecom())
+                .hometax(empJpaEntity.getHometax())
+                .isSignedIn(empJpaEntity.getIsSignedIn())
                 .createdAt(empJpaEntity.getCreatedAt())
                 .updatedAt(empJpaEntity.getUpdatedAt())
                 .deleted(empJpaEntity.getDeleted())

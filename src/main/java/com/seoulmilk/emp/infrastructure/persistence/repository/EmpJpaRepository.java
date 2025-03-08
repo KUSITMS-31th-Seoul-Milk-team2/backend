@@ -27,7 +27,7 @@ public interface EmpJpaRepository extends JpaRepository<EmpJpaEntity, Long> {
     @Modifying
     @Query("""
                 update EmpJpaEntity e
-                set e.is_signedin = CASE WHEN e.is_signedin = true THEN false ELSE true END
+                set e.isSignedIn = CASE WHEN e.isSignedIn = true THEN false ELSE true END
                 where e.id = :id
             """)
     void grantPrivilege(Long id);

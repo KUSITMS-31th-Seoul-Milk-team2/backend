@@ -39,7 +39,7 @@ public class EmpJpaEntity extends BaseLongIdEntity {
 
     private String hometax;
 
-    private boolean is_signedin;
+    private Boolean isSignedIn = false;
 
     public static EmpJpaEntity toJpaEntity(Emp emp) {
         return EmpJpaEntity.builder()
@@ -53,7 +53,7 @@ public class EmpJpaEntity extends BaseLongIdEntity {
                 .birthday(emp.getBirthday())
                 .telecom(emp.getTelecom())
                 .hometax(emp.getHometax())
-                .is_signedin(emp.is_signedin())
+                .isSignedIn(emp.getIsSignedIn())
                 .createdAt(emp.getCreatedAt())
                 .updatedAt(emp.getUpdatedAt())
                 .deleted(Optional.ofNullable(emp.getDeleted()).orElse(false))
