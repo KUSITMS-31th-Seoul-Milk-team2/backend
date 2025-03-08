@@ -13,4 +13,5 @@ public interface EmpRepository {
     void deleteAll();
     void updatePassword(Long id, String newPassword);
     List<Emp> findAllByName(String employeeName);
+    void grantPrivilege(Emp emp);
 }

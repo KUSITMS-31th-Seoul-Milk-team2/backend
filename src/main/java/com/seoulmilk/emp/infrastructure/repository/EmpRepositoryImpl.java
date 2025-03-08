@@ -1,5 +1,6 @@
 package com.seoulmilk.emp.infrastructure.repository;
 
+import com.seoulmilk.core.exception.error.GlobalErrorCode;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.exception.EmpErrorCode;
@@ -54,14 +55,30 @@ public class EmpRepositoryImpl implements EmpRepository {
 
     @Override
     public void updatePassword(Long id, String newPassword) {
-        empJpaRepository.updatePassword(id, newPassword);
+        try {
+            empJpaRepository.updatePassword(id, newPassword);
+        } catch (Exception e) {
+            log.error("[EmpRepositoryImpl] updatePassword 쿼리 실행 중 에러 발생 : {}", e.getMessage());
+            throw GlobalErrorCode.INTERNAL_SERVER_ERROR.toException();
+        }
     }
 
     @Override
     public List<Emp> findAllByName(String employeeName) {
-        return empJpaRepository.findAllByName(employeeName) // List<EmpJpaEntity>
+        return empJpaRepository.findAllByName(employeeName)
                 .stream()
-                .map(empMapper::toDomainEntity) // EmpJpaEntity -> Emp 변환
-                .collect(Collectors.toList()); // 리스트로 변환
+                .map(empMapper::toDomainEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void grantPrivilege(Emp emp) {
+        try {
+            EmpJpaEntity empJpaEntity = empMapper.toJpaEntity(emp);
+            empJpaRepository.grantPrivilege(empJpaEntity.getId());
+        } catch (Exception e) {
+            log.error("[EmpRepositoryImpl] grantPrivilege 쿼리 실행 중 에러 발생 : {}", e.getMessage());
+            throw GlobalErrorCode.INTERNAL_SERVER_ERROR.toException();
+        }
     }
 }
