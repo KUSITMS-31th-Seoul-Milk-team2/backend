@@ -27,7 +27,7 @@ public class OcrValidationRequestListDeserializer extends StdDeserializer<List<O
 
         if (p.currentToken() == JsonToken.START_ARRAY) {
             p.nextToken();
-            
+
             if (p.currentToken() == JsonToken.START_ARRAY) {
                 while (p.nextToken() != JsonToken.END_ARRAY) {
                     result.add(deserializeSingleRequest(p, ctxt));
