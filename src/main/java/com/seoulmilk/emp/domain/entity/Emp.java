@@ -29,27 +29,39 @@ public class Emp {
 
     private HashedPassword password;
 
+    private String hometax;
+
+    private boolean is_signedin;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
     private Boolean deleted;
 
+    public boolean isAdministrator() {
+        return this.getRole() == Role.ADMIN;
+    }
+
     public static Emp create(
             String name, String employeeId, String email, Role role, String phoneNumber,
-             String telecom, String birthday,HashedPassword hashedPassword
-    ) {
-        return Emp.builder()
-                .id(null)
-                .employeeId(employeeId)
-                .name(name)
-                .email(email)
-                .role(role)
-                .phoneNumber(phoneNumber)
-                .telecom(telecom)
-                .birthday(birthday)
-                .password(hashedPassword)
-                .build();
+            String telecom, String birthday, HashedPassword hashedPassword, String hometax,
+            boolean is_signedin) {
+        {
+            return Emp.builder()
+                    .id(null)
+                    .employeeId(employeeId)
+                    .name(name)
+                    .email(email)
+                    .role(role)
+                    .phoneNumber(phoneNumber)
+                    .telecom(telecom)
+                    .birthday(birthday)
+                    .password(hashedPassword)
+                    .hometax(hometax)
+                    .is_signedin(is_signedin)
+                    .build();
+        }
     }
 
     public static Emp toDomainEntity(EmpJpaEntity empJpaEntity) {
@@ -67,5 +79,4 @@ public class Emp {
                 .deleted(empJpaEntity.getDeleted())
                 .build();
     }
-
 }

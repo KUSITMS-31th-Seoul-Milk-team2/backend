@@ -37,6 +37,10 @@ public class EmpJpaEntity extends BaseLongIdEntity {
 
     private String telecom;
 
+    private String hometax;
+
+    private boolean is_signedin;
+
     public static EmpJpaEntity toJpaEntity(Emp emp) {
         return EmpJpaEntity.builder()
                 .id(emp.getId())
@@ -48,6 +52,8 @@ public class EmpJpaEntity extends BaseLongIdEntity {
                 .password(emp.getPassword().getValue())
                 .birthday(emp.getBirthday())
                 .telecom(emp.getTelecom())
+                .hometax(emp.getHometax())
+                .is_signedin(emp.is_signedin())
                 .createdAt(emp.getCreatedAt())
                 .updatedAt(emp.getUpdatedAt())
                 .deleted(Optional.ofNullable(emp.getDeleted()).orElse(false))
