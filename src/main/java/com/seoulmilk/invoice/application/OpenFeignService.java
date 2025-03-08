@@ -26,10 +26,10 @@ public class OpenFeignService {
 
     public OcrValidationRequest processImg(Long empPk, MultipartFile file) {
         validateFilePresence(file);
-//        String fileUrl = fileUtil.uploadFile(file);
+        String fileUrl = fileUtil.uploadFile(file);
         FileMetaData fileMetaData = createFileMetaData(file);
         OcrResponse ocrResponse = executeOcr(fileMetaData, file);
-        return OcrResponseConverter.convert(empPk, null, ocrResponse);
+        return OcrResponseConverter.convert(empPk, fileUrl, ocrResponse);
     }
 
 
