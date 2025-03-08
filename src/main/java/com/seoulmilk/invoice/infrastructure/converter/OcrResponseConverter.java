@@ -1,7 +1,7 @@
 package com.seoulmilk.invoice.infrastructure.converter;
 
 import com.seoulmilk.invoice.dto.response.OcrResponse;
-import com.seoulmilk.invoice.exception.InvoiceErrorCode;
+import com.seoulmilk.invoice.application.exception.InvoiceErrorCode;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import lombok.extern.log4j.Log4j2;
 

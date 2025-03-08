@@ -1,6 +1,6 @@
 package com.seoulmilk.invoice.domain.value;
 
-import com.seoulmilk.invoice.exception.InvoiceErrorCode;
+import com.seoulmilk.invoice.application.exception.InvoiceErrorCode;
 
 import java.util.List;
 
