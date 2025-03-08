@@ -44,11 +44,11 @@ public class SecurityConfiguration {
                         authorizeRequests
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .requestMatchers("/v1/auth/**").permitAll()
-                                .requestMatchers("/v1/invoice/**").permitAll()
-                                .requestMatchers("/v1/receipt/**").permitAll()
-                                .requestMatchers("/v1/emp/**").permitAll()
-                                .requestMatchers("/v1/notice/**").permitAll()
-                                .anyRequest().authenticated()
+                                .requestMatchers("/v1/invoice/**").authenticated()
+                                .requestMatchers("/v1/receipt/**").authenticated()
+                                .requestMatchers("/v1/emp/**").authenticated()
+                                .requestMatchers("/v1/notice/**").authenticated()
+                                .requestMatchers("/v1/admin/**").authenticated()
                 )
                 .addFilterBefore(
                         exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class

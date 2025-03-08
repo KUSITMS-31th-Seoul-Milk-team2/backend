@@ -25,10 +25,9 @@ public class GrantPrivilegeController implements GrantPrivilegeSwagger {
     @PostMapping("/grant-privilege")
     public ResponseEntity<RestResponse<GrantPrivilegeResponse>> grantPrivilege(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @Valid @RequestBody GrantPrivilegeRequest grantPrivilegeRequest) {
-
+            @Valid @RequestBody GrantPrivilegeRequest grantPrivilegeRequest
+    ) {
         GrantPrivilegeResponse grantPrivilegeResponse = grantPrivilegeService.grantPrivilege(customUserDetails, grantPrivilegeRequest);
-
         return ResponseEntity.ok(new RestResponse<>(grantPrivilegeResponse));
     }
 }
