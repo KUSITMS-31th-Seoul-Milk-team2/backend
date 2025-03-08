@@ -20,7 +20,7 @@ public interface GrantPrivilegeSwagger {
     @Operation(
             summary = "권한 부여 API",
             description = "사원에게 권한을 부여합니다.",
-            operationId = "/v1/emp/grant-privilege"
+            operationId = "/v1/admin/grant-privilege"
     )
     @ApiErrorCode({GlobalErrorCode.class, EmpErrorCode.class, AdminErrorCode.class})
     ResponseEntity<RestResponse<GrantPrivilegeResponse>> grantPrivilege(
