@@ -15,7 +15,7 @@ public class TaxReceiptValidationRequestFactory {
             "0004",
                 "5",
                 uuid,
-                "1",
+                emp.getHometax().getValue(),
                 emp.getName(),
                 emp.getPhoneNumber(),
                 emp.getBirthday(),
@@ -24,7 +24,7 @@ public class TaxReceiptValidationRequestFactory {
                 ocrValidationRequest.taxValidationInfo().approvalNo(),
                 ocrValidationRequest.taxValidationInfo().reportingDate(),
                 ocrValidationRequest.taxValidationInfo().supplyValue(),
-                emp.getTelecom()
+                emp.getTelecom().getTelecomNum()
         );
     }
 }
