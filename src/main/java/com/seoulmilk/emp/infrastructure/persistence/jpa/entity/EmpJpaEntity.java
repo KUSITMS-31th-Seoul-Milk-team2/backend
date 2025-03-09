@@ -2,7 +2,9 @@ package com.seoulmilk.emp.infrastructure.persistence.jpa.entity;
 
 import com.seoulmilk.core.infrastructure.jpa.entity.BaseLongIdEntity;
 import com.seoulmilk.emp.domain.entity.Emp;
+import com.seoulmilk.emp.domain.value.HomeTax;
 import com.seoulmilk.emp.domain.value.Role;
+import com.seoulmilk.emp.domain.value.Telecom;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -36,9 +38,11 @@ public class EmpJpaEntity extends BaseLongIdEntity {
 
     private String birthday;
 
-    private String telecom;
+    @Enumerated(EnumType.STRING)
+    private Telecom telecom;
 
-    private String hometax;
+    @Enumerated(EnumType.STRING)
+    private HomeTax hometax;
 
     @Builder.Default
     private Boolean isSignedIn = false;

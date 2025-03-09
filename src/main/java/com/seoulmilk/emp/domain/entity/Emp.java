@@ -1,7 +1,9 @@
 package com.seoulmilk.emp.domain.entity;
 
 import com.seoulmilk.emp.domain.value.HashedPassword;
+import com.seoulmilk.emp.domain.value.HomeTax;
 import com.seoulmilk.emp.domain.value.Role;
+import com.seoulmilk.emp.domain.value.Telecom;
 import com.seoulmilk.emp.infrastructure.persistence.jpa.entity.EmpJpaEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,13 +25,13 @@ public class Emp {
 
     private String phoneNumber;
 
-    private String telecom;
+    private Telecom telecom;
 
     private String birthday;
 
     private HashedPassword password;
 
-    private String hometax;
+    private HomeTax hometax;
 
     private Boolean isSignedIn;
 
@@ -45,7 +47,7 @@ public class Emp {
 
     public static Emp create(
             String name, String employeeId, String email, Role role, String phoneNumber,
-            String telecom, String birthday, HashedPassword hashedPassword, String hometax) {
+            Telecom telecom, String birthday, HashedPassword hashedPassword, HomeTax hometax) {
         {
             return Emp.builder()
                     .id(null)
