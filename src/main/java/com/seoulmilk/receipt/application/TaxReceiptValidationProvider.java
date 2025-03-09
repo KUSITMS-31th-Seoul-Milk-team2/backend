@@ -1,5 +1,6 @@
 package com.seoulmilk.receipt.application;
 
+import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
@@ -7,6 +8,6 @@ import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationRespo
 import java.util.List;
 
 public interface TaxReceiptValidationProvider {
-    AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> requests);
+    AdditionalAuthResponse requestAdditionalAuthentication(Emp emp, List<TaxReceiptValidationRequest> requests);
     List<TaxReceiptValidationResponse> retrieveValidatedTaxReceipts  (String transactionId);
 }

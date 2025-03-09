@@ -1,6 +1,7 @@
 package com.seoulmilk.receipt.infrastructure.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.receipt.application.TaxReceiptValidationProvider;
 import com.seoulmilk.receipt.exception.ReceiptValidationErrorCode;
 import com.seoulmilk.receipt.infrastructure.configuration.EasyCodefProvider;
@@ -36,7 +37,7 @@ public class EasyCodefValidationProvider implements TaxReceiptValidationProvider
     }
 
     @Override
-    public AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> requests) {
+    public AdditionalAuthResponse requestAdditionalAuthentication(Emp emp, List<TaxReceiptValidationRequest> requests) {
         List<EasyCodefRequest> easyCodefRequests = new LinkedList<>();
 
         for(TaxReceiptValidationRequest request : requests) {
