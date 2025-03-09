@@ -9,6 +9,7 @@ import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
+import com.seoulmilk.receipt.presentation.dto.request.ValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,9 @@ public interface TaxReceiptValidateSwagger {
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
     ResponseEntity<RestResponse<AdditionalAuthResponse>> validateTaxReceipts(
-            @RequestBody List<TaxReceiptValidationRequest> requestList
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody List<ValidationRequest> requests
     );
 
     @Operation(
@@ -54,7 +57,7 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/upload/addition"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
+    ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> uploadAdditionAuthController(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     );

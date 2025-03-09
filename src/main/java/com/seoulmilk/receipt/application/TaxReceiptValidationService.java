@@ -13,6 +13,7 @@ import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.exception.ReceiptValidationErrorCode;
 import com.seoulmilk.receipt.infrastructure.factory.TaxReceiptValidationRequestFactory;
+import com.seoulmilk.receipt.presentation.dto.request.ValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import lombok.RequiredArgsConstructor;
@@ -71,8 +72,16 @@ public class TaxReceiptValidationService {
                 .orElseThrow(() -> EmpErrorCode.NOT_EXIST_EMPLOYEE.toException());
     }
 
-    private TaxReceiptValidationRequest createTaxReceiptValidationRequest(Emp emp, OcrValidationRequest ocrValidationRequest, String uuid) {
+    private TaxReceiptValidationRequest createTaxReceiptValidationRequest(
+            Emp emp, OcrValidationRequest ocrValidationRequest, String uuid
+    ) {
         return TaxReceiptValidationRequestFactory.create(emp, ocrValidationRequest, uuid);
+    }
+
+    private TaxReceiptValidationRequest createTaxReceiptValidationRequest(
+            Emp emp, ValidationRequest validationRequest, String uuid
+    ) {
+        return TaxReceiptValidationRequestFactory.create(emp, validationRequest, uuid);
     }
 
     private void handleTransactionId(Long empPk, String transactionId) {
@@ -98,8 +107,21 @@ public class TaxReceiptValidationService {
         return uuid;
     }
 
-    public AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> requests) {
-        return taxReceiptValidationProvider.requestAdditionalAuthentication(requests);
+    public AdditionalAuthResponse requestAdditionalAuthentication(
+            CustomUserDetails customUserDetails,
+            List<ValidationRequest> requests
+    ) {
+        Emp emp = getEmployee(customUserDetails.getId());
+
+        List<TaxReceiptValidationRequest> taxReceiptValidationRequestList = new ArrayList<>();
+        String uuid = UUID.randomUUID().toString();
+        for (ValidationRequest validationRequest : requests) {
+            TaxReceiptValidationRequest taxReceiptValidationRequest =
+                    createTaxReceiptValidationRequest(emp, validationRequest, uuid);
+            taxReceiptValidationRequestList.add(taxReceiptValidationRequest);
+        }
+
+        return taxReceiptValidationProvider.requestAdditionalAuthentication(emp, taxReceiptValidationRequestList);
     }
 
     public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceiptsWithTransactionId(CustomUserDetails customUserDetails){
@@ -172,7 +194,9 @@ public class TaxReceiptValidationService {
         return Integer.parseInt(grandTotal) - Integer.parseInt(taxTotal);
     }
 
-    public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceipts(Long empPk, List<OcrValidationRequest> requestsData, String transactionId) {
+    public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceipts(
+            Long empPk, List<OcrValidationRequest> requestsData, String transactionId
+    ) {
         List<TaxReceiptValidationResponse> responses =
                 taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
 
