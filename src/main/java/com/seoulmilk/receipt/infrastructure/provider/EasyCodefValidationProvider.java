@@ -37,7 +37,7 @@ public class EasyCodefValidationProvider implements TaxReceiptValidationProvider
     }
 
     @Override
-    public AdditionalAuthResponse requestAdditionalAuthentication(Emp emp, List<TaxReceiptValidationRequest> requests) {
+    public AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> requests) {
         List<EasyCodefRequest> easyCodefRequests = new LinkedList<>();
 
         for(TaxReceiptValidationRequest request : requests) {

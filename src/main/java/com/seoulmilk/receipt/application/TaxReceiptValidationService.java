@@ -38,7 +38,7 @@ public class TaxReceiptValidationService {
     private final InValidReceiptRepository invalidReceiptRepository;
     private final ValidReceiptRepository validReceiptRepository;
 
-    @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}", concurrency = "1")
+    @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}", concurrency = "3", errorHandler = "noRetryErrorHandler")
     public void listen(List<OcrValidationRequest> ocrValidationRequestList) {
         log.info("이벤트 결과:  " + ocrValidationRequestList);
 
@@ -49,7 +49,7 @@ public class TaxReceiptValidationService {
         Emp emp = getEmployee(pk);
         log.info("현재 사용자 - {}", emp.getName());
 
-        String uuid = getUUID("uuid:" + emp.getId());
+        String uuid = UUID.randomUUID().toString();
         List<TaxReceiptValidationRequest> taxReceiptValidationRequests = new ArrayList<>();
 
         for (OcrValidationRequest ocrValidationRequest : ocrValidationRequestList) {
@@ -58,13 +58,19 @@ public class TaxReceiptValidationService {
             taxReceiptValidationRequests.add(taxReceiptValidationRequest);
         }
 
-        // 여기 주석 친 곳이 문제임!!!!
-//        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(taxReceiptValidationRequests);
-//        handleTransactionId(emp.getId(), additionalAuthResponse.jti());
+        log.info("추가인증 정보 요청 시작");
+        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(taxReceiptValidationRequests);
+        log.info("추가인증 정보 요청 끝");
+        handleTransactionId(emp.getId(), additionalAuthResponse.jti());
+        log.info("레디스에 저장된 트랜잭션 id - {}", redisTemplate.opsForValue().get("transactionId:" + pk));
+
         hadleRequestData(emp.getId(), ocrValidationRequestList);
         log.info("레디스에 저장 된 데이터 - {}", redisTemplate.opsForValue().get("requestData:" + pk));
     }
 
+    private AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> taxReceiptValidationRequests) {
+        return taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequests);
+    }
 
     private Emp getEmployee(Long empPk) {
         return empRepository.findById(empPk)
@@ -97,15 +103,6 @@ public class TaxReceiptValidationService {
         }
     }
 
-    private String getUUID(String cacheKey) {
-        String uuid = (String) redisTemplate.opsForValue().get(cacheKey);
-        if (uuid == null) {
-            uuid = UUID.randomUUID().toString();
-            redisTemplate.opsForValue().set(cacheKey, uuid, Duration.ofSeconds(120));
-        }
-        return uuid;
-    }
-
     public AdditionalAuthResponse requestAdditionalAuthentication(
             CustomUserDetails customUserDetails,
             List<ValidationRequest> requests
@@ -120,21 +117,28 @@ public class TaxReceiptValidationService {
             taxReceiptValidationRequestList.add(taxReceiptValidationRequest);
         }
 
-        return taxReceiptValidationProvider.requestAdditionalAuthentication(emp, taxReceiptValidationRequestList);
+        return taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequestList);
     }
 
     public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceiptsWithTransactionId(CustomUserDetails customUserDetails){
-        log.info("현재 사용자 pk - {}", customUserDetails.getId());
+        log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 사용자 pk - {}", customUserDetails.getId());
         Emp emp = getEmployee(customUserDetails.getId());
+        log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 사용자 정보 - {}", emp.getName());
 
         String transactionCacheKey = "transactionId:" + customUserDetails.getId();
         if (redisTemplate.opsForValue().get(transactionCacheKey) == null) {
             throw ReceiptValidationErrorCode.NOT_EXIST_TXID.toException();
         }
         String transactionId = (String) redisTemplate.opsForValue().getAndDelete(transactionCacheKey);
+        log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 트랜잭션 id - {}", transactionId);
+
 
         String dataCacheKey = "requestData:" + customUserDetails.getId();
+        if (redisTemplate.opsForValue().get(dataCacheKey) == null) {
+            throw ReceiptValidationErrorCode.ERROR_TO_GET_DATA.toException();
+        }
         List<OcrValidationRequest> requestsData = (List<OcrValidationRequest>) redisTemplate.opsForValue().getAndDelete(dataCacheKey);
+        log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 레디스에서 찾은 데이터 - {}", requestsData);
 
         List<TaxReceiptValidationResponse> responses = taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
 
