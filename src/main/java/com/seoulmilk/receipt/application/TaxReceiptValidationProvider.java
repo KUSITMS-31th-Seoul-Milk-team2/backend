@@ -8,6 +8,6 @@ import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationRespo
 import java.util.List;
 
 public interface TaxReceiptValidationProvider {
-    AdditionalAuthResponse requestAdditionalAuthentication(Emp emp, List<TaxReceiptValidationRequest> requests);
+    AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> requests);
     List<TaxReceiptValidationResponse> retrieveValidatedTaxReceipts  (String transactionId);
 }
