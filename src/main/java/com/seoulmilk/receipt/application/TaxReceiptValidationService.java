@@ -37,32 +37,31 @@ public class TaxReceiptValidationService {
     private final InValidReceiptRepository invalidReceiptRepository;
     private final ValidReceiptRepository validReceiptRepository;
 
-    @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}")
-    public void listen(List<OcrValidationRequest> nestedList) {
-        log.info("이벤트 결과:  " + nestedList);
-        //        log.info("Received nested list: {}", nestedList);
+    @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}", concurrency = "1")
+    public void listen(List<OcrValidationRequest> ocrValidationRequestList) {
+        log.info("이벤트 결과:  " + ocrValidationRequestList);
 
-//        // 중첩 리스트 풀어서 사용
-//        List<OcrValidationRequest> ocrValidationRequests = nestedList.get(0);
-//
-//        Long pk = ocrValidationRequests.get(0).empPk();
-//        log.info("현재 사용자 pk - {}", pk);
-//
-//        Emp emp = getEmployee(pk);
-//        log.info("현재 사용자 - {}", emp);
-//
-//        String uuid = getUUID("uuid:" + emp.getId());
-//        List<TaxReceiptValidationRequest> taxReceiptValidationRequests = new ArrayList<>();
-//
-//        for (OcrValidationRequest ocrValidationRequest : ocrValidationRequests) {
-//            TaxReceiptValidationRequest taxReceiptValidationRequest =
-//                    createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
-//            taxReceiptValidationRequests.add(taxReceiptValidationRequest);
-//        }
-//
+        Long pk = ocrValidationRequestList.get(0).empPk();
+
+        log.info("현재 사용자 pk - {}", pk);
+
+        Emp emp = getEmployee(pk);
+        log.info("현재 사용자 - {}", emp.getName());
+
+        String uuid = getUUID("uuid:" + emp.getId());
+        List<TaxReceiptValidationRequest> taxReceiptValidationRequests = new ArrayList<>();
+
+        for (OcrValidationRequest ocrValidationRequest : ocrValidationRequestList) {
+            TaxReceiptValidationRequest taxReceiptValidationRequest =
+                    createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
+            taxReceiptValidationRequests.add(taxReceiptValidationRequest);
+        }
+
+        // 여기 주석 친 곳이 문제임!!!!
 //        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(taxReceiptValidationRequests);
 //        handleTransactionId(emp.getId(), additionalAuthResponse.jti());
-//        hadleRequestData(emp.getId(), ocrValidationRequests);
+        hadleRequestData(emp.getId(), ocrValidationRequestList);
+        log.info("레디스에 저장 된 데이터 - {}", redisTemplate.opsForValue().get("requestData:" + pk));
     }
 
 
@@ -90,10 +89,10 @@ public class TaxReceiptValidationService {
     }
 
     private String getUUID(String cacheKey) {
-        String uuid = (String) redisTemplate.opsForValue().getAndDelete(cacheKey);
+        String uuid = (String) redisTemplate.opsForValue().get(cacheKey);
         if (uuid == null) {
             uuid = UUID.randomUUID().toString();
-            redisTemplate.opsForValue().set(cacheKey, uuid, Duration.ofMinutes(3));
+            redisTemplate.opsForValue().set(cacheKey, uuid, Duration.ofSeconds(120));
         }
         return uuid;
     }
