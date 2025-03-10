@@ -33,6 +33,10 @@ public class LoginServiceTest {
     @Mock
     private TokenProvider tokenProvider;
 
+    // TODO: 쿠키 설정 후 지워야 함.
+    @Mock
+    private TokenService tokenService;
+
     @InjectMocks
     private LoginService loginService;
 
