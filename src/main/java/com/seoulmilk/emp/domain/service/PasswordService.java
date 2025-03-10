@@ -2,6 +2,7 @@ package com.seoulmilk.emp.domain.service;
 
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
+import com.seoulmilk.emp.dto.request.CheckPasswordCorrectRequest;
 import com.seoulmilk.emp.dto.request.UpdatePasswordRequest;
 import com.seoulmilk.emp.exception.EmpErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,13 @@ public class PasswordService {
         if (Objects.equals(updatePasswordRequest.oldPassword(), updatePasswordRequest.newPassword())) {
             log.error("이전 비밀번호와 새 비밀번호가 동일합니다.");
             throw EmpErrorCode.SAME_PASSWORD_ERROR.toException();
+        }
+    }
+
+    public void validatePassword(CustomUserDetails customUserDetails, CheckPasswordCorrectRequest checkPasswordCorrectRequest) {
+        if (!passwordEncoder.matches(checkPasswordCorrectRequest.password(), customUserDetails.getPassword())) {
+            log.error("이전 비밀번호와 일치하지 않습니다.");
+            throw EmpErrorCode.WRONG_PASSWORD_ERROR.toException();
         }
     }
 
