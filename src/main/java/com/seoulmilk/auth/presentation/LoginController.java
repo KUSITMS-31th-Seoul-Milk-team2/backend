@@ -38,11 +38,8 @@ public class LoginController implements LoginSwagger {
                 .domain("34.47.109.128")
                 .path("/")
                 .httpOnly(false)
-<<<<<<< HEAD
-=======
                 .secure(false)
                 .sameSite("None")
->>>>>>> 72da9450ebb1a8c5afa2c2e9c802dd6e506dfd98
                 .maxAge(accessCookieMaxAge)
                 .build();
 
