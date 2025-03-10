@@ -26,6 +26,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -142,6 +143,7 @@ public class TaxReceiptValidationService {
         log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 레디스에서 찾은 데이터 - {}", requestsData);
 
         List<TaxReceiptValidationResponse> responses = taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
+        Collections.reverse(responses);
 
         saveRecieptData(emp, requestsData, responses);
 
@@ -149,7 +151,6 @@ public class TaxReceiptValidationService {
     }
 
     private void saveRecieptData(Emp emp, List<OcrValidationRequest> requestsData, List<TaxReceiptValidationResponse> responses){
-        String fileUrl = null;
         LocalDateTime now = LocalDateTime.now();
         String erdat = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String erzet = now.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
