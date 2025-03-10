@@ -2,9 +2,11 @@ package com.seoulmilk.notice.domain.repository;
 
 import com.seoulmilk.notice.domain.entity.Notice;
 import com.seoulmilk.notice.dto.request.UpdateNoticeRequest;
+import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntity;
 import org.springframework.data.domain.Page;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;
 
@@ -15,8 +17,11 @@ public interface NoticeRepository {
 
     void delete(Notice notice);
 
+    Page<Notice> findAllOrderByIdDescAndEmpPk(Long empPk, Pageable pageable);
+
     Page<Notice> findAllOrderByIdDesc(Pageable pageable);
 
     Notice updateNotice(UpdateNoticeRequest updateNoticeRequest, String fileUrl);
 
+    Page<Notice> findAllByKeyword(Specification<NoticeJpaEntity> spec, Pageable pageable);
 }
