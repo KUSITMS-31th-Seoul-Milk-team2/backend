@@ -4,7 +4,6 @@ import com.seoulmilk.core.infrastructure.jpa.entity.BaseLongIdEntity;
 import com.seoulmilk.notice.domain.entity.Notice;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
