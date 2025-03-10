@@ -25,7 +25,7 @@ public class PostNoticeController implements PostNoticeSwagger {
 
     private final PostNoticeService postNoticeService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping
     public ResponseEntity<RestResponse<PostNoticeResponse>> post(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestPart @Valid PostNoticeRequest postNoticeRequest,

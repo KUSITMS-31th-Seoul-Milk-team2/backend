@@ -5,14 +5,17 @@ import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntit
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 
-public interface NoticeJpaRepository extends JpaRepository<NoticeJpaEntity, Long> {
+public interface NoticeJpaRepository extends JpaRepository<NoticeJpaEntity, Long>, JpaSpecificationExecutor<NoticeJpaEntity> {
 
-    @Transactional
+    @Query("SELECT n FROM NoticeJpaEntity n WHERE n.authorPk = :empPk ORDER BY n.id DESC")
+    Page<NoticeJpaEntity> findAllOrderByIdDescAndId(Pageable pageable, Long empPk);
+
     @Query("SELECT n FROM NoticeJpaEntity n ORDER BY n.id DESC")
     Page<NoticeJpaEntity> findAllOrderByIdDesc(Pageable pageable);
 
