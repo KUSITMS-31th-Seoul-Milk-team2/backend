@@ -1,4 +1,4 @@
-package com.seoulmilk.receipt.presentation;
+package com.seoulmilk.receipt.presentation.controller.crud;
 
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.receipt.application.query.TaxReceiptDeleteService;

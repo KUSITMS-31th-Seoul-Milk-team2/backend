@@ -8,7 +8,7 @@ import com.seoulmilk.receipt.dto.request.ValidResponseSearchRequest;
 import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.ValidReceiptJpaEntity;
 import com.seoulmilk.receipt.infrastructure.persistence.mapper.ValidReceiptMapper;
-import com.seoulmilk.receipt.infrastructure.persistence.repository.ValidReceiptJpaRepository;
+import com.seoulmilk.receipt.infrastructure.persistence.jpa.repository.ValidReceiptJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
