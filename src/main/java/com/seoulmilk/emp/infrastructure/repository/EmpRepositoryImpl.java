@@ -34,7 +34,7 @@ public class EmpRepositoryImpl implements EmpRepository {
     }
 
     @Override
-    public Optional<Emp> findByid(Long id) {
+    public Optional<Emp> findById(Long id) {
         return empJpaRepository.findById(id).map(empMapper::toDomainEntity);
     }
 
