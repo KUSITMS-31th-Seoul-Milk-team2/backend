@@ -11,7 +11,7 @@ public interface ValidReceiptRepository {
     ValidReceipt save(ValidReceipt validReceipt);
     Optional<ValidReceipt> findById(String issueId);
     void deleteAll();
-
+    void deleteById(Long pk);
     List<ValidReceipt> findAllBySpecification(
             ValidResponseSearchRequest validResponseSearchRequest
     );

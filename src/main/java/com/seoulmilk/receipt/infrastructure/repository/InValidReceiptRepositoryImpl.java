@@ -7,14 +7,13 @@ import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.InValidReceip
 import com.seoulmilk.receipt.infrastructure.persistence.mapper.InValidReceiptMapper;
 import com.seoulmilk.receipt.infrastructure.persistence.repository.InValidJpaReceiptRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-@Log4j2
 public class InValidReceiptRepositoryImpl implements InValidReceiptRepository {
     private final InValidReceiptMapper invalidReceiptMapper;
     private final InValidJpaReceiptRepository inValidJpaReceiptRepository;
@@ -37,5 +36,10 @@ public class InValidReceiptRepositoryImpl implements InValidReceiptRepository {
     @Override
     public void deleteAll() {
         inValidJpaReceiptRepository.deleteAll();
+    }
+
+    @Override
+    public void deleteByIds(List<Long> pk) {
+         inValidJpaReceiptRepository.deleteAllByIdIn(pk);
     }
 }

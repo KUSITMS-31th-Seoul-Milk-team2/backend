@@ -46,6 +46,11 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
     }
 
     @Override
+    public void deleteById(Long pk) {
+        validReceiptJpaRepository.deleteById(pk);
+    }
+
+    @Override
     public List<ValidReceipt> findAllBySpecification(
             ValidResponseSearchRequest validResponseSearchRequest
     ) {

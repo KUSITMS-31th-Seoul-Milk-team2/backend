@@ -1,4 +1,4 @@
-package com.seoulmilk.receipt.application;
+package com.seoulmilk.receipt.application.query;
 
 import com.seoulmilk.receipt.domain.InValidReceiptRepository;
 import com.seoulmilk.receipt.domain.ValidReceiptRepository;
