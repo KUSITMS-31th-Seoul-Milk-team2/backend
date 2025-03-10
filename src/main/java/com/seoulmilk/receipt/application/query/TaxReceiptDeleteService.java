@@ -18,13 +18,11 @@ public class TaxReceiptDeleteService {
 
     @Transactional
     public void deleteValidReceipt(Long pk) {
-        // 영수증 하나를 PK값을 이용하여 삭제합니다.
         validReceiptRepository.deleteById(pk);
     }
 
     @Transactional
     public void deleteInValidReceipts(List<Long> pkList) {
-        // 불일치 영수증 여러개를 Pk 값의 리스트를 사용하여 제거합니다
         inValidReceiptRepository.deleteByIds(pkList);
     }
 }

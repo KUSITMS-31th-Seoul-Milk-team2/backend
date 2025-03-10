@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ public interface TaxReceiptDeleteSwagger {
     ResponseEntity<RestResponse<Boolean>> deleteReceiptById(@PathVariable Long pk);
 
     @Operation(
-            summary = "단일 지급결의서 삭제 컨트롤러",
+            summary = "다수 지급결의서 일괄 삭제 컨트롤러",
             description = "검증이 되지 않은 세금 계산서를 삭제합니다" +
                     "다수의 pk값을 사용하여 한번에 삭제합니다",
             operationId = "/v1/receipt/delete"
