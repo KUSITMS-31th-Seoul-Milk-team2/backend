@@ -25,7 +25,7 @@ public class UpdateNoticeService {
         Notice notice = noticeRepository.findById(updateNoticeRequest.id())
                 .orElseThrow(NoticeErrorCode.NOT_EXISTS_NOTICE::toException);
 
-        if (!notice.isAuthor(customUserDetails.getEmployeeId())) {
+        if (!notice.isAuthor(customUserDetails.getId())) {
             throw NoticeErrorCode.NOT_AN_AUTHOR.toException();
         }
 

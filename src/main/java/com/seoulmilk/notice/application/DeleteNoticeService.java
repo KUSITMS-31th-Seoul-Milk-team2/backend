@@ -22,7 +22,7 @@ public class DeleteNoticeService {
         Notice notice = noticeRepository.findById(deleteNoticeRequest.id())
                 .orElseThrow(NoticeErrorCode.NOT_EXISTS_NOTICE::toException);
 
-        if (!notice.isAuthor(customUserDetails.getEmployeeId())) {
+        if (!notice.isAuthor(customUserDetails.getId())) {
             throw NoticeErrorCode.NOT_AN_AUTHOR.toException();
         }
 

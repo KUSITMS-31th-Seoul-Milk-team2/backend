@@ -22,10 +22,9 @@ public class PostNoticeService {
 
     @Transactional
     public PostNoticeResponse post(CustomUserDetails customUserDetails, PostNoticeRequest postNoticeRequest, MultipartFile file) {
-        String employeeId = customUserDetails.emp().getEmployeeId();
         String fileUrl = fileUtil.uploadFile(file);
         Notice notice = noticeRepository.save(
-                Notice.create(employeeId, postNoticeRequest.title(), postNoticeRequest.content(), fileUrl)
+                Notice.create(customUserDetails.getId(), customUserDetails.getUsername(), postNoticeRequest.title(), postNoticeRequest.content(), fileUrl)
         );
 
         return PostNoticeResponse.create(notice);
