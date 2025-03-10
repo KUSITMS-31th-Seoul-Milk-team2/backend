@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -45,6 +46,12 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     }
 
     @Override
+    public Page<Notice> findAllOrderByIdDescAndEmpPk(Long empPk, Pageable pageable) {
+        Page<NoticeJpaEntity> noticeJpaEntities = noticeJpaRepository.findAllOrderByIdDescAndId(pageable, empPk);
+        return noticeJpaEntities.map(noticeMapper::toDomainEntity);
+    }
+
+    @Override
     public Page<Notice> findAllOrderByIdDesc(Pageable pageable) {
         Page<NoticeJpaEntity> noticeJpaEntities = noticeJpaRepository.findAllOrderByIdDesc(pageable);
         return noticeJpaEntities.map(noticeMapper::toDomainEntity);
@@ -58,5 +65,11 @@ public class NoticeRepositoryImpl implements NoticeRepository {
         Notice updatedNotice = notice.update(updateNoticeRequest.title(), updateNoticeRequest.content(), fileUrl);
         noticeJpaRepository.save(noticeMapper.toJpaEntity(updatedNotice));
         return updatedNotice;
+    }
+
+    @Override
+    public Page<Notice> findAllByKeyword(Specification<NoticeJpaEntity> spec, Pageable pageable) {
+        Page<NoticeJpaEntity> noticesByKeyword = noticeJpaRepository.findAll(spec, pageable);
+        return noticesByKeyword.map(noticeMapper::toDomainEntity);
     }
 }
