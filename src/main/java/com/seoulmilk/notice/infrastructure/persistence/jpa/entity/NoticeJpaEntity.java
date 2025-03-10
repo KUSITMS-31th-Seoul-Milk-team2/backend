@@ -25,7 +25,7 @@ public class NoticeJpaEntity extends BaseLongIdEntity {
 
     private String title;
 
-    @Lob
+    @Column(length = 1024)
     private String content;
 
     @Column(length = 512)
