@@ -1,7 +1,6 @@
-package com.seoulmilk.receipt.infrastructure.provider;
+package com.seoulmilk.receipt.infrastructure.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.receipt.application.TaxReceiptValidationProvider;
 import com.seoulmilk.receipt.exception.ReceiptValidationErrorCode;
 import com.seoulmilk.receipt.infrastructure.configuration.EasyCodefProvider;
@@ -24,7 +23,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class EasyCodefValidationProvider implements TaxReceiptValidationProvider {
+public class EasyCodefValidationService implements TaxReceiptValidationProvider {
     private final EasyCodefProvider easyCodefProvider;
     private final EasyCodefRequestFactory easyCodefRequestFactory;
     private final ObjectMapper objectMapper;
