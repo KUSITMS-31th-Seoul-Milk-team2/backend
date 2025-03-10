@@ -1,4 +1,0 @@
-dependencies {
-    implementation group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: '{ojdbc version}'
-    implementation group: 'com.oracle.database.nls', name: 'orai18n', version: '{ojdbc version}'
-}
