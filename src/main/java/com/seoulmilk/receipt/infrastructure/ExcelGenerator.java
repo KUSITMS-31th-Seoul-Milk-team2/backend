@@ -29,7 +29,6 @@ public class ExcelGenerator {
             XSSFSheet sheet = workbook.createSheet(SHEET_NAME);
             createHeaderRow(sheet);
             fillDataRows(sheet, validReceipts);
-            autoSizeColumns(sheet);
 
             workbook.write(outputStream);
             return outputStream.toByteArray();
@@ -70,11 +69,5 @@ public class ExcelGenerator {
         row.createCell(12).setCellValue(receipt.getErdat());
         row.createCell(13).setCellValue(receipt.getErzet());
         row.createCell(14).setCellValue(receipt.getFileUrl());
-    }
-
-    private void autoSizeColumns(XSSFSheet sheet) {
-        for (int i = 0; i < HEADERS.length; i++) {
-            sheet.autoSizeColumn(i);
-        }
     }
 }
