@@ -35,8 +35,9 @@ public class LoginController implements LoginSwagger {
         long accessCookieMaxAge = jwtProperties.getAccess().getExpiration() / 1000;
 
         ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
+                .domain("34.47.109.128")
                 .path("/")
-                .httpOnly(true)
+                .httpOnly(false)
                 .secure(false)
                 .sameSite("None")
                 .maxAge(accessCookieMaxAge)
