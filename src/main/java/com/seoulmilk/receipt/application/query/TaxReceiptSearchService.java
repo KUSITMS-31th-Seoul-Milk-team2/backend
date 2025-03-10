@@ -1,5 +1,7 @@
 package com.seoulmilk.receipt.application.query;
 
+import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
+import com.seoulmilk.emp.domain.value.Role;
 import com.seoulmilk.receipt.domain.InValidReceiptRepository;
 import com.seoulmilk.receipt.domain.ValidReceiptRepository;
 import com.seoulmilk.receipt.domain.entity.ValidReceipt;
@@ -17,9 +19,16 @@ public class TaxReceiptSearchService {
     private final ValidReceiptRepository validReceiptRepository;
     private final InValidReceiptRepository invalidReceiptRepository;
 
-    public List<ValidReceipt> findAllValidReceiptPage(
+    public List<ValidReceipt> findAllValidReceipt(
+            CustomUserDetails customUserDetails,
             ValidResponseSearchRequest keywords
-    ) {
-        return validReceiptRepository.findAllBySpecification(keywords);
+    ){
+        if(customUserDetails.getRole() == Role.ADMIN){
+            log.info("[findAllValidReceipt] 현재 사용자 - 관리자");
+            return validReceiptRepository.findAllBySpecificationWithAdmin(keywords);
+        }else{
+            log.info("[findAllValidReceipt] 현재 사용자 - 사원");
+            return validReceiptRepository.findAllBySpecification(customUserDetails, keywords);
+        }
     }
 }

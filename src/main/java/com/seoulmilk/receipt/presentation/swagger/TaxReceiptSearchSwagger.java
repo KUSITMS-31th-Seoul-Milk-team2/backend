@@ -1,11 +1,13 @@
 package com.seoulmilk.receipt.presentation.swagger;
 
+import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.dto.request.ValidResponseSearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -19,6 +21,7 @@ public interface TaxReceiptSearchSwagger {
             operationId = "/v1/receipt/search"
     )
     ResponseEntity<RestResponse<List<ValidReceipt>>> getValidReceipts(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody ValidResponseSearchRequest request
     );
 }
