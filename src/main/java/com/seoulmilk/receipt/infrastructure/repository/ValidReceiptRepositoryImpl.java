@@ -117,4 +117,9 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
                 .stream()
                 .map(ValidReceipt::toDomainEntity).toList();
     }
+
+    @Override
+    public List<ValidReceipt> findAll() {
+        return validReceiptJpaRepository.findAll().stream().map(ValidReceipt::toDomainEntity).toList();
+    }
 }
