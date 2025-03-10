@@ -27,4 +27,6 @@ public interface ValidReceiptRepository {
             CustomUserDetails customUserDetails,
             ValidResponseSearchRequest validResponseSearchRequest
     );
+
+    List<ValidReceipt> findAll();
 }
