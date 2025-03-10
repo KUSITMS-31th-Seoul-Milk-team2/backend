@@ -49,7 +49,7 @@ public class ValidReceiptSpecification {
     }
 
     private static String sanitizeInput(String input) {
-        return input.replaceAll("[^a-zA-Z0-9]", "");
+        return input.replaceAll("[^a-zA-Z0-9가-힣]", "");
     }
 
     private static List<String> sanitizeListInput(List<String> inputList) {
