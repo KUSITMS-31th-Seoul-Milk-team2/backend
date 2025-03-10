@@ -18,7 +18,9 @@ import java.util.Optional;
 @Table(name = "NOTICE")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NoticeJpaEntity extends BaseLongIdEntity {
-    private String employeeId;
+    private Long authorPk;
+
+    private String authorName;
 
     private String title;
 
@@ -30,7 +32,8 @@ public class NoticeJpaEntity extends BaseLongIdEntity {
     public static NoticeJpaEntity toJpaEntity(Notice notice) {
         return NoticeJpaEntity.builder()
                 .id(notice.getId())
-                .employeeId(notice.getEmployeeId())
+                .authorPk(notice.getAuthorPk())
+                .authorName(notice.getAuthorName())
                 .title(notice.getTitle())
                 .content(notice.getContent())
                 .fileUrl(notice.getFileUrl())
@@ -39,5 +42,4 @@ public class NoticeJpaEntity extends BaseLongIdEntity {
                 .deleted(Optional.ofNullable(notice.getDeleted()).orElse(false))
                 .build();
     }
-
 }
