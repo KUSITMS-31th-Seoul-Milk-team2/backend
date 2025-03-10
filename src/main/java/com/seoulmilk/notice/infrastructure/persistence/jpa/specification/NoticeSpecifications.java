@@ -4,24 +4,32 @@ import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntit
 import org.springframework.data.jpa.domain.Specification;
 
 public class NoticeSpecifications {
+
+    private static String createContainingPattern(String keyword) {
+        return "%" + keyword + "%";
+    }
+
     public static Specification<NoticeJpaEntity> likeAll(String keyword) {
+        String containingPattern = createContainingPattern(keyword);
         return (root, query, criteriaBuilder) -> criteriaBuilder.or(
-                criteriaBuilder.like(root.get("title"), "%" + keyword + "%"),
-                criteriaBuilder.like(root.get("content"), "%" + keyword + "%"),
-                criteriaBuilder.like(root.get("authorName"), "%" + keyword + "%")
+                criteriaBuilder.like(root.get("title"), containingPattern),
+                criteriaBuilder.like(root.get("content"), containingPattern),
+                criteriaBuilder.like(root.get("authorName"), containingPattern)
         );
     }
 
     public static Specification<NoticeJpaEntity> likeTitleAndContent(String keyword) {
+        String containingPattern = createContainingPattern(keyword);
         return (root, query, criteriaBuilder) -> criteriaBuilder.or(
-                criteriaBuilder.like(root.get("title"), "%" + keyword + "%"),
-                criteriaBuilder.like(root.get("content"), "%" + keyword + "%")
+                criteriaBuilder.like(root.get("title"), containingPattern),
+                criteriaBuilder.like(root.get("content"), containingPattern)
         );
     }
 
     public static Specification<NoticeJpaEntity> likeAuthorName(String keyword) {
+        String containingPattern = createContainingPattern(keyword);
         return (root, query, criteriaBuilder) -> criteriaBuilder.like(
-                root.get("authorName"), "%" + keyword + "%"
+                root.get("authorName"), containingPattern
         );
     }
 }
