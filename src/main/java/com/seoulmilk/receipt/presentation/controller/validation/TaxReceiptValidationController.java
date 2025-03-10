@@ -1,4 +1,4 @@
-package com.seoulmilk.receipt.presentation;
+package com.seoulmilk.receipt.presentation.controller.validation;
 
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;

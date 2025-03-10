@@ -5,7 +5,7 @@ import com.seoulmilk.receipt.domain.entity.InValidReceipt;
 import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.InValidReceiptJpaEntity;
 import com.seoulmilk.receipt.infrastructure.persistence.mapper.InValidReceiptMapper;
-import com.seoulmilk.receipt.infrastructure.persistence.repository.InValidJpaReceiptRepository;
+import com.seoulmilk.receipt.infrastructure.persistence.jpa.repository.InValidJpaReceiptRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.seoulmilk.receipt.infrastructure.persistence.repository;
+package com.seoulmilk.receipt.infrastructure.persistence.jpa.repository;
 
 import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.InValidReceiptJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
