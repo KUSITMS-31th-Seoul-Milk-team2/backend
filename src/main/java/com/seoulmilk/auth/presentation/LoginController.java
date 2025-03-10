@@ -36,9 +36,7 @@ public class LoginController implements LoginSwagger {
 
         ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
                 .path("/")
-                .httpOnly(true)
-                .secure(false)
-                .sameSite("None")
+                .httpOnly(false)
                 .maxAge(accessCookieMaxAge)
                 .build();
 
