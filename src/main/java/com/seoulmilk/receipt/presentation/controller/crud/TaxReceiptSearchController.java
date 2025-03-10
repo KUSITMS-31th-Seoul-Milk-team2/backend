@@ -1,6 +1,8 @@
 package com.seoulmilk.receipt.presentation.controller.crud;
 
+import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
+import com.seoulmilk.emp.domain.value.Role;
 import com.seoulmilk.receipt.application.query.TaxReceiptSearchService;
 import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.dto.request.ValidResponseSearchRequest;
@@ -8,6 +10,7 @@ import com.seoulmilk.receipt.presentation.swagger.TaxReceiptSearchSwagger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,10 +28,13 @@ public class TaxReceiptSearchController implements TaxReceiptSearchSwagger {
     @Override
     @PostMapping("/search")
     public ResponseEntity<RestResponse<List<ValidReceipt>>> getValidReceipts(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody ValidResponseSearchRequest request
     ) {
-        List<ValidReceipt> validReceipts =
-                taxReceiptSearchService.findAllValidReceiptPage(request);
+        List<ValidReceipt> validReceipts = taxReceiptSearchService.findAllValidReceipt(
+                customUserDetails,
+                request
+        );
 
         return ResponseEntity.ok(
                 new RestResponse<>(validReceipts)

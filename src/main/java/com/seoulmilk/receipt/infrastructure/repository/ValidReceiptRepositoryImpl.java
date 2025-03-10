@@ -1,5 +1,6 @@
 package com.seoulmilk.receipt.infrastructure.repository;
 
+import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.receipt.domain.ValidReceiptRepository;
@@ -12,6 +13,7 @@ import com.seoulmilk.receipt.infrastructure.persistence.mapper.ValidReceiptMappe
 import com.seoulmilk.receipt.infrastructure.persistence.jpa.repository.ValidReceiptJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -62,7 +64,7 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
     }
 
     @Override
-    public List<ValidReceipt> findAllBySpecification(
+    public List<ValidReceipt> findAllBySpecificationWithAdmin(
             ValidResponseSearchRequest validResponseSearchRequest
     ) {
         List<String> empNames = validResponseSearchRequest.employeeName();
@@ -81,10 +83,40 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
                 validResponseSearchRequest.erdatEnd()
         );
 
-       return validReceiptJpaRepository.findAll(
+        return validReceiptJpaRepository.findAll(
             ValidReceiptSpecification.search(
                     v
             )
        ).stream().map(ValidReceipt::toDomainEntity).toList();
+    }
+
+    @Override
+    public List<ValidReceipt> findAllBySpecification(
+            CustomUserDetails customUserDetails, ValidResponseSearchRequest validResponseSearchRequest
+    ) {
+        List<String> empIds = null;
+        List<Emp> employees = empRepository.findAllByName(customUserDetails.getUsername());
+
+        for(Emp emp : employees){
+            if(customUserDetails.getId() == emp.getId()){
+                empIds = new ArrayList<>();
+                empIds.add(emp.getEmployeeId());
+                break;
+            }
+        }
+
+        ValidResponseSearchRequest v = new ValidResponseSearchRequest(
+                empIds,
+                validResponseSearchRequest.suNames(),
+                validResponseSearchRequest.ipNames(),
+                validResponseSearchRequest.erdatStart(),
+                validResponseSearchRequest.erdatEnd()
+        );
+
+        return validReceiptJpaRepository.findAll(
+                ValidReceiptSpecification.search(
+                        v
+                )
+        ).stream().map(ValidReceipt::toDomainEntity).toList();
     }
 }
