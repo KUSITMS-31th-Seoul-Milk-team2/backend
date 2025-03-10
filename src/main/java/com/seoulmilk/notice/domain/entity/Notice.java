@@ -44,7 +44,7 @@ public class Notice {
                 .title(title != null ? title : this.title)
                 .content(content != null ? content : this.content)
                 .fileUrl(fileUrl != null ? fileUrl : this.fileUrl)
-                .updatedAt(LocalDateTime.now())  // 업데이트 시간 자동 반영
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 
