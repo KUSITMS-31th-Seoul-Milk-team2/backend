@@ -1,5 +1,6 @@
 package com.seoulmilk.notice.presentation;
 
+import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.notice.application.ReadNoticeService;
 import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
@@ -11,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +40,25 @@ public class ReadNoticeController implements ReadNoticeSwagger {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         PageNoticeResponse<NoticeSummaryResponse> response = readNoticeService.getNoticesByPage(pageable);
+        return ResponseEntity.ok(new RestResponse<>(response));
+    }
+
+    @GetMapping("/my-notices")
+    public ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> getMyNotices(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        PageNoticeResponse<NoticeSummaryResponse> response = readNoticeService.getMyNotices(
+                customUserDetails.getId(),
+                pageable);
+        return ResponseEntity.ok(new RestResponse<>(response));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> searchNotices(
+            @RequestParam String searchType,
+            @RequestParam String keyword,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        PageNoticeResponse<NoticeSummaryResponse> response = readNoticeService.getNoticesByKeyword(searchType, keyword, pageable);
         return ResponseEntity.ok(new RestResponse<>(response));
     }
 }
