@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 public interface NoticeJpaRepository extends JpaRepository<NoticeJpaEntity, Long>, JpaSpecificationExecutor<NoticeJpaEntity> {
 
@@ -23,4 +25,6 @@ public interface NoticeJpaRepository extends JpaRepository<NoticeJpaEntity, Long
     @Transactional
     @Query("UPDATE NoticeJpaEntity n SET n.title = :#{#updateNoticeRequest.title}, n.content = :#{#updateNoticeRequest.content} WHERE n.id = :#{#updateNoticeRequest.id}")
     int update(UpdateNoticeRequest updateNoticeRequest);
+
+    List<NoticeJpaEntity> findAllByIdIn(List<Long> ids);
 }

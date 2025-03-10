@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -71,5 +72,20 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     public Page<Notice> findAllByKeyword(Specification<NoticeJpaEntity> spec, Pageable pageable) {
         Page<NoticeJpaEntity> noticesByKeyword = noticeJpaRepository.findAll(spec, pageable);
         return noticesByKeyword.map(noticeMapper::toDomainEntity);
+    }
+
+    @Override
+    public List<Notice> findAllByIds(List<Long> ids) {
+        List<NoticeJpaEntity> noticeJpaEntities = noticeJpaRepository.findAllByIdIn(ids);
+        return noticeJpaEntities.stream()
+                .map(noticeMapper::toDomainEntity)
+                .toList();
+    }
+
+    @Override
+    public void deleteAll(List<Notice> notices) {
+        noticeJpaRepository.deleteAll(notices.stream()
+                .map(noticeMapper::toJpaEntity)
+                .toList());
     }
 }

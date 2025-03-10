@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface NoticeRepository {
@@ -24,4 +25,8 @@ public interface NoticeRepository {
     Notice updateNotice(UpdateNoticeRequest updateNoticeRequest, String fileUrl);
 
     Page<Notice> findAllByKeyword(Specification<NoticeJpaEntity> spec, Pageable pageable);
+
+    List<Notice> findAllByIds(List<Long> ids);
+
+    void deleteAll(List<Notice> notices);
 }
