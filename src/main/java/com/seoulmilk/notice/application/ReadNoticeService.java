@@ -5,15 +5,17 @@ import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.exception.EmpErrorCode;
 import com.seoulmilk.notice.domain.entity.Notice;
 import com.seoulmilk.notice.domain.repository.NoticeRepository;
+import com.seoulmilk.notice.domain.value.Keywords;
 import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
 import com.seoulmilk.notice.dto.response.PageNoticeResponse;
 import com.seoulmilk.notice.dto.response.ReadNoticeResponse;
 import com.seoulmilk.notice.exception.NoticeErrorCode;
+import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Service;
-
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -25,11 +27,23 @@ public class ReadNoticeService {
     private final NoticeRepository noticeRepository;
     private final EmpRepository empRepository;
 
+    public PageNoticeResponse<NoticeSummaryResponse> getMyNotices(Long empPk, Pageable pageable) {
+        Page<Notice> notices = noticeRepository.findAllOrderByIdDescAndEmpPk(empPk, pageable);
+        List<NoticeSummaryResponse> content = notices.getContent().stream()
+                .map(notice -> {
+                    Emp author = empRepository.findById(notice.getAuthorPk())
+                            .orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
+
+                    return NoticeSummaryResponse.create(notice, author);
+                }).toList();
+        return PageNoticeResponse.create(content, notices);
+    }
+
     public ReadNoticeResponse readOneNotice(Long id) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(NoticeErrorCode.NOT_EXISTS_NOTICE::toException);
 
-        Emp author = empRepository.findByEmployeeId(notice.getEmployeeId())
+        Emp author = empRepository.findById(notice.getAuthorPk())
                 .orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
 
         return ReadNoticeResponse.create(notice, author);
@@ -40,7 +54,7 @@ public class ReadNoticeService {
 
         List<NoticeSummaryResponse> content = notices.getContent().stream()
                 .map(notice -> {
-                    Emp author = empRepository.findByEmployeeId(notice.getEmployeeId())
+                    Emp author = empRepository.findById(notice.getAuthorPk())
                             .orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
 
                     return NoticeSummaryResponse.create(notice, author);
@@ -49,5 +63,17 @@ public class ReadNoticeService {
         return PageNoticeResponse.create(content, notices);
     }
 
+    public PageNoticeResponse<NoticeSummaryResponse> getNoticesByKeyword(String searchType, String keyword, Pageable pageable) {
+        Specification<NoticeJpaEntity> spec = Keywords.fromValue(searchType).getSpecification(keyword);
+        Page<Notice> notices = noticeRepository.findAllByKeyword(spec, pageable);
+        List<NoticeSummaryResponse> content = notices.getContent().stream()
+                .map(notice -> {
+                    Emp author = empRepository.findById(notice.getAuthorPk())
+                            .orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
 
+                    return NoticeSummaryResponse.create(notice, author);
+                }).toList();
+
+        return PageNoticeResponse.create(content, notices);
+    }
 }
