@@ -4,6 +4,7 @@ import com.seoulmilk.core.configuration.swagger.ApiErrorCode;
 import com.seoulmilk.core.exception.error.GlobalErrorCode;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
+import com.seoulmilk.emp.exception.EmpErrorCode;
 import com.seoulmilk.notice.dto.request.PostNoticeRequest;
 import com.seoulmilk.notice.dto.response.PostNoticeResponse;
 import com.seoulmilk.notice.exception.NoticeErrorCode;
@@ -23,7 +24,7 @@ public interface PostNoticeSwagger {
             description = "공지사항을 등록합니다.",
             operationId = "/v1/notice"
     )
-    @ApiErrorCode({GlobalErrorCode.class, NoticeErrorCode.class})
+    @ApiErrorCode({GlobalErrorCode.class, EmpErrorCode.class, NoticeErrorCode.class})
     ResponseEntity<RestResponse<PostNoticeResponse>> post(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
