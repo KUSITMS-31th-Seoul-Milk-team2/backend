@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
-        Emp emp = empRepository.findByid(id).orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
+        Emp emp = empRepository.findById(id).orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
 
         return new CustomUserDetails(emp);
     }

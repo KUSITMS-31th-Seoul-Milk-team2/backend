@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,7 +67,7 @@ public class TaxReceiptValidationService {
 
 
     private Emp getEmployee(Long empPk) {
-        return empRepository.findByid(empPk)
+        return empRepository.findById(empPk)
                 .orElseThrow(() -> EmpErrorCode.NOT_EXIST_EMPLOYEE.toException());
     }
 
