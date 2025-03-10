@@ -12,7 +12,9 @@ import java.util.Objects;
 public class Notice {
     private Long id;
 
-    private String employeeId;
+    private Long authorPk;
+
+    private String authorName;
 
     private String title;
 
@@ -26,23 +28,14 @@ public class Notice {
 
     private Boolean deleted;
 
-    public static Notice create(String employeeId, String title, String content, String fileUrl) {
+    public static Notice create(Long authorPk, String authorName, String title, String content, String fileUrl) {
         return Notice.builder()
                 .id(null)
-                .employeeId(employeeId)
+                .authorPk(authorPk)
+                .authorName(authorName)
                 .title(title)
                 .content(content)
                 .fileUrl(fileUrl)
-                .build();
-    }
-
-    public static Notice create(String employeeId, String title, String content) {
-        return Notice.builder()
-                .id(null)
-                .employeeId(employeeId)
-                .title(title)
-                .content(content)
-                .fileUrl(null)
                 .build();
     }
 
@@ -58,7 +51,8 @@ public class Notice {
     public static Notice toDomainEntity(NoticeJpaEntity noticeJpaEntity) {
         return Notice.builder()
                 .id(noticeJpaEntity.getId())
-                .employeeId(noticeJpaEntity.getEmployeeId())
+                .authorPk(noticeJpaEntity.getAuthorPk())
+                .authorName(noticeJpaEntity.getAuthorName())
                 .title(noticeJpaEntity.getTitle())
                 .content(noticeJpaEntity.getContent())
                 .fileUrl(noticeJpaEntity.getFileUrl())
@@ -68,7 +62,7 @@ public class Notice {
                 .build();
     }
 
-    public boolean isAuthor(String employeeId) {
-        return Objects.equals(this.getEmployeeId(), employeeId);
+    public boolean isAuthor(Long empPk) {
+        return Objects.equals(this.authorPk, empPk);
     }
 }

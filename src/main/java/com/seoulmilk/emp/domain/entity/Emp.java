@@ -58,7 +58,6 @@ public class Emp {
                     .birthday(birthday)
                     .password(hashedPassword)
                     .hometax(hometax)
-                    .isSignedIn(false)
                     .build();
         }
     }
