@@ -14,7 +14,6 @@ public interface ValidReceiptJpaRepository extends JpaRepository<ValidReceiptJpa
     Optional<ValidReceiptJpaEntity> findByIssueId(String issueId);
 
     @Modifying(clearAutomatically = true)
-    @Transactional
     @Query("UPDATE ValidReceiptJpaEntity v " +
             "SET v.chargeTotal = :#{#updateValidReceiptRequest.chargeTotal()}, " +
             "    v.taxTotal = :#{#updateValidReceiptRequest.taxTotal()}, " +

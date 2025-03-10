@@ -65,9 +65,9 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
 
     @Override
     public List<ValidReceipt> findAllBySpecificationWithAdmin(
-            ValidResponseSearchRequest validResponseSearchRequest
+            ValidResponseSearchRequest request
     ) {
-        List<String> empNames = validResponseSearchRequest.employeeName();
+        List<String> empNames = request.employeeName();
         List<String> empIds = new ArrayList<>();
 
         for(String empName : empNames) {
@@ -75,24 +75,24 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
             employees.forEach(emp -> empIds.add(emp.getEmployeeId()));
         }
 
-        ValidResponseSearchRequest v = new ValidResponseSearchRequest(
+        ValidResponseSearchRequest validResponseSearchRequest = new ValidResponseSearchRequest(
                 empIds,
-                validResponseSearchRequest.suNames(),
-                validResponseSearchRequest.ipNames(),
-                validResponseSearchRequest.erdatStart(),
-                validResponseSearchRequest.erdatEnd()
+                request.suNames(),
+                request.ipNames(),
+                request.erdatStart(),
+                request.erdatEnd()
         );
 
         return validReceiptJpaRepository.findAll(
-            ValidReceiptSpecification.search(
-                    v
-            )
-       ).stream().map(ValidReceipt::toDomainEntity).toList();
+            ValidReceiptSpecification.search(validResponseSearchRequest))
+                .stream()
+                .map(ValidReceipt::toDomainEntity).toList();
     }
 
     @Override
     public List<ValidReceipt> findAllBySpecification(
-            CustomUserDetails customUserDetails, ValidResponseSearchRequest validResponseSearchRequest
+            CustomUserDetails customUserDetails,
+            ValidResponseSearchRequest request
     ) {
         List<String> empIds = null;
         List<Emp> employees = empRepository.findAllByName(customUserDetails.getUsername());
@@ -105,18 +105,16 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
             }
         }
 
-        ValidResponseSearchRequest v = new ValidResponseSearchRequest(
+        ValidResponseSearchRequest validResponseSearchRequest = new ValidResponseSearchRequest(
                 empIds,
-                validResponseSearchRequest.suNames(),
-                validResponseSearchRequest.ipNames(),
-                validResponseSearchRequest.erdatStart(),
-                validResponseSearchRequest.erdatEnd()
+                request.suNames(),
+                request.ipNames(),
+                request.erdatStart(),
+                request.erdatEnd()
         );
 
-        return validReceiptJpaRepository.findAll(
-                ValidReceiptSpecification.search(
-                        v
-                )
-        ).stream().map(ValidReceipt::toDomainEntity).toList();
+        return validReceiptJpaRepository.findAll(ValidReceiptSpecification.search(validResponseSearchRequest))
+                .stream()
+                .map(ValidReceipt::toDomainEntity).toList();
     }
 }
