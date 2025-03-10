@@ -18,6 +18,10 @@ public class ValidatedTaxReceiptExcelDownloadController implements ValidatedTaxR
 
     @GetMapping("/download")
     public ResponseEntity<byte[]> downloadValidatedTaxReceiptExcel() {
-        return ResponseEntity.ok().body(validatedTaxReceiptExcelDownloadService.exportValidatedTaxReceiptToExcel());
+        byte[] excelBytes = validatedTaxReceiptExcelDownloadService.exportValidatedTaxReceiptToExcel();
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .header("Content-Disposition", "attachment; filename=\"validated_tax_receipts.xlsx\"")
+                .body(excelBytes);
     }
 }
