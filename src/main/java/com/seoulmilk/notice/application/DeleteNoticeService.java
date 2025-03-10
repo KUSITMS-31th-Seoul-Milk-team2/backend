@@ -10,6 +10,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -19,13 +21,12 @@ public class DeleteNoticeService {
 
     @Transactional
     public void delete(CustomUserDetails customUserDetails, DeleteNoticeRequest deleteNoticeRequest) {
-        Notice notice = noticeRepository.findById(deleteNoticeRequest.id())
-                .orElseThrow(NoticeErrorCode.NOT_EXISTS_NOTICE::toException);
-
-        if (!notice.isAuthor(customUserDetails.getId())) {
-            throw NoticeErrorCode.NOT_AN_AUTHOR.toException();
+        List<Notice> notices = noticeRepository.findAllByIds(deleteNoticeRequest.ids());
+        for (Notice notice : notices) {
+            if (!notice.isAuthor(customUserDetails.getId())) {
+                throw NoticeErrorCode.NOT_AN_AUTHOR.toException();
+            }
         }
-
-        noticeRepository.delete(notice);
+        noticeRepository.deleteAll(notices);
     }
 }
