@@ -47,28 +47,51 @@ public record OcrValidationRequest(
             @Schema(description = "총액(공급가액 + 세액)", example = "100100")
             String grandTotal
     ) {
-            public static TaxValidationInfo from(
-                    String supplierRegNumber,
-                    String contractorRegNumber,
-                    String approvalNo,
-                    String reportingDate,
-                    String supplyValue,
-                    String supplierName,
-                    String contractorName,
-                    String taxTotal,
-                    String grandTotal
-            ) {
-                return new TaxValidationInfo(
-                        supplierRegNumber,
-                        contractorRegNumber,
-                        approvalNo,
-                        reportingDate,
-                        supplyValue,
-                        supplierName,
-                        contractorName,
-                        taxTotal,
-                        grandTotal
-                );
+
+        private static final String DEFAULT_SUPPLIER_REG_NUMBER = "1234567890";
+        private static final String DEFAULT_CONTRACTOR_REG_NUMBER = "1234567890";
+        private static final String DEFAULT_APPROVAL_NO = "123456781234567812345678";
+        private static final String DEFAULT_REPORTING_DATE = "20250305";
+        private static final String DEFAULT_SUPPLY_VALUE = "0";
+        private static final String DEFAULT_SUPPLIER_NAME = "이름";
+        private static final String DEFAULT_CONTRACTOR_NAME = "이름";
+        private static final String DEFAULT_TAX_TOTAL = "0";
+        private static final String DEFAULT_GRAND_TOTAL = "100";
+
+
+        public static TaxValidationInfo from(
+                String supplierRegNumber,
+                String contractorRegNumber,
+                String approvalNo,
+                String reportingDate,
+                String supplyValue,
+                String supplierName,
+                String contractorName,
+                String taxTotal,
+                String grandTotal
+        ) {
+            return new TaxValidationInfo(
+                    validateOrDefault(supplierRegNumber, DEFAULT_SUPPLIER_REG_NUMBER, "^[0-9]{10}$"),
+                    validateOrDefault(contractorRegNumber, DEFAULT_CONTRACTOR_REG_NUMBER, "^[0-9]{10}$"),
+                    validateOrDefault(approvalNo, DEFAULT_APPROVAL_NO, "^[0-9]{24}$"),
+                    validateOrDefault(reportingDate, DEFAULT_REPORTING_DATE, "^[0-9]{8}$"),
+                    validateOrDefault(supplyValue, DEFAULT_SUPPLY_VALUE, "^[0-9]+$"),
+                    defaultIfNull(supplierName, DEFAULT_SUPPLIER_NAME),
+                    defaultIfNull(contractorName, DEFAULT_CONTRACTOR_NAME),
+                    validateOrDefault(taxTotal, DEFAULT_TAX_TOTAL, "^[0-9]+$"),
+                    validateOrDefault(grandTotal, DEFAULT_GRAND_TOTAL, "^[0-9]+$")
+            );
+        }
+
+        private static String validateOrDefault(String value, String defaultValue, String regex) {
+            if (value == null || !value.matches(regex)) {
+                return defaultValue;
             }
+            return value;
+        }
+
+        private static String defaultIfNull(String value, String defaultValue) {
+            return value != null ? value : defaultValue;
+        }
     }
 }
