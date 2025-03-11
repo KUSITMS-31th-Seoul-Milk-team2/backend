@@ -6,6 +6,8 @@ import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.exception.EmpErrorCode;
 import com.seoulmilk.receipt.domain.InValidReceiptRepository;
 import com.seoulmilk.receipt.domain.ValidReceiptRepository;
+import com.seoulmilk.receipt.domain.entity.InValidReceipt;
+import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.infrastructure.factory.ReceiptFactory;
@@ -19,10 +21,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -97,7 +96,7 @@ public class TaxReceiptValidationService {
         return taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequestList);
     }
 
-    public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceiptsWithTransactionId(CustomUserDetails customUserDetails){
+    public Map<String, Object> retrieveValidatedTaxReceiptsWithTransactionId(CustomUserDetails customUserDetails){
         log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 사용자 pk - {}", customUserDetails.getId());
         Emp emp = getEmployee(customUserDetails.getId());
         log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 사용자 정보 - {}", emp.getName());
@@ -112,20 +111,31 @@ public class TaxReceiptValidationService {
         List<TaxReceiptValidationResponse> responses = taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
         Collections.reverse(responses);
 
-        saveRecieptData(emp, requestsData, responses);
+        Map<String, Object> responseMap = saveRecieptData(emp, requestsData, responses);
 
-        return responses;
+        return responseMap;
     }
 
-    private void saveRecieptData(Emp emp, List<OcrValidationRequest> requestsData, List<TaxReceiptValidationResponse> responses){
+    private Map<String, Object> saveRecieptData(Emp emp, List<OcrValidationRequest> requestsData, List<TaxReceiptValidationResponse> responses){
+        Boolean flag = false;
+        List<InValidReceipt> responseDataList = new ArrayList<>();
+
         for(int i = 0; i < responses.size(); i++) {
             OcrValidationRequest ocrValidationRequest = requestsData.get(i);
             if(responses.get(i).resAuthenticity().equals("1")){
                 validReceiptRepository.save(ReceiptFactory.validReceiptCreate(emp, ocrValidationRequest));
             }else if(responses.get(i).resAuthenticity().equals("0")){
-                invalidReceiptRepository.save(ReceiptFactory.inValidReceiptCreate(emp, ocrValidationRequest));
+                flag = true;
+                InValidReceipt inValidReceipt = ReceiptFactory.inValidReceiptCreate(emp, ocrValidationRequest);
+                invalidReceiptRepository.save(inValidReceipt);
+                responseDataList.add(inValidReceipt);
             }
         }
+
+        return Map.of(
+                "result", flag,
+                "invalid", responseDataList
+        );
     }
 
     // 파일 업로드 하지 않고 5개 정보로 요청을 보낸경우
