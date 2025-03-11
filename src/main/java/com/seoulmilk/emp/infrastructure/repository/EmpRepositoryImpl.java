@@ -3,6 +3,7 @@ package com.seoulmilk.emp.infrastructure.repository;
 import com.seoulmilk.core.exception.error.GlobalErrorCode;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
+import com.seoulmilk.emp.domain.value.HashedPassword;
 import com.seoulmilk.emp.dto.response.FilteredEmpResponse;
 import com.seoulmilk.emp.exception.EmpErrorCode;
 import com.seoulmilk.emp.infrastructure.mapper.EmpMapper;
@@ -82,14 +83,15 @@ public class EmpRepositoryImpl implements EmpRepository {
     }
 
     @Override
-    public void grantPrivilege(Emp emp) {
+    public void grantPrivilege(Emp emp, HashedPassword hashedPassword) {
         try {
             EmpJpaEntity empJpaEntity = empMapper.toJpaEntity(emp);
             if (empJpaEntity == null) {
                 log.error("[EmpRepositoryImpl] 사원 엔티티를 JPA 엔티티로 변환 도중 에러 발생 ");
                 throw EmpErrorCode.FAILED_TO_SAVE_EMPLOYEE.toException();
             }
-            empJpaRepository.grantPrivilege(empJpaEntity.getId());
+
+            empJpaRepository.grantPrivilege(empJpaEntity.getId(), hashedPassword.getValue());
         } catch (Exception e) {
             log.error("[EmpRepositoryImpl] grantPrivilege 쿼리 실행 중 에러 발생 : {}", e.getMessage());
             throw GlobalErrorCode.INTERNAL_SERVER_ERROR.toException();
@@ -126,5 +128,4 @@ public class EmpRepositoryImpl implements EmpRepository {
             throw GlobalErrorCode.INTERNAL_SERVER_ERROR.toException();
         }
     }
-
 }

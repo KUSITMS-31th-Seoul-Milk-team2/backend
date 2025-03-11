@@ -1,8 +1,11 @@
 package com.seoulmilk.emp.application;
 
+import com.seoulmilk.auth.application.PasswordHashingService;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
+import com.seoulmilk.emp.domain.value.HashedPassword;
+import com.seoulmilk.emp.domain.value.Password;
 import com.seoulmilk.emp.domain.value.Role;
 import com.seoulmilk.emp.dto.request.GrantPrivilegeRequest;
 import com.seoulmilk.emp.dto.response.GrantPrivilegeResponse;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class GrantPrivilegeService {
     private final EmpRepository empRepository;
+    private final PasswordHashingService passwordHashingService;
 
     @Transactional
     public GrantPrivilegeResponse grantPrivilege(CustomUserDetails customUserDetails, GrantPrivilegeRequest grantPrivilegeRequest) {
@@ -29,8 +33,7 @@ public class GrantPrivilegeService {
         Emp emp = empRepository.findByEmployeeName(grantPrivilegeRequest.name()).orElseThrow(EmpErrorCode.CAN_NOT_FIND_EMPLOYEE_WITH_NAME::toException);
 
         validateEmp(grantPrivilegeRequest, emp);
-
-        empRepository.grantPrivilege(emp);
+        empRepository.grantPrivilege(emp, passwordHashingService.generateInitialPassword(emp.getPhoneNumber()));
         return GrantPrivilegeResponse.of("사원 권한 할당에 성공했습니다.", emp);
     }
 

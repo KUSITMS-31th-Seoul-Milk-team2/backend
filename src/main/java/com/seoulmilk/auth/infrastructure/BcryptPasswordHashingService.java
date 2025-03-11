@@ -24,4 +24,8 @@ public class BcryptPasswordHashingService implements PasswordHashingService {
             throw AuthenticationErrorCode.PASSWORD_NOT_MATCH.toException();
         }
     }
+
+    public HashedPassword generateInitialPassword(String phoneNumber) {
+        return HashedPassword.of(passwordEncoder.encode(phoneNumber.substring(3)));
+    }
 }

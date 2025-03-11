@@ -41,7 +41,7 @@ public class CreateEmpService {
         );
 
         empRepository.save(createdEmp);
-        empRepository.grantPrivilege(createdEmp);
+        empRepository.grantPrivilege(createdEmp, passwordHashingService.generateInitialPassword("12345678"));
         return CreateEmpResponse.of(createdEmp);
     }
 
