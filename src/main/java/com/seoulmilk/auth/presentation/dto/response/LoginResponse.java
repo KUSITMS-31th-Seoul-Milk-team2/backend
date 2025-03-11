@@ -24,11 +24,14 @@ public record LoginResponse(
             @Schema(description = "이메일", example = "test@test.com")
             String email,
 
+            @Schema(description = "생년월일", example = "1990-01-01")
+            String birthday,
+
             @Schema(description = "사용자 권한", example = "ADMIN")
             Role role
     ) {
         public static UserInfo from(Emp employee) {
-            return new UserInfo(employee.getEmployeeId(), employee.getName(), employee.getPhoneNumber(), employee.getEmail(), employee.getRole());
+            return new UserInfo(employee.getEmployeeId(), employee.getName(), employee.getPhoneNumber(), employee.getEmail(), employee.getBirthday(), employee.getRole());
         }
     }
 
