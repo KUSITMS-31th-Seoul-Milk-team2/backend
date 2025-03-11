@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/receipt")
@@ -55,7 +56,7 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
 
     @Override
     @PostMapping("/upload/addition")
-    public ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> uploadAdditionAuthController(
+    public ResponseEntity<RestResponse<Map<String, Object>>> uploadAdditionAuthController(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){

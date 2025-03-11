@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Valid", description = "세금계산서 검증 프로세스")
 public interface TaxReceiptValidateSwagger {
@@ -57,7 +58,7 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/upload/addition"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> uploadAdditionAuthController(
+    ResponseEntity<RestResponse<Map<String,Object>>> uploadAdditionAuthController(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     );
