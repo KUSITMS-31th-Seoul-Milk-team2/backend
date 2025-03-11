@@ -29,10 +29,12 @@ public interface EmpJpaRepository extends JpaRepository<EmpJpaEntity, Long> {
     @Modifying
     @Query("""
                 update EmpJpaEntity e
-                set e.isSignedIn = CASE WHEN e.isSignedIn = true THEN false ELSE true END
+                set e.isSignedIn = CASE WHEN e.isSignedIn = true THEN false ELSE true END,
+                e.password = :hashedPassword
                 where e.id = :id
             """)
-    void grantPrivilege(Long id);
+    void grantPrivilege(Long id, String hashedPassword);
+
 
     List<EmpJpaEntity> findAllByIdIn(List<Long> ids);
 

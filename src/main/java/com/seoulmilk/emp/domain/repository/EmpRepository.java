@@ -1,6 +1,7 @@
 package com.seoulmilk.emp.domain.repository;
 
 import com.seoulmilk.emp.domain.entity.Emp;
+import com.seoulmilk.emp.domain.value.HashedPassword;
 import com.seoulmilk.emp.dto.response.FilteredEmpResponse;
 import org.springframework.data.domain.Pageable;
 
@@ -22,7 +23,7 @@ public interface EmpRepository {
 
     List<Emp> findAllByName(String employeeName);
 
-    void grantPrivilege(Emp emp);
+    void grantPrivilege(Emp emp, HashedPassword hashedPassword);
 
     List<Emp> findAllByIds(List<Long> ids);
 
