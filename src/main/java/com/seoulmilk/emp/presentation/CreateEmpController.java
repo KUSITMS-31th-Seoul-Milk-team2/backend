@@ -22,7 +22,6 @@ public class CreateEmpController implements CreateEmpSwagger {
     private final CreateEmpService createEmpService;
 
     @PostMapping
-    @RequestMapping
     public ResponseEntity<RestResponse<CreateEmpResponse>> create(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody GrantPrivilegeRequest createEmpRequest
