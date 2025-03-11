@@ -37,5 +37,4 @@ public record FileMetaData(String filename, String contentType) {
                 ? filename.substring(lastDotIndex + 1).toLowerCase()
                 : "";
     }
-
 }

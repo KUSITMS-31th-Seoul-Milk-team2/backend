@@ -1,9 +1,10 @@
 package com.seoulmilk.invoice.presentation;
 
-import com.seoulmilk.invoice.application.OpenFeignService;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.invoice.application.OcrEventPublisher;
+import com.seoulmilk.invoice.application.OpenFeignService;
+import com.seoulmilk.invoice.presentation.swagger.InvoiceOcrSwagger;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/v1/invoice")
-public class InvoiceOcrController {
+public class InvoiceOcrController implements InvoiceOcrSwagger {
     private final OpenFeignService openFeignService;
     private final OcrEventPublisher ocrEventPublisher;
 
@@ -42,8 +43,6 @@ public class InvoiceOcrController {
                     }
                 })
                 .toList();
-
-        log.info("results: {}", results);
 
         CompletableFuture.runAsync(() -> {
             List<OcrValidationRequest> validResults = results.stream()
