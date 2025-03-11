@@ -54,7 +54,6 @@ public class OpenFeignService {
     private String createRequestMessage(FileMetaData metaData) {
 
         OcrRequest request = requestFactory.create(metaData);
-        String json = requestConverter.toJson(request);
-        return json;
+        return requestConverter.toJson(request);
     }
 }
