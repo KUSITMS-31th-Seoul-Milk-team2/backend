@@ -31,6 +31,12 @@ public class DeleteEmpService {
             throw AdminErrorCode.NOT_ADMIN_EXCEPTION.toException();
         }
         List<Emp> emps = empRepository.findAllByIds(deleteEmpsRequest.ids());
+
+        if (emps.size() != deleteEmpsRequest.ids().size()) {
+            log.error("[DeleteEmpService.delete] 삭제할 수 없는 회원이 포함되어 있습니다. 삭제할 수 없는 회원 PK: {}", deleteEmpsRequest.ids());
+            throw AdminErrorCode.EMP_NOT_FOUND.toException();
+        }
+
         empRepository.deleteAll(emps);
         return DeleteEmpResponse.of(
                 true,
