@@ -4,6 +4,8 @@ import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.value.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDateTime;
+
 public record LoginResponse(
         @Schema(description = "Access Token")
         String accessToken,
@@ -28,10 +30,13 @@ public record LoginResponse(
             String birthday,
 
             @Schema(description = "사용자 권한", example = "ADMIN")
-            Role role
+            Role role,
+
+            @Schema(description = "회원가입 날짜 및 시간", example = "2021-01-01T00:00:00")
+            LocalDateTime createdAt
     ) {
         public static UserInfo from(Emp employee) {
-            return new UserInfo(employee.getEmployeeId(), employee.getName(), employee.getPhoneNumber(), employee.getEmail(), employee.getBirthday(), employee.getRole());
+            return new UserInfo(employee.getEmployeeId(), employee.getName(), employee.getPhoneNumber(), employee.getEmail(), employee.getBirthday(), employee.getRole(), employee.getCreatedAt());
         }
     }
 
