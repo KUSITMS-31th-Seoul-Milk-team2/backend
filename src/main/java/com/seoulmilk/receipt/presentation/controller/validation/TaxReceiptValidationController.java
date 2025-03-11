@@ -42,21 +42,23 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
 
     @Override
     @PostMapping("/addition")
-    public ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
+    public ResponseEntity<RestResponse<Boolean>> multipleAdditionAuthController(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam String transactionId,
-            @RequestBody List<OcrValidationRequest> requests
+            @RequestBody List<Long> inValidReceiptPks
     ){
         log.info("[multipleAdditionAuthController] 컨트롤러 작동");
         return ResponseEntity.ok(
-                new RestResponse<>(taxReceiptValidationService.retrieveValidatedTaxReceipts(customUserDetails.getId(), requests, transactionId))
+                new RestResponse<>(taxReceiptValidationService.retrieveValidatedTaxReceipts(
+                        customUserDetails, inValidReceiptPks, transactionId)
+                )
         );
     }
 
     @Override
     @PostMapping("/upload/addition")
-    public ResponseEntity<RestResponse<Map<String, Object>>> uploadAdditionAuthController(
+    public ResponseEntity<RestResponse<Boolean>> uploadAdditionAuthController(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){

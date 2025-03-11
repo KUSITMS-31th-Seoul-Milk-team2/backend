@@ -29,13 +29,18 @@ public class InValidReceiptRepositoryImpl implements InValidReceiptRepository {
     }
 
     @Override
-    public Optional<InValidReceipt> findById(String issueId) {
-        return inValidJpaReceiptRepository.findByIssueId(issueId).map(invalidReceiptMapper::toDomainEntity);
+    public Optional<InValidReceipt> findById(Long pk) {
+        return inValidJpaReceiptRepository.findById(pk).map(invalidReceiptMapper::toDomainEntity);
     }
 
     @Override
     public void deleteAll() {
         inValidJpaReceiptRepository.deleteAll();
+    }
+
+    @Override
+    public void deleteById(Long pk) {
+        inValidJpaReceiptRepository.deleteById(pk);
     }
 
     @Override

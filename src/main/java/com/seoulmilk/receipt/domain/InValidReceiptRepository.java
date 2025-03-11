@@ -8,7 +8,8 @@ import java.util.Optional;
 
 public interface InValidReceiptRepository {
     InValidReceipt save(InValidReceipt validReceipt);
-    Optional<InValidReceipt> findById(String issueId);
+    Optional<InValidReceipt> findById(Long pk);
     void deleteAll();
+    void deleteById(Long pk);
     void deleteByIds(List<Long> pk);
 }

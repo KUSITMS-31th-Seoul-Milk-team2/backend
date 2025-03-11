@@ -32,6 +32,29 @@ public class ReceiptFactory {
         );
     }
 
+    public static ValidReceipt validReceiptCreate(Emp emp, InValidReceipt inValidReceipt){
+        return ValidReceipt.create(
+                emp.getEmployeeId(),
+                inValidReceipt.getArap(),
+                inValidReceipt.getIssueId(),
+                inValidReceipt.getIssueDate(),
+                inValidReceipt.getSuId(),
+                inValidReceipt.getSuName(),
+                inValidReceipt.getIpId(),
+                inValidReceipt.getIpName(),
+                getChargeTotal(inValidReceipt.getGrandTotal(), inValidReceipt.getTaxTotal()),
+                inValidReceipt.getTaxTotal(),
+                inValidReceipt.getGrandTotal(),
+                inValidReceipt.getErdat(),
+                inValidReceipt.getErzet(),
+                inValidReceipt.getFileUrl()
+        );
+    }
+
+    private static Integer getChargeTotal(Integer grandTotal, Integer taxTotal) {
+        return grandTotal - taxTotal;
+    }
+
     public static InValidReceipt inValidReceiptCreate(Emp emp, OcrValidationRequest ocrValidationRequest){
         String erdat = getDateFormat("yyyy-MM-dd");
         String erzet = getDateFormat("HH:mm:ss");

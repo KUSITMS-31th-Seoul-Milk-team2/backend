@@ -44,11 +44,11 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/receipt/addition"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<List<TaxReceiptValidationResponse>>> multipleAdditionAuthController(
+    ResponseEntity<RestResponse<Boolean>> multipleAdditionAuthController(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam String transactionId,
-            @RequestBody List<OcrValidationRequest> requests
+            @RequestBody List<Long> receiptPks
     );
 
     @Operation(
@@ -58,7 +58,7 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/upload/addition"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<Map<String,Object>>> uploadAdditionAuthController(
+    ResponseEntity<RestResponse<Boolean>> uploadAdditionAuthController(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     );
