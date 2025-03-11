@@ -1,7 +1,7 @@
 package com.seoulmilk.invoice.infrastructure.converter;
 
-import com.seoulmilk.invoice.dto.response.OcrResponse;
 import com.seoulmilk.invoice.application.exception.InvoiceErrorCode;
+import com.seoulmilk.invoice.dto.response.OcrResponse;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
 import lombok.extern.log4j.Log4j2;
 
@@ -26,7 +26,7 @@ public class OcrResponseConverter {
             }
         });
 
-        OcrValidationRequest ocrValidationRequest = new OcrValidationRequest(
+        return new OcrValidationRequest(
                 empPk,
                 fileUrl,
                 OcrValidationRequest.TaxValidationInfo.from(
@@ -41,11 +41,6 @@ public class OcrResponseConverter {
                         normalizeNumericValue(fieldMap.get("총액"))
                 )
         );
-
-        log.info("OCR 검증 요청: {}", ocrValidationRequest);
-
-
-        return ocrValidationRequest;
     }
 
     private static Map<String, String> extractFieldMap(OcrResponse response) {
@@ -63,29 +58,30 @@ public class OcrResponseConverter {
     }
 
     private static String normalizeRegisterNumber(String raw) {
-        String cleaned = raw.replaceAll(InvoiceRegexPatterns.NON_DIGIT, "");
-        if (!cleaned.matches(InvoiceRegexPatterns.BUSINESS_REGISTER_NUMBER)) {
+        String cleaned = InvoiceRegex.NON_DIGIT.removeFrom(raw);
+        if (!InvoiceRegex.BUSINESS_REGISTER_NUMBER.getCompiledPattern()
+                .matcher(cleaned).matches()) {
             throw InvoiceErrorCode.INVALID_SUPPLIER_NUMBER_FORMAT.toException();
         }
         return cleaned;
     }
 
     private static String formatApprovalNo(String raw) {
-        return raw.replaceAll(InvoiceRegexPatterns.HYPHEN, "")
-                .replaceAll(InvoiceRegexPatterns.WHITESPACE, "");
+        return InvoiceRegex.HYPHEN.removeFrom(raw)
+                .replaceAll(InvoiceRegex.WHITESPACE.getPattern(), "");
     }
 
     private static String formatDate(String rawDate) {
-        return rawDate.replaceAll(InvoiceRegexPatterns.HYPHEN, "")
-                .replaceAll(InvoiceRegexPatterns.WHITESPACE, "");
+        return InvoiceRegex.HYPHEN.removeFrom(rawDate)
+                .replaceAll(InvoiceRegex.WHITESPACE.getPattern(), "");
     }
 
     private static String normalizeSupplyValue(String raw) {
-        return raw.replaceAll(InvoiceRegexPatterns.NON_DIGIT, "");
+        return InvoiceRegex.NON_DIGIT.removeFrom(raw);
     }
 
     private static String normalizeNumericValue(String raw) {
-        return raw.replaceAll("[^0-9]", "");
+        return  InvoiceRegex.NON_DIGIT.removeFrom(raw);
     }
 
 }
