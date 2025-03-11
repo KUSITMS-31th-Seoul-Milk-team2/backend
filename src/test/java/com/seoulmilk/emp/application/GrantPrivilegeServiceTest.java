@@ -1,5 +1,6 @@
 package com.seoulmilk.emp.application;
 
+import com.seoulmilk.auth.application.PasswordHashingService;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
@@ -28,6 +29,9 @@ class GrantPrivilegeServiceTest {
 
     @Mock
     private CustomUserDetails adminUserDetails;
+
+    @Mock
+    private PasswordHashingService passwordHashingService;
 
     @InjectMocks
     private GrantPrivilegeService grantPrivilegeService;
@@ -58,7 +62,7 @@ class GrantPrivilegeServiceTest {
         GrantPrivilegeResponse response = grantPrivilegeService.grantPrivilege(adminUserDetails, validRequest);
 
         // Then
-        verify(empRepository, times(1)).grantPrivilege(mockEmp);
+        verify(empRepository, times(1)).grantPrivilege(mockEmp, null);
         assertThat(response.message()).isEqualTo("사원 권한 할당에 성공했습니다.");
     }
 
@@ -113,7 +117,7 @@ class GrantPrivilegeServiceTest {
         assertThatThrownBy(() -> grantPrivilegeService.grantPrivilege(adminUserDetails, invalidRequest))
                 .isInstanceOf(EmpErrorCode.INVALID_NAME_AND_EMPLOYEE_ID.toException().getClass());
 
-        verify(empRepository, never()).grantPrivilege(any());
+        verify(empRepository, never()).grantPrivilege(any(), any());
     }
 
     @Test
@@ -133,6 +137,6 @@ class GrantPrivilegeServiceTest {
         assertThatThrownBy(() -> grantPrivilegeService.grantPrivilege(adminUserDetails, validRequest))
                 .isInstanceOf(AdminErrorCode.ALREADY_ADMINISTRATOR.toException().getClass());
 
-        verify(empRepository, never()).grantPrivilege(any());
+        verify(empRepository, never()).grantPrivilege(any(), any());
     }
 }
