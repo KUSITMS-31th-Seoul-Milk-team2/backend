@@ -30,7 +30,7 @@ public interface TaxReceiptSearchSwagger {
     @Operation(
             summary = "본인이 만든 불일치 세금계산서 전체 조회 API",
             description = "본인의 사번을 통해 본인이 요청한 영수증 중 불일치 세금계산서 정보를 불러옵니다.",
-            operationId = "/v1/receipt/search"
+            operationId = "/v1/receipt/invalid/search"
     )
     ResponseEntity<RestResponse<List<InValidReceiptJpaEntity>>> getInvalidReceipts(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
