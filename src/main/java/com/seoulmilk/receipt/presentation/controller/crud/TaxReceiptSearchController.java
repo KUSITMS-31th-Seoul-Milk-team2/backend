@@ -6,15 +6,13 @@ import com.seoulmilk.emp.domain.value.Role;
 import com.seoulmilk.receipt.application.query.TaxReceiptSearchService;
 import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.dto.request.ValidResponseSearchRequest;
+import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.InValidReceiptJpaEntity;
 import com.seoulmilk.receipt.presentation.swagger.TaxReceiptSearchSwagger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,6 +36,16 @@ public class TaxReceiptSearchController implements TaxReceiptSearchSwagger {
 
         return ResponseEntity.ok(
                 new RestResponse<>(validReceipts)
+        );
+    }
+
+    @Override
+    @GetMapping("/invalid/search")
+    public ResponseEntity<RestResponse<List<InValidReceiptJpaEntity>>> getInvalidReceipts(CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(
+                new RestResponse<>(
+                        taxReceiptSearchService.findByUserId(customUserDetails.getEmployeeId())
+                )
         );
     }
 }

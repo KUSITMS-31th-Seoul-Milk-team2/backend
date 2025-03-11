@@ -1,6 +1,7 @@
 package com.seoulmilk.receipt.domain;
 
 import com.seoulmilk.receipt.domain.entity.InValidReceipt;
+import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.InValidReceiptJpaEntity;
 import jakarta.transaction.Transactional;
 
 import java.util.List;

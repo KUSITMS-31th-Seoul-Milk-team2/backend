@@ -12,6 +12,9 @@ import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.factory.ReceiptFactory;
 import com.seoulmilk.receipt.infrastructure.factory.TaxReceiptValidationRequestFactory;
+import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.InValidReceiptJpaEntity;
+import com.seoulmilk.receipt.infrastructure.persistence.jpa.repository.InValidJpaReceiptRepository;
+import com.seoulmilk.receipt.infrastructure.persistence.mapper.InValidReceiptMapper;
 import com.seoulmilk.receipt.infrastructure.service.ReceiptCacheService;
 import com.seoulmilk.receipt.presentation.dto.request.ValidationRequest;
 import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
@@ -32,6 +35,7 @@ public class TaxReceiptValidationService {
     private final ReceiptCacheService receiptCacheService;
     private final InValidReceiptRepository invalidReceiptRepository;
     private final ValidReceiptRepository validReceiptRepository;
+    private final InValidReceiptMapper invalidReceiptMapper;
 
     @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}", concurrency = "3", errorHandler = "noRetryErrorHandler")
     public void listen(List<OcrValidationRequest> ocrValidationRequestList) {
@@ -101,7 +105,6 @@ public class TaxReceiptValidationService {
 
     private Boolean saveRecieptData(Emp emp, List<OcrValidationRequest> requestsData, List<TaxReceiptValidationResponse> responses){
         Boolean flag = true;
-
         for(int i = 0; i < responses.size(); i++) {
             OcrValidationRequest ocrValidationRequest = requestsData.get(i);
             if(responses.get(i).resAuthenticity().equals("1")){

@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface InValidJpaReceiptRepository extends JpaRepository<InValidReceiptJpaEntity, Long> {
     Optional<InValidReceiptJpaEntity> findByIssueId(String issueId);
-
+    List<InValidReceiptJpaEntity> findAllByEmployeeId(String employeeId);
     void deleteAllByIdIn(List<Long> pk);
 }
