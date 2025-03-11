@@ -154,6 +154,9 @@ public class TaxReceiptValidationService {
         Boolean flag = true;
 
         for(int i = 0; i < responses.size(); i++) {
+            if (i >= receiptPks.size()) {
+                throw new IllegalStateException("receiptPks와 responses의 개수가 일치하지 않습니다.");
+            }
             Long pk = receiptPks.get(i);
             if(responses.get(i).resAuthenticity().equals("1")){
                 InValidReceipt inValidReceipt = invalidReceiptRepository.findById(pk)
