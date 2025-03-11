@@ -1,5 +1,6 @@
 package com.seoulmilk.notice.infrastructure.persistence.repository;
 
+import com.seoulmilk.core.exception.error.GlobalErrorCode;
 import com.seoulmilk.notice.domain.entity.Notice;
 import com.seoulmilk.notice.domain.repository.NoticeRepository;
 import com.seoulmilk.notice.dto.request.UpdateNoticeRequest;
@@ -43,7 +44,12 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Override
     public void delete(Notice notice) {
-        noticeJpaRepository.delete(noticeMapper.toJpaEntity(notice));
+        try {
+            noticeJpaRepository.delete(noticeMapper.toJpaEntity(notice));
+        } catch (Exception e) {
+            log.error("[NoticeRepositoryImpl] delete 쿼리 실행 중 에러 발생 : {}", e.getMessage());
+            throw GlobalErrorCode.INTERNAL_SERVER_ERROR.toException();
+        }
     }
 
     @Override
@@ -84,8 +90,13 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Override
     public void deleteAll(List<Notice> notices) {
-        noticeJpaRepository.deleteAll(notices.stream()
-                .map(noticeMapper::toJpaEntity)
-                .toList());
+        try {
+            noticeJpaRepository.deleteAll(notices.stream()
+                    .map(noticeMapper::toJpaEntity)
+                    .toList());
+        } catch (Exception e) {
+            log.error("[NoticeRepositoryImpl] deleteAll 쿼리 실행 중 에러 발생 : {}", e.getMessage());
+            throw GlobalErrorCode.INTERNAL_SERVER_ERROR.toException();
+        }
     }
 }

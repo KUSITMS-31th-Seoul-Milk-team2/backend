@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "Admin", description = "관리자")
 public interface GrantPrivilegeSwagger {
@@ -26,6 +25,6 @@ public interface GrantPrivilegeSwagger {
     ResponseEntity<RestResponse<GrantPrivilegeResponse>> grantPrivilege(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody GrantPrivilegeRequest grantPrivilegeRequest
+            GrantPrivilegeRequest grantPrivilegeRequest
     );
 }
