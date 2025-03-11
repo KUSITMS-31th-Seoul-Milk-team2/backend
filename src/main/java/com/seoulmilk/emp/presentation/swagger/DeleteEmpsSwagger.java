@@ -4,10 +4,9 @@ import com.seoulmilk.core.configuration.swagger.ApiErrorCode;
 import com.seoulmilk.core.exception.error.GlobalErrorCode;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
-import com.seoulmilk.emp.dto.request.GrantPrivilegeRequest;
-import com.seoulmilk.emp.dto.response.GrantPrivilegeResponse;
+import com.seoulmilk.emp.dto.request.DeleteEmpsRequest;
+import com.seoulmilk.emp.dto.response.DeleteEmpResponse;
 import com.seoulmilk.emp.exception.AdminErrorCode;
-import com.seoulmilk.emp.exception.EmpErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,16 +14,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @Tag(name = "Admin", description = "관리자")
-public interface GrantPrivilegeSwagger {
+public interface DeleteEmpsSwagger {
     @Operation(
-            summary = "권한 부여 API",
-            description = "사원에게 권한을 부여합니다.",
-            operationId = "/v1/admin/grant-privilege"
+            summary = "사원 삭제 API",
+            description = "사원을 삭제합니다.",
+            operationId = "/v1/admin"
     )
-    @ApiErrorCode({GlobalErrorCode.class, EmpErrorCode.class, AdminErrorCode.class})
-    ResponseEntity<RestResponse<GrantPrivilegeResponse>> grantPrivilege(
+    @ApiErrorCode({AdminErrorCode.class, GlobalErrorCode.class})
+    ResponseEntity<RestResponse<DeleteEmpResponse>> delete(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            GrantPrivilegeRequest grantPrivilegeRequest
+            DeleteEmpsRequest deleteEmpsRequest
     );
 }

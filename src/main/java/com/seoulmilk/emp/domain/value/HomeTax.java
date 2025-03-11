@@ -1,5 +1,6 @@
 package com.seoulmilk.emp.domain.value;
 
+import com.seoulmilk.core.exception.error.GlobalErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -25,4 +26,14 @@ public enum HomeTax {
     BANK_SALAD("9");
 
     private final String value;
+
+    public static HomeTax fromValue(String value) {
+        for (HomeTax homeTax : values()) {
+            if (homeTax.value.equals(value)) {
+                return homeTax;
+            }
+        }
+        throw GlobalErrorCode.NOT_EXIST_HOMETAX.toException();
+    }
+
 }
