@@ -6,6 +6,7 @@ import com.seoulmilk.emp.application.UpdateValidationInfoService;
 import com.seoulmilk.emp.dto.request.UpdateHometaxInfoRequest;
 import com.seoulmilk.emp.dto.response.UpdateHometaxInfoResponse;
 import com.seoulmilk.emp.presentation.swagger.UpdateValidationInfoSwagger;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +25,7 @@ public class UpdateValidationInfoController implements UpdateValidationInfoSwagg
     @PutMapping("/hometax")
     public ResponseEntity<RestResponse<UpdateHometaxInfoResponse>> updateHometaxInfo(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody UpdateHometaxInfoRequest updateHometaxInfoRequest
+            @Valid @RequestBody UpdateHometaxInfoRequest updateHometaxInfoRequest
     ) {
         UpdateHometaxInfoResponse updateHometaxInfoResponse = updateValidationInfoService.updateHometaxInfo(customUserDetails, updateHometaxInfoRequest);
         return ResponseEntity.ok(new RestResponse<>(updateHometaxInfoResponse));
