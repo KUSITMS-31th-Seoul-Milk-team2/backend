@@ -1,8 +1,9 @@
 dependencies {
-    implementation 'com.oracle.database.jdbc:ojdbc8:19.8.0.0'
+    implementation 'com.oracle.database.jdbc:ojdbc11:21.9.0.0'
 // https://mvnrepository.com/artifact/com.oracle.ojdbc/orai18n
     implementation group: 'com.oracle.database.nls', name: 'orai18n', version: '19.8.0.0'
     implementation 'org.hibernate:hibernate-core:6.3.1.Final'  // Hibernate 명시적 추가
+    implementation 'org.hibernate.orm:hibernate-community-dialects:6.3.1.Final'
 //    runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'redis.clients:jedis:4.2.3'
 }

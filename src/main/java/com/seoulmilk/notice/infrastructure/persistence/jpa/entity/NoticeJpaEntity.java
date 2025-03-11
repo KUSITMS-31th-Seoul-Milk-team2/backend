@@ -10,6 +10,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.Optional;
 
@@ -26,6 +28,7 @@ public class NoticeJpaEntity extends BaseLongIdEntity {
     private String title;
 
     @Lob
+    @JdbcTypeCode(SqlTypes.CLOB)
     @Column(columnDefinition = "CLOB")
     private String content;
 
