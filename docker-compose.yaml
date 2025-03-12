@@ -15,27 +15,6 @@ services:
     networks:
       - app-network
 
-  nginx:
-    container_name: nginx
-    build:
-      context: ./nginx
-    ports:
-      - "80:80"
-    depends_on:
-      - spring-app
-    networks:
-      - app-network
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./certs:/etc/letsencrypt
-      - ./nginx:/etc/nginx
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    networks:
-      - app-network
-
   zookeeper:
     image: wurstmeister/zookeeper
     container_name: zookeeper
