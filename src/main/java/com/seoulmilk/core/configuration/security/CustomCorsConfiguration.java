@@ -19,7 +19,8 @@ public class CustomCorsConfiguration {
                 "http://localhost:5173",
                 "http://34.47.109.128",
                 "http://seoulmilk.kro.kr",
-                "https://seoulmilk.kro.kr"
+                "https://seoulmilk.kro.kr",
+                "https://frontend-murex-one-70.vercel.app"
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
