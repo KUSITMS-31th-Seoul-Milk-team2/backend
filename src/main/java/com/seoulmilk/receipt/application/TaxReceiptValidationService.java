@@ -21,6 +21,7 @@ import com.seoulmilk.receipt.presentation.dto.response.AdditionalAuthResponse;
 import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptValidationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class TaxReceiptValidationService {
     private final ReceiptCacheService receiptCacheService;
     private final InValidReceiptRepository invalidReceiptRepository;
     private final ValidReceiptRepository validReceiptRepository;
-    private final InValidReceiptMapper invalidReceiptMapper;
+    private final RedisTemplate redisTemplate;
 
     @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}", concurrency = "3", errorHandler = "noRetryErrorHandler")
     public void listen(List<OcrValidationRequest> ocrValidationRequestList) {
@@ -59,7 +60,11 @@ public class TaxReceiptValidationService {
         AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(taxReceiptValidationRequests);
 
         receiptCacheService.handleTransactionId(emp.getId(), additionalAuthResponse.jti());
+        log.info("저장된 트랜잭션 id key - {}, Value - {}",
+                "transactionId:" + emp.getId(), redisTemplate.opsForValue().get("transactionId:" + emp.getId()));
+
         receiptCacheService.hadleRequestData(emp.getId(), ocrValidationRequestList);
+        log.info("저장된 데이터 - {}", redisTemplate.opsForValue().get("requestData:" + emp.getId()));
     }
 
     private AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> taxReceiptValidationRequests) {
