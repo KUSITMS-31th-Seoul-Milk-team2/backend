@@ -62,11 +62,8 @@ public class EasyCodefValidationService implements TaxReceiptValidationProvider 
     @Override
     public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceipts  (String transactionId) {
         List<EasyCodefResponse> easyCodefResponses;
-        try{
-            easyCodefResponses = easyCodef.requestMultipleSimpleAuthCertification(transactionId);
-        }catch (Exception e){
-            throw ReceiptValidationErrorCode.ADDITIONAL_AUTHENTICATION_ERROR.toException();
-        }
+
+        easyCodefResponses = easyCodef.requestMultipleSimpleAuthCertification(transactionId);
 
         List<TaxReceiptValidationResponse> validationResponses = new LinkedList<>();
 
