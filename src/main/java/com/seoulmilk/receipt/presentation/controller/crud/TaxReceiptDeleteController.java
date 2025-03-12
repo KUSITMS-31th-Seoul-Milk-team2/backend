@@ -18,8 +18,17 @@ public class TaxReceiptDeleteController implements TaxReceiptDeleteSwagger {
     private final TaxReceiptDeleteService taxReceiptDeleteService;
 
     @Override
-    @DeleteMapping("/{pk}")
-    public ResponseEntity<RestResponse<Boolean>> deleteReceiptById(
+    @DeleteMapping("/invalid/{pk}")
+    public ResponseEntity<RestResponse<Boolean>> deleteInvalidReceiptById(
+            @PathVariable Long pk
+    ) {
+        taxReceiptDeleteService.deleteInvalidReceipt(pk);
+        return ResponseEntity.ok(new RestResponse<>(true));
+    }
+
+    @Override
+    @DeleteMapping("/valid/{pk}")
+    public ResponseEntity<RestResponse<Boolean>> deleteValidReceiptById(
             @PathVariable Long pk
     ) {
         taxReceiptDeleteService.deleteValidReceipt(pk);

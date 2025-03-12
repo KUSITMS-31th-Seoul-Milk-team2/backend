@@ -22,6 +22,11 @@ public class TaxReceiptDeleteService {
     }
 
     @Transactional
+    public void deleteInvalidReceipt(Long pk) {
+        inValidReceiptRepository.deleteById(pk);
+    }
+
+    @Transactional
     public void deleteInValidReceipts(List<Long> pkList) {
         inValidReceiptRepository.deleteByIds(pkList);
     }

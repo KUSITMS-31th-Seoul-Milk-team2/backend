@@ -15,9 +15,21 @@ public interface TaxReceiptDeleteSwagger {
             summary = "단일 지급결의서 삭제 컨트롤러",
             description = "검증이 완료된 세금계산서에 대한 삭제를 수행합니다. " +
                     "단 하나의 pk값을 사용하여 하나의 영수증을 삭제합니다",
-            operationId = "/v1/receipt/{pk}"
+            operationId = "/valid/{pk}"
     )
-    ResponseEntity<RestResponse<Boolean>> deleteReceiptById(@PathVariable Long pk);
+    ResponseEntity<RestResponse<Boolean>> deleteValidReceiptById(
+            @PathVariable Long pk
+    );
+
+    @Operation(
+            summary = "단일 불일치 계산서 삭제 컨트롤러",
+            description = "검증이 완료되지 않은 세금계산서에 대한 삭제를 수행합니다. " +
+                    "단 하나의 pk값을 사용하여 하나의 영수증을 삭제합니다",
+            operationId = "/invalid/{pk}"
+    )
+    ResponseEntity<RestResponse<Boolean>> deleteInvalidReceiptById(
+            @PathVariable Long pk
+    );
 
     @Operation(
             summary = "다수 지급결의서 일괄 삭제 컨트롤러",
@@ -25,5 +37,7 @@ public interface TaxReceiptDeleteSwagger {
                     "다수의 pk값을 사용하여 한번에 삭제합니다",
             operationId = "/v1/receipt/delete"
     )
-    ResponseEntity<RestResponse<Boolean>> deleteReceiptByIds(@RequestBody List<Long> pkList);
+    ResponseEntity<RestResponse<Boolean>> deleteReceiptByIds(
+            @RequestBody List<Long> pkList
+    );
 }
