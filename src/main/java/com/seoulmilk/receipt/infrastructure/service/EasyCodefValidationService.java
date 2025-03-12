@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,9 +62,16 @@ public class EasyCodefValidationService implements TaxReceiptValidationProvider 
 
     @Override
     public List<TaxReceiptValidationResponse> retrieveValidatedTaxReceipts  (String transactionId) {
-        List<EasyCodefResponse> easyCodefResponses;
+        List<EasyCodefResponse> easyCodefResponses = new ArrayList<>();
 
-        easyCodefResponses = easyCodef.requestMultipleSimpleAuthCertification(transactionId);
+        try {
+            List<EasyCodefResponse> tempResponses = easyCodef.requestMultipleSimpleAuthCertification(transactionId);
+            if (tempResponses != null) {
+                easyCodefResponses = tempResponses;
+            }
+        } catch (NullPointerException e) {
+            System.err.println("NullPointerException 발생: requestMultipleSimpleAuthCertification 결과가 null이거나 접근 중 문제 발생");
+        }
 
         List<TaxReceiptValidationResponse> validationResponses = new LinkedList<>();
 
