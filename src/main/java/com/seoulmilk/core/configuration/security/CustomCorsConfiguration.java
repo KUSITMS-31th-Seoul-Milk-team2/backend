@@ -17,7 +17,9 @@ public class CustomCorsConfiguration {
         config.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "http://34.47.109.128"
+                "http://34.47.109.128",
+                "http://seoulmilk.kro.kr",
+                "https://seoulmilk.kro.kr"
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
