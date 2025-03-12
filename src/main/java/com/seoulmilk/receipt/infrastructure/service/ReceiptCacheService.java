@@ -17,16 +17,10 @@ public class ReceiptCacheService {
     private final RedisTemplate redisTemplate;
 
     public String getTransactionIdInRedis(String cacheKey){
-        if (redisTemplate.opsForValue().get(cacheKey) == null) {
-            throw ReceiptValidationErrorCode.NOT_EXIST_TXID.toException();
-        }
         return (String) redisTemplate.opsForValue().getAndDelete(cacheKey);
     }
 
     public List<OcrValidationRequest> getOcrValidationRequestDataInRedis(String cacheKey){
-        if (redisTemplate.opsForValue().get(cacheKey) == null) {
-            throw ReceiptValidationErrorCode.ERROR_TO_GET_DATA.toException();
-        }
         return (List<OcrValidationRequest>) redisTemplate.opsForValue().getAndDelete(cacheKey);
     }
 
