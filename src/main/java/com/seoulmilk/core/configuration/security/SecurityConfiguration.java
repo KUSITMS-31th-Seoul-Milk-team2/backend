@@ -43,6 +43,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                                .requestMatchers("/health/**").permitAll()
                                 .requestMatchers("/v1/auth/**").permitAll()
                                 .requestMatchers("/v1/invoice/**").authenticated()
                                 .requestMatchers("/v1/receipt/**").authenticated()
