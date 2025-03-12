@@ -36,5 +36,4 @@ public class FileUtil {
             throw GlobalErrorCode.INTERNAL_SERVER_ERROR.toException();
         }
     }
-
 }

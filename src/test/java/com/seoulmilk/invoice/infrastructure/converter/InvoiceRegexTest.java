@@ -64,7 +64,6 @@ class InvoiceRegexTest {
         }
     }
 
-    // =================== WHITESPACE 테스트 ===================
     @Nested
     @DisplayName("WHITESPACE 테스트")
     class WhitespaceTest {
