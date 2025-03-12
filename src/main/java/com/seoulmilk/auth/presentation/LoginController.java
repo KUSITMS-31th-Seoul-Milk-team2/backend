@@ -36,9 +36,11 @@ public class LoginController implements LoginSwagger {
         long accessCookieMaxAge = jwtProperties.getAccess().getExpiration() / 1000;
 
         ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
+                .domain("vercel.app")
                 .path("/")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
+                .sameSite("None")
                 .maxAge(accessCookieMaxAge)
                 .build();
 
