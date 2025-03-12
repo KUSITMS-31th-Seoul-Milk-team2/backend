@@ -138,7 +138,7 @@ public class TaxReceiptValidationService {
                     createTaxReceiptValidationRequest(emp, validationRequest, uuid);
             taxReceiptValidationRequestList.add(taxReceiptValidationRequest);
         }
-
+        log.info("현재 요청 보내는 데이터 - {}", taxReceiptValidationRequestList);
         AdditionalAuthResponse additionalAuthResponse =
             taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequestList);
 
