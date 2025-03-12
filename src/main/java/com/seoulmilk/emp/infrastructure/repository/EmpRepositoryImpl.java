@@ -4,6 +4,7 @@ import com.seoulmilk.core.exception.error.GlobalErrorCode;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.domain.value.HashedPassword;
+import com.seoulmilk.emp.domain.value.HomeTax;
 import com.seoulmilk.emp.dto.response.FilteredEmpResponse;
 import com.seoulmilk.emp.exception.EmpErrorCode;
 import com.seoulmilk.emp.infrastructure.mapper.EmpMapper;
@@ -120,9 +121,9 @@ public class EmpRepositoryImpl implements EmpRepository {
     }
 
     @Override
-    public void updateHometaxInfo(Long empPk, String hometaxName) {
+    public void updateHometaxInfo(Long empPk, HomeTax homeTax) {
         try {
-            empJpaRepository.updateHometaxInfo(empPk, hometaxName);
+            empJpaRepository.updateHometaxInfo(empPk, homeTax);
         } catch (Exception e) {
             log.error("[EmpRepositoryImpl] updateHometaxInfo 쿼리 실행 중 에러 발생 : {}", e.getMessage());
             throw GlobalErrorCode.INTERNAL_SERVER_ERROR.toException();

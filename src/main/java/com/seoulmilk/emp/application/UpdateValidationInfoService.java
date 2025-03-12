@@ -1,5 +1,6 @@
 package com.seoulmilk.emp.application;
 
+import com.seoulmilk.auth.exception.HometaxErrorCode;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.domain.value.HomeTax;
@@ -19,7 +20,10 @@ public class UpdateValidationInfoService {
             CustomUserDetails customUserDetails,
             UpdateHometaxInfoRequest updateHometaxInfoRequest
     ) {
-        String homeTax = HomeTax.valueOf(updateHometaxInfoRequest.homeTaxNum()).name();
+
+        HomeTax homeTax = HomeTax.fromValue(updateHometaxInfoRequest.homeTaxNum());
+
+        if (customUserDetails.getHomeTax() == homeTax) throw HometaxErrorCode.SAME_HOMETAX.toException();
 
         empRepository.updateHometaxInfo(
                 customUserDetails.getId(),

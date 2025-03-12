@@ -1,5 +1,6 @@
 package com.seoulmilk.emp.infrastructure.persistence.repository;
 
+import com.seoulmilk.emp.domain.value.HomeTax;
 import com.seoulmilk.emp.dto.response.FilteredEmpResponse;
 import com.seoulmilk.emp.infrastructure.persistence.jpa.entity.EmpJpaEntity;
 import org.jetbrains.annotations.NotNull;
@@ -56,8 +57,8 @@ public interface EmpJpaRepository extends JpaRepository<EmpJpaEntity, Long> {
     @Modifying
     @Query("""
                 update EmpJpaEntity e
-                set e.hometax = :hometaxName
+                set e.hometax = :homeTax
                 where e.id = :empPk
             """)
-    void updateHometaxInfo(Long empPk, String hometaxName);
+    void updateHometaxInfo(Long empPk, HomeTax homeTax);
 }
