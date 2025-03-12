@@ -31,7 +31,7 @@ public interface TaxReceiptValidateSwagger {
             operationId = "/v1/receipt/validation"
     )
     @ApiErrorCode({GlobalErrorCode.class, AuthenticationErrorCode.class, ReceiptErrorCode.class})
-    ResponseEntity<RestResponse<AdditionalAuthResponse>> validateTaxReceipts(
+    ResponseEntity<RestResponse<String>> validateTaxReceipts(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody List<ValidationRequest> requests

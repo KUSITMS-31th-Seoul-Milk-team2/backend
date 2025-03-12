@@ -27,7 +27,7 @@ public class TaxReceiptValidationController implements TaxReceiptValidateSwagger
 
     @Override
     @PostMapping("/validation")
-    public ResponseEntity<RestResponse<AdditionalAuthResponse>> validateTaxReceipts(
+    public ResponseEntity<RestResponse<String>> validateTaxReceipts(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody List<ValidationRequest> requests

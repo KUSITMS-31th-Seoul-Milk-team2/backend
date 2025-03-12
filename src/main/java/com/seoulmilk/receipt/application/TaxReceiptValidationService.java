@@ -125,7 +125,7 @@ public class TaxReceiptValidationService {
     }
 
     // 파일 업로드 하지 않고 5개 정보로 요청을 보낸경우
-    public AdditionalAuthResponse requestAdditionalAuthentication(
+    public String requestAdditionalAuthentication(
             CustomUserDetails customUserDetails,
             List<ValidationRequest> requests
     ) {
@@ -139,7 +139,10 @@ public class TaxReceiptValidationService {
             taxReceiptValidationRequestList.add(taxReceiptValidationRequest);
         }
 
-        return taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequestList);
+        AdditionalAuthResponse additionalAuthResponse =
+            taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequestList);
+
+        return additionalAuthResponse.jti();
     }
 
     public Boolean retrieveValidatedTaxReceipts(
