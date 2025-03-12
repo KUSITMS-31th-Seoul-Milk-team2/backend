@@ -1,5 +1,6 @@
 package com.seoulmilk.notice.domain.repository;
 
+import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.notice.domain.entity.Notice;
 import com.seoulmilk.notice.dto.request.UpdateNoticeRequest;
 import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntity;
@@ -29,4 +30,6 @@ public interface NoticeRepository {
     List<Notice> findAllByIds(List<Long> ids);
 
     void deleteAll(List<Notice> notices);
+
+    void deleteAllNoticesByEmps(List<Emp> emps);
 }

@@ -7,6 +7,7 @@ import com.seoulmilk.emp.domain.value.Role;
 import com.seoulmilk.emp.dto.request.DeleteEmpsRequest;
 import com.seoulmilk.emp.dto.response.DeleteEmpResponse;
 import com.seoulmilk.emp.exception.AdminErrorCode;
+import com.seoulmilk.notice.domain.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 public class DeleteEmpService {
 
     private final EmpRepository empRepository;
+    private final NoticeRepository noticeRepository;
 
     @Transactional
     public DeleteEmpResponse delete(
@@ -37,6 +39,7 @@ public class DeleteEmpService {
             throw AdminErrorCode.EMP_NOT_FOUND.toException();
         }
 
+        noticeRepository.deleteAllNoticesByEmps(emps);
         empRepository.deleteAll(emps);
         return DeleteEmpResponse.of(
                 true,
