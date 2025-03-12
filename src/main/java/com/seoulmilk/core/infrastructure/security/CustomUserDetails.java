@@ -1,6 +1,7 @@
 package com.seoulmilk.core.infrastructure.security;
 
 import com.seoulmilk.emp.domain.entity.Emp;
+import com.seoulmilk.emp.domain.value.HomeTax;
 import com.seoulmilk.emp.domain.value.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -58,5 +59,9 @@ public record CustomUserDetails(Emp emp) implements UserDetails {
 
     public Role getRole() {
         return emp.getRole();
+    }
+
+    public HomeTax getHomeTax() {
+        return emp.getHometax();
     }
 }
