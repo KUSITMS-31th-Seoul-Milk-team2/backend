@@ -22,6 +22,9 @@ public class FileStorageServiceImpl implements FileStorageService {
     @Value("${minio.bucket}")
     private String bucketName;
 
+    @Value("${minio.expiry}")
+    private int expiry;
+
     @PostConstruct
     void initBucket() throws Exception {
         if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
@@ -54,7 +57,7 @@ public class FileStorageServiceImpl implements FileStorageService {
                         .method(Method.GET)
                         .bucket(bucketName)
                         .object(objectName)
-                        .expiry(7, TimeUnit.DAYS) // TODO: 1년간 유효한 URL로 변경
+                        .expiry(expiry, TimeUnit.DAYS)
                         .build()
         );
     }

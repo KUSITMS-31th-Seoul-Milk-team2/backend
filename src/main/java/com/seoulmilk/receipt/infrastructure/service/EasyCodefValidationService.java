@@ -51,7 +51,6 @@ public class EasyCodefValidationService implements TaxReceiptValidationProvider 
             throw ReceiptValidationErrorCode.ERROR_TO_CONNECT_CODEF_SERVER.toException();
         }
 
-        // 응답 성공시 추가인증 관련 정보를 받는다.
         if(isSuccess(response.code())){
             HashMap<String, Object> responseMap = objectMapper.convertValue(response, HashMap.class);
             return objectMapper.convertValue(responseMap.get("data"), AdditionalAuthResponse.class);
@@ -80,7 +79,6 @@ public class EasyCodefValidationService implements TaxReceiptValidationProvider 
                 HashMap<String, Object> responseMap = objectMapper.convertValue(easyCodefResponse, HashMap.class);
                 validationResponses.add(objectMapper.convertValue(responseMap.get("data"), TaxReceiptValidationResponse.class));
             }else{
-                // 오류 처리 방안 고민....
                 throw ReceiptValidationErrorCode.INVALID_FORMAT_ERROR.toException();
             }
         }
