@@ -14,10 +14,12 @@ import com.seoulmilk.receipt.infrastructure.persistence.jpa.repository.ValidRece
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,7 +87,10 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
         );
 
         return validReceiptJpaRepository.findAll(
-            ValidReceiptSpecification.search(validResponseSearchRequest))
+                ValidReceiptSpecification.search(
+                        validResponseSearchRequest),
+                Sort.by(Sort.Direction.DESC, "id")
+        )
                 .stream()
                 .map(ValidReceipt::toDomainEntity).toList();
     }
@@ -114,7 +119,11 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
                 request.erdatEnd()
         );
 
-        return validReceiptJpaRepository.findAll(ValidReceiptSpecification.search(validResponseSearchRequest))
+        return validReceiptJpaRepository.findAll(
+                ValidReceiptSpecification.search(
+                        validResponseSearchRequest),
+                        Sort.by(Sort.Direction.DESC, "id")
+                )
                 .stream()
                 .map(ValidReceipt::toDomainEntity).toList();
     }
