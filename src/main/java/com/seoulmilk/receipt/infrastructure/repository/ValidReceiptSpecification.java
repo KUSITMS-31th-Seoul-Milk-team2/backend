@@ -15,6 +15,8 @@ public class ValidReceiptSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            predicates.add(criteriaBuilder.isTrue(root.get("isShow")));
+
             // 직원 ID 검색 - 유효성 검사 추가
             if (validResponseSearchRequest.employeeName() != null && !validResponseSearchRequest.employeeName().isEmpty()) {
                 List<String> sanitizedEmployeeName = sanitizeListInput(validResponseSearchRequest.employeeName());
