@@ -6,6 +6,7 @@ import com.seoulmilk.notice.domain.entity.Notice;
 import com.seoulmilk.notice.domain.repository.NoticeRepository;
 import com.seoulmilk.notice.dto.request.PostNoticeRequest;
 import com.seoulmilk.notice.dto.response.PostNoticeResponse;
+import com.seoulmilk.notice.exception.NoticeErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,4 +60,18 @@ public class PostNoticeServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("공지사항 등록 실패")
+    void postNotice_failed() {
+        // Given
+        when(fileUtil.uploadFile(any())).thenReturn(testFileUrl);
+        doThrow(RuntimeException.class)
+                .when(noticeRepository)
+                .save(any(Notice.class));
+
+        // When & Then
+        assertThatThrownBy(() -> postNoticeService.post(userDetails, request, mockFile))
+                .isInstanceOf(NoticeErrorCode.POST_NOTICE_FAILED.toException().getClass())
+                .hasMessage(NoticeErrorCode.POST_NOTICE_FAILED.getMessage());
+    }
 }
