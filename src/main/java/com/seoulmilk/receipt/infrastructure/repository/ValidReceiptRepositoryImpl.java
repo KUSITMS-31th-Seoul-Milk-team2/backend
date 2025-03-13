@@ -74,7 +74,7 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
         List<String> empIds = new ArrayList<>();
 
         for(String empName : empNames) {
-            List<Emp> employees = empRepository.findAllByName(empName); // 여러 개 조회
+            List<Emp> employees = empRepository.findAllByName(empName);
             employees.forEach(emp -> empIds.add(emp.getEmployeeId()));
         }
 
