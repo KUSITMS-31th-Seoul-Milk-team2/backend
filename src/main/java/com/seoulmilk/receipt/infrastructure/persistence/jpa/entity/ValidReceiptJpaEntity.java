@@ -18,34 +18,48 @@ import java.util.Optional;
 @Table(name = "NTS_TAX_VALID")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ValidReceiptJpaEntity extends BaseLongIdEntity {
+    @Column(nullable = false)
     private String employeeId;
 
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Arap arap;
 
+    @Column(nullable = false)
     private String issueId;
 
+    @Column(nullable = false)
     private String issueDate;
 
+    @Column(nullable = false)
     private String suId;
 
+    @Column(nullable = false)
     private String suName;
 
+    @Column(nullable = false)
     private String ipId;
 
+    @Column(nullable = false)
     private String ipName;
 
+    @Column(nullable = false)
     private Integer chargeTotal;
 
+    @Column(nullable = false)
     private Integer taxTotal;
 
+    @Column(nullable = false)
     private Integer grandTotal;
 
+    @Column(nullable = false)
     private String erdat;
 
+    @Column(nullable = false)
     private String erzet;
 
-    @Column(length = 512)
+    @Column(nullable = false, length = 512)
     private String fileUrl;
 
     @Builder.Default

@@ -21,10 +21,13 @@ import java.util.Optional;
 @Table(name = "NOTICE")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NoticeJpaEntity extends BaseLongIdEntity {
+    @Column(nullable = false)
     private Long authorPk;
 
+    @Column(nullable = false)
     private String authorName;
 
+    @Column(nullable = false, length = 128)
     private String title;
 
     @Lob
