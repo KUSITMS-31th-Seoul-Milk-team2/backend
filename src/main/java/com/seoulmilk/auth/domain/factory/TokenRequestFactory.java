@@ -1,4 +1,4 @@
-package com.seoulmilk.auth.application;
+package com.seoulmilk.auth.domain.factory;
 
 import com.seoulmilk.auth.dto.request.TokenRequest;
 import lombok.RequiredArgsConstructor;

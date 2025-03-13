@@ -1,7 +1,6 @@
 package com.seoulmilk.auth.presentation;
 
 import com.seoulmilk.auth.application.LoginService;
-import com.seoulmilk.auth.application.TokenRequestFactory;
 import com.seoulmilk.auth.application.TokenService;
 import com.seoulmilk.auth.infrastructure.jwt.JwtProperties;
 import com.seoulmilk.auth.presentation.dto.request.LoginRequest;
