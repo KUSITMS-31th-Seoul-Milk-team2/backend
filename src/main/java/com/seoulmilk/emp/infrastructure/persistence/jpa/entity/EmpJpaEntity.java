@@ -5,10 +5,7 @@ import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.value.HomeTax;
 import com.seoulmilk.emp.domain.value.Role;
 import com.seoulmilk.emp.domain.value.Telecom;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,15 +20,19 @@ import java.util.Optional;
 @Table(name = "EMP")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EmpJpaEntity extends BaseLongIdEntity {
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
     private String employeeId;
 
+    @Column(unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(unique = true)
     private String phoneNumber;
 
     private String password;
