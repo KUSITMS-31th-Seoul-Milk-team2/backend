@@ -22,25 +22,25 @@ public class InValidReceiptJpaEntity extends BaseLongIdEntity {
     private String employeeId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2)
     private Arap arap;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 24)
     private String issueId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 8)
     private String issueDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 13)
     private String suId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String suName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 13)
     private String ipId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String ipName;
 
     @Column(nullable = false)
@@ -52,10 +52,10 @@ public class InValidReceiptJpaEntity extends BaseLongIdEntity {
     @Column(nullable = false)
     private Integer grandTotal;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private String erdat;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private String erzet;
 
     @Column(length = 512)

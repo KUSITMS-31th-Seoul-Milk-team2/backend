@@ -20,19 +20,19 @@ import java.util.Optional;
 @Table(name = "EMP")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EmpJpaEntity extends BaseLongIdEntity {
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 40)
     private String employeeId;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 40)
     private String email;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 30)
     private String phoneNumber;
 
     private String password;
