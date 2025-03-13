@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -120,6 +121,11 @@ public class ValidReceiptRepositoryImpl implements ValidReceiptRepository {
 
     @Override
     public List<ValidReceipt> findAll() {
-        return validReceiptJpaRepository.findAll().stream().map(ValidReceipt::toDomainEntity).toList();
+        return validReceiptJpaRepository.findAllByIsShowTrue().stream().map(ValidReceipt::toDomainEntity).toList();
+    }
+
+    @Override
+    public int bulkUpdateExpiredReceipts(LocalDateTime cutoff) {
+        return validReceiptJpaRepository.bulkUpdateExpiredReceipts(cutoff);
     }
 }

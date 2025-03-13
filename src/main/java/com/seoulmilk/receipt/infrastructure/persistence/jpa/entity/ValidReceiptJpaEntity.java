@@ -5,6 +5,7 @@ import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.domain.value.Arap;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -46,6 +47,9 @@ public class ValidReceiptJpaEntity extends BaseLongIdEntity {
 
     @Column(length = 512)
     private String fileUrl;
+
+    @Builder.Default
+    private Boolean isShow = true;
 
     public static ValidReceiptJpaEntity toJpaEntity(ValidReceipt validReceipt) {
         return ValidReceiptJpaEntity.builder()
