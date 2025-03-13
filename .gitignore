@@ -40,6 +40,7 @@ out/
 src/main/resources/application.yml
 src/main/resources/application-local.yml
 src/test/resources/application.yml
+src/test/resources/application-test.yml
 
 ### docker-compose ###
 docker-compose-kafka.yaml
