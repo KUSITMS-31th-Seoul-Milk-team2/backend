@@ -7,7 +7,6 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.kafka:spring-kafka'
-    testImplementation 'org.springframework.kafka:spring-kafka-test'
 
     // Web-flux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -17,4 +16,7 @@ dependencies {
 
     // redis
     implementation "org.springframework.boot:spring-boot-starter-data-redis"
+
+    // Batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
 }
