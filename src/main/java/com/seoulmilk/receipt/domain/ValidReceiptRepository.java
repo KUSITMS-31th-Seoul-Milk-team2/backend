@@ -5,6 +5,7 @@ import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.dto.request.UpdateValidReceiptRequest;
 import com.seoulmilk.receipt.dto.request.ValidResponseSearchRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,4 +30,6 @@ public interface ValidReceiptRepository {
     );
 
     List<ValidReceipt> findAll();
+
+    int bulkUpdateExpiredReceipts(LocalDateTime cutoff);
 }

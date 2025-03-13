@@ -40,6 +40,8 @@ public class ValidReceipt {
 
     private String fileUrl;
 
+    private Boolean isShow;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -87,6 +89,7 @@ public class ValidReceipt {
                 .erdat(validReceiptJpaEntity.getErdat())
                 .erzet(validReceiptJpaEntity.getErzet())
                 .fileUrl(validReceiptJpaEntity.getFileUrl())
+                .isShow(validReceiptJpaEntity.getIsShow())
                 .createdAt(validReceiptJpaEntity.getCreatedAt())
                 .updatedAt(validReceiptJpaEntity.getUpdatedAt())
                 .deleted(validReceiptJpaEntity.getDeleted())
