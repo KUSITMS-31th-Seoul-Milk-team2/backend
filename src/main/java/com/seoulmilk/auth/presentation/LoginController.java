@@ -2,6 +2,7 @@ package com.seoulmilk.auth.presentation;
 
 import com.seoulmilk.auth.application.LoginService;
 import com.seoulmilk.auth.application.TokenService;
+import com.seoulmilk.auth.domain.factory.TokenRequestFactory;
 import com.seoulmilk.auth.infrastructure.jwt.JwtProperties;
 import com.seoulmilk.auth.presentation.dto.request.LoginRequest;
 import com.seoulmilk.auth.presentation.dto.response.LoginResponse;
@@ -30,8 +31,7 @@ public class LoginController implements LoginSwagger {
     @PostMapping("/login")
     public ResponseEntity<RestResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse loginResponse = loginService.login(request);
-//        String accessToken = tokenService.provideAccessToken(TokenRequestFactory.create(request.employeeId()));
-        String accessToken = loginResponse.accessToken();
+        String accessToken = tokenService.provideAccessToken(TokenRequestFactory.create(request.employeeId()));
         long accessCookieMaxAge = jwtProperties.getAccess().getExpiration() / 1000;
 
         ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
