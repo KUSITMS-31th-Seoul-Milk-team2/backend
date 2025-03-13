@@ -5,6 +5,7 @@ import com.seoulmilk.receipt.domain.entity.InValidReceipt;
 import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.domain.value.Arap;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
+import com.seoulmilk.receipt.dto.request.TaxReceiptValidationRequest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,17 +33,21 @@ public class ReceiptFactory {
         );
     }
 
-    public static ValidReceipt validReceiptCreate(Emp emp, InValidReceipt inValidReceipt){
+    public static ValidReceipt validReceiptCreate(
+            Emp emp,
+            InValidReceipt inValidReceipt,
+            TaxReceiptValidationRequest taxReceiptValidationRequest
+    ){
         return ValidReceipt.create(
                 emp.getEmployeeId(),
                 inValidReceipt.getArap(),
-                inValidReceipt.getIssueId(),
-                inValidReceipt.getIssueDate(),
-                inValidReceipt.getSuId(),
+                taxReceiptValidationRequest.approvalNo(),
+                taxReceiptValidationRequest.reportingDate(),
+                taxReceiptValidationRequest.supplierRegNumber(),
                 inValidReceipt.getSuName(),
-                inValidReceipt.getIpId(),
+                taxReceiptValidationRequest.contractorRegNumber(),
                 inValidReceipt.getIpName(),
-                getChargeTotal(inValidReceipt.getGrandTotal(), inValidReceipt.getTaxTotal()),
+                Integer.valueOf(taxReceiptValidationRequest.supplyValue()),
                 inValidReceipt.getTaxTotal(),
                 inValidReceipt.getGrandTotal(),
                 inValidReceipt.getErdat(),

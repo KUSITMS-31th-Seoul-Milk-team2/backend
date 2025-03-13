@@ -139,8 +139,11 @@ public class TaxReceiptValidationService {
             taxReceiptValidationRequestList.add(taxReceiptValidationRequest);
         }
         log.info("현재 요청 보내는 데이터 - {}", taxReceiptValidationRequestList);
+
         AdditionalAuthResponse additionalAuthResponse =
             taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequestList);
+        String key = "taxReceiptValidationRequestList" + customUserDetails.getId();
+        redisTemplate.opsForValue().set(key, taxReceiptValidationRequestList);
 
         return additionalAuthResponse.jti();
     }
@@ -160,6 +163,9 @@ public class TaxReceiptValidationService {
 
     public Boolean updateInvalidReceiptData(Emp emp, List<Long> receiptPks, List<TaxReceiptValidationResponse> responses){
         Boolean flag = true;
+        String key = "taxReceiptValidationRequestList" + emp.getId();
+        List<TaxReceiptValidationRequest> taxReceiptValidationRequestList =
+                (List<TaxReceiptValidationRequest>) redisTemplate.opsForValue().getAndDelete(key);
 
         for(int i = 0; i < responses.size(); i++) {
             if (i >= receiptPks.size()) {
@@ -170,7 +176,9 @@ public class TaxReceiptValidationService {
                 InValidReceipt inValidReceipt = invalidReceiptRepository.findById(pk)
                         .orElseThrow(ReceiptErrorCode.NOT_EXIST_RECEIPT::toException);
                 invalidReceiptRepository.deleteById(pk);
-                validReceiptRepository.save(ReceiptFactory.validReceiptCreate(emp, inValidReceipt));
+                validReceiptRepository.save(ReceiptFactory.validReceiptCreate(
+                        emp, inValidReceipt, taxReceiptValidationRequestList.get(i)
+                ));
             }else if(responses.get(i).resAuthenticity().equals("0")){
                 flag = false;
             }

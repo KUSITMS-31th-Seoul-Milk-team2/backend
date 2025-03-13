@@ -6,8 +6,11 @@ import com.seoulmilk.receipt.domain.InValidReceiptRepository;
 import com.seoulmilk.receipt.domain.ValidReceiptRepository;
 import com.seoulmilk.receipt.domain.entity.ValidReceipt;
 import com.seoulmilk.receipt.dto.request.ValidResponseSearchRequest;
+import com.seoulmilk.receipt.exception.ReceiptErrorCode;
 import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.InValidReceiptJpaEntity;
+import com.seoulmilk.receipt.infrastructure.persistence.jpa.entity.ValidReceiptJpaEntity;
 import com.seoulmilk.receipt.infrastructure.persistence.jpa.repository.InValidJpaReceiptRepository;
+import com.seoulmilk.receipt.presentation.dto.response.TaxReceiptDataResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -36,5 +39,23 @@ public class TaxReceiptSearchService {
 
     public List<InValidReceiptJpaEntity> findByUserId(String userId){
         return inValidJpaReceiptRepository.findAllByEmployeeId(userId);
+    }
+
+    public TaxReceiptDataResponse findByReceiptId(Long id){
+        ValidReceipt validReceipt =
+                validReceiptRepository.findById(id)
+                        .orElseThrow(() -> ReceiptErrorCode.NOT_EXIST_RECEIPT.toException());
+
+        TaxReceiptDataResponse taxReceiptDataResponse
+                = new TaxReceiptDataResponse(
+                        validReceipt.getSuId(),
+                validReceipt.getIpId(),
+                validReceipt.getIssueId(),
+                validReceipt.getIssueDate(),
+                String.valueOf(validReceipt.getChargeTotal())
+        );
+
+
+        return taxReceiptDataResponse;
     }
 }
