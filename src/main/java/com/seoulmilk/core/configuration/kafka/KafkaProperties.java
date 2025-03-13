@@ -10,4 +10,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class KafkaProperties {
     private final String topic;
     private final String groupId;
+    private final int partitionCount;
+    private final int replicaCount;
 }
