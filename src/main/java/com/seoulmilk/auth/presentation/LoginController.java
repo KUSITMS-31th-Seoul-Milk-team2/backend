@@ -24,14 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController implements LoginSwagger {
 
     private final LoginService loginService;
-    private final TokenService tokenService;
     private final JwtProperties jwtProperties;
 
     @Override
     @PostMapping("/login")
     public ResponseEntity<RestResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse loginResponse = loginService.login(request);
-        String accessToken = tokenService.provideAccessToken(TokenRequestFactory.create(request.employeeId()));
+        String accessToken = loginResponse.accessToken();
         long accessCookieMaxAge = jwtProperties.getAccess().getExpiration() / 1000;
 
         ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
