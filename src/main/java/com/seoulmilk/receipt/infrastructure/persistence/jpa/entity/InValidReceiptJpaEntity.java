@@ -28,7 +28,7 @@ public class InValidReceiptJpaEntity extends BaseLongIdEntity {
     @Column(nullable = false, length = 24)
     private String issueId;
 
-    @Column(nullable = false, length = 8)
+    @Column(nullable = false, length = 10)
     private String issueDate;
 
     @Column(nullable = false, length = 13)
