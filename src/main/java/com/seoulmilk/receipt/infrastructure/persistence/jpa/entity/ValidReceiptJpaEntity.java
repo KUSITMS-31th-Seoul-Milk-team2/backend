@@ -18,30 +18,29 @@ import java.util.Optional;
 @Table(name = "NTS_TAX_VALID")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ValidReceiptJpaEntity extends BaseLongIdEntity {
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String employeeId;
 
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2)
     private Arap arap;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 24)
     private String issueId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 8)
     private String issueDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 13)
     private String suId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String suName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 13)
     private String ipId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String ipName;
 
     @Column(nullable = false)
@@ -53,10 +52,10 @@ public class ValidReceiptJpaEntity extends BaseLongIdEntity {
     @Column(nullable = false)
     private Integer grandTotal;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private String erdat;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10)
     private String erzet;
 
     @Column(nullable = false, length = 512)
