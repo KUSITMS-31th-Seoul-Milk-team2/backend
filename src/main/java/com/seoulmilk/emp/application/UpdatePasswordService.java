@@ -27,7 +27,6 @@ public class UpdatePasswordService {
                 customUserDetails.getEmail(),
                 updatePasswordRequest.newPassword()
         );
-        // TODO: email.send() 메서드가 성공했는지 어떻게 확인? + 트랜잭션 분리(외부 메서드 호출, db 업데이트)
         emailUtil.send(sendEmailRequest);
         passwordService.updatePassword(customUserDetails, updatePasswordRequest);
     }
