@@ -7,9 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
 public record LoginResponse(
-        @Schema(description = "Access Token")
-        String accessToken,
-
         @Schema(description = "사용자 정보")
         UserInfo userInfo
 ) {
@@ -40,7 +37,7 @@ public record LoginResponse(
         }
     }
 
-    public static LoginResponse of(String accessToken, Emp employee) {
-        return new LoginResponse(accessToken, UserInfo.from(employee));
+    public static LoginResponse of(Emp employee) {
+        return new LoginResponse(UserInfo.from(employee));
     }
 }
