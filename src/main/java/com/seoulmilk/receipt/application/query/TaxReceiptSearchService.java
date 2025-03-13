@@ -52,9 +52,9 @@ public class TaxReceiptSearchService {
                 validReceipt.getIpId(),
                 validReceipt.getIssueId(),
                 validReceipt.getIssueDate(),
-                String.valueOf(validReceipt.getChargeTotal())
+                String.valueOf(validReceipt.getChargeTotal()),
+                validReceipt.getFileUrl()
         );
-
 
         return taxReceiptDataResponse;
     }

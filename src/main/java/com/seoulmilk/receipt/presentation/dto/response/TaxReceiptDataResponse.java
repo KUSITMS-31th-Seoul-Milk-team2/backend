@@ -22,6 +22,11 @@ public record TaxReceiptDataResponse(
 
         @NotNull(message = "공급가액은 필수 입력 항목입니다.")
         @Schema(description = "공급가액", example = "4560000")
-        String supplyValue
+        String supplyValue,
+
+        @NotNull(message = "파일 URL은 필수 입력 항목입니다.")
+        @Schema(description = "파일 URL", example = "file.url")
+        String fileUrl
+
 ) {
 }
