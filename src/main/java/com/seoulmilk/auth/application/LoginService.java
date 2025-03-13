@@ -1,5 +1,6 @@
 package com.seoulmilk.auth.application;
 
+import com.seoulmilk.auth.domain.factory.TokenRequestFactory;
 import com.seoulmilk.auth.presentation.dto.request.LoginRequest;
 import com.seoulmilk.auth.presentation.dto.response.LoginResponse;
 import com.seoulmilk.emp.domain.entity.Emp;
