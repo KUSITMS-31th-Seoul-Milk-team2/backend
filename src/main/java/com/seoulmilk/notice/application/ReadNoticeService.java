@@ -1,5 +1,6 @@
 package com.seoulmilk.notice.application;
 
+import com.seoulmilk.core.application.CacheService;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.exception.EmpErrorCode;
@@ -15,20 +16,25 @@ import com.seoulmilk.notice.exception.NoticeErrorCode;
 import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ReadNoticeService {
     private final NoticeRepository noticeRepository;
     private final EmpRepository empRepository;
+    private final CacheService cacheService;
 
     @Value("${spring.url.base}")
     private String baseUrl;
@@ -50,9 +56,15 @@ public class ReadNoticeService {
         return ReadNoticeResponse.create(notice, author);
     }
 
+    @Cacheable(
+            value = "notice",
+            cacheManager = "customCacheManager",
+            keyGenerator = "noticePageableKeyGenerator"
+    )
     public PageNoticeResponse<NoticeSummaryResponse> getNoticesByPage(Pageable pageable) {
+        cacheService.checkCacheContent();
+        log.info("[ReadNoticeService.getNoticesByPage] 공지사항 페이지를 조회합니다.");
         Page<Notice> notices = noticeRepository.findAllOrderByIdDesc(pageable);
-
         List<NoticeSummaryResponse> content = notices.getContent().stream()
                 .map(NoticeSummaryResponse::create).toList();
 
