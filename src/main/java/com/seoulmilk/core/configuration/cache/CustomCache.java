@@ -25,7 +25,7 @@ public record CustomCache(Cache firstLevelCache, Cache secondLevelCache) impleme
                 firstLevelCache.put(key, valueWrapper.get());
             }
         }
-        return secondLevelCache.get(key);
+        return valueWrapper;
     }
 
     @Override

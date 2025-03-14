@@ -6,6 +6,8 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -28,6 +30,8 @@ public class CustomCacheManager implements CacheManager {
 
     @Override
     public Collection<String> getCacheNames() {
-        return caffeineCacheManager.getCacheNames();
+            Set<String> mergedNames = new HashSet<>(caffeineCacheManager.getCacheNames());
+            mergedNames.addAll(redisCacheManager.getCacheNames());
+            return mergedNames;
     }
 }
