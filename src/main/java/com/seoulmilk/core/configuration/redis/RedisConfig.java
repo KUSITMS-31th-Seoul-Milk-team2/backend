@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -20,7 +19,7 @@ public class RedisConfig {
 
     @Value("${spring.data.redis.host}")
     private String redisHost;
-    @Value("${spring.data.redis.port}")
+    @Value("${spring.data.redis.port} ")
     private int redisPort;
 
     @Bean
@@ -44,7 +43,10 @@ public class RedisConfig {
                 JsonTypeInfo.As.PROPERTY
         );
 
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+        GenericJackson2JsonRedisSerializer jsonRedisSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+        template.setValueSerializer(jsonRedisSerializer);
+        template.setHashValueSerializer(jsonRedisSerializer);
+
         return template;
     }
 }
