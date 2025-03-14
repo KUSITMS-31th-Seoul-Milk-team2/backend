@@ -3,6 +3,7 @@ package com.seoulmilk.notice.application;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.util.fileUtil.FileUtil;
 import com.seoulmilk.notice.domain.entity.Notice;
+import com.seoulmilk.notice.domain.event.PostNoticeEventPublisher;
 import com.seoulmilk.notice.domain.repository.NoticeRepository;
 import com.seoulmilk.notice.dto.request.PostNoticeRequest;
 import com.seoulmilk.notice.dto.response.PostNoticeResponse;
@@ -26,6 +27,9 @@ import static org.mockito.Mockito.*;
 public class PostNoticeServiceTest {
     @Mock
     private NoticeRepository noticeRepository;
+
+    @Mock
+    private PostNoticeEventPublisher postNoticeEventPublisher;
 
     @Mock
     private FileUtil fileUtil;

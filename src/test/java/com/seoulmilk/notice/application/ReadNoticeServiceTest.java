@@ -1,5 +1,6 @@
 package com.seoulmilk.notice.application;
 
+import com.seoulmilk.core.application.CacheService;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.exception.EmpErrorCode;
@@ -39,6 +40,9 @@ class ReadNoticeServiceTest {
 
     @Mock
     private EmpRepository empRepository;
+
+    @Mock
+    private CacheService cacheService;
 
     @InjectMocks
     private ReadNoticeService readNoticeService;
