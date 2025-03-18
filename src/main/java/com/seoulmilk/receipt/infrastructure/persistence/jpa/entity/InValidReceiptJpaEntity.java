@@ -58,7 +58,7 @@ public class InValidReceiptJpaEntity extends BaseLongIdEntity {
     @Column(nullable = false, length = 10)
     private String erzet;
 
-    @Column(length = 512)
+    @Column(length = 1024)
     private String fileUrl;
 
     public static InValidReceiptJpaEntity toJpaEntity(InValidReceipt inValidReceipt) {

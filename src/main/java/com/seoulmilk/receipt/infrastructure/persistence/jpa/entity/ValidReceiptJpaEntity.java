@@ -58,7 +58,7 @@ public class ValidReceiptJpaEntity extends BaseLongIdEntity {
     @Column(nullable = false, length = 10)
     private String erzet;
 
-    @Column(nullable = false, length = 512)
+    @Column(nullable = false, length = 1024)
     private String fileUrl;
 
     @Builder.Default
