@@ -29,7 +29,7 @@ public class CacheConfiguration {
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new Jackson2JsonRedisSerializer<>(objectMapper, PageNoticeResponse.class)
-                        )).entryTtl(Duration.ofMinutes(10));
+                        )).entryTtl(Duration.ofMinutes(5));
     }
 
     @Bean
