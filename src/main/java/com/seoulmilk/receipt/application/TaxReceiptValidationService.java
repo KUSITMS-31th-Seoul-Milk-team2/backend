@@ -40,6 +40,7 @@ public class TaxReceiptValidationService {
 
     @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}", concurrency = "3", errorHandler = "noRetryErrorHandler")
     public void listen(List<OcrValidationRequest> ocrValidationRequestList) {
+        long startTime = System.currentTimeMillis();
         log.info("이벤트 결과 - {} ", ocrValidationRequestList);
 
         Long pk = ocrValidationRequestList.getFirst().empPk();
@@ -65,6 +66,8 @@ public class TaxReceiptValidationService {
 
         receiptCacheService.hadleRequestData(emp.getId(), ocrValidationRequestList);
         log.info("저장된 데이터 - {}", redisTemplate.opsForValue().get("requestData:" + emp.getId()));
+        long endTime = System.currentTimeMillis();
+        log.info("카프카를 통한 국세청 검증 로직 실행시간 측정 - {}ms", endTime - startTime);
     }
 
     private AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> taxReceiptValidationRequests) {
