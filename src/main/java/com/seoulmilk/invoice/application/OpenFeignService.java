@@ -25,10 +25,13 @@ public class OpenFeignService {
     private final FileUtil fileUtil;
 
     public OcrValidationRequest processImg(Long empPk, MultipartFile file) {
+        long startTime = System.currentTimeMillis();
         validateFilePresence(file);
         String fileUrl = fileUtil.uploadFile(file);
         FileMetaData fileMetaData = createFileMetaData(file);
         OcrResponse ocrResponse = executeOcr(fileMetaData, file);
+        long endTime = System.currentTimeMillis();
+        log.info("[processImg] 파일 1장당 OCR 처리에 걸리는 시간 - {}ms", endTime - startTime);
         return OcrResponseConverter.convert(empPk, fileUrl, ocrResponse);
     }
 
@@ -52,7 +55,6 @@ public class OpenFeignService {
     }
 
     private String createRequestMessage(FileMetaData metaData) {
-
         OcrRequest request = requestFactory.create(metaData);
         return requestConverter.toJson(request);
     }
