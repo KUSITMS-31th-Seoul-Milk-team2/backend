@@ -1,6 +1,5 @@
 package com.seoulmilk.notice.infrastructure.persistence.jpa.repository;
 
-import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.notice.dto.request.UpdateNoticeRequest;
 import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntity;
 import org.springframework.data.domain.Page;
@@ -17,10 +16,10 @@ import java.util.List;
 
 public interface NoticeJpaRepository extends JpaRepository<NoticeJpaEntity, Long>, JpaSpecificationExecutor<NoticeJpaEntity> {
 
-    @Query("SELECT n FROM NoticeJpaEntity n WHERE n.authorPk = :empPk ORDER BY n.id DESC")
+    @Query("SELECT n FROM NoticeJpaEntity n WHERE n.authorPk = :empPk")
     Page<NoticeJpaEntity> findAllOrderByIdDescAndId(Pageable pageable, Long empPk);
 
-    @Query("SELECT n FROM NoticeJpaEntity n ORDER BY n.id DESC")
+    @Query("SELECT n FROM NoticeJpaEntity n")
     Page<NoticeJpaEntity> findAllOrderByIdDesc(Pageable pageable);
 
     @Modifying(clearAutomatically = true)
