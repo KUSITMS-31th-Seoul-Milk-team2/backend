@@ -6,12 +6,15 @@ import com.seoulmilk.emp.exception.EmpErrorCode;
 import com.seoulmilk.notice.domain.entity.Notice;
 import com.seoulmilk.notice.domain.repository.NoticeRepository;
 import com.seoulmilk.notice.domain.value.Keywords;
+import com.seoulmilk.notice.dto.request.ReadNoticePaginationRequest;
 import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
 import com.seoulmilk.notice.dto.response.PageNoticeResponse;
 import com.seoulmilk.notice.dto.response.ReadNoticeResponse;
+import com.seoulmilk.notice.dto.response.ReadPaginatedResponse;
 import com.seoulmilk.notice.exception.NoticeErrorCode;
 import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,15 +30,13 @@ public class ReadNoticeService {
     private final NoticeRepository noticeRepository;
     private final EmpRepository empRepository;
 
+    @Value("${spring.url.base}")
+    private String baseUrl;
+
     public PageNoticeResponse<NoticeSummaryResponse> getMyNotices(Long empPk, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllOrderByIdDescAndEmpPk(empPk, pageable);
         List<NoticeSummaryResponse> content = notices.getContent().stream()
-                .map(notice -> {
-                    Emp author = empRepository.findById(notice.getAuthorPk())
-                            .orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
-
-                    return NoticeSummaryResponse.create(notice, author);
-                }).toList();
+                .map(NoticeSummaryResponse::create).toList();
         return PageNoticeResponse.create(content, notices);
     }
 
@@ -53,12 +54,7 @@ public class ReadNoticeService {
         Page<Notice> notices = noticeRepository.findAllOrderByIdDesc(pageable);
 
         List<NoticeSummaryResponse> content = notices.getContent().stream()
-                .map(notice -> {
-                    Emp author = empRepository.findById(notice.getAuthorPk())
-                            .orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
-
-                    return NoticeSummaryResponse.create(notice, author);
-                }).toList();
+                .map(NoticeSummaryResponse::create).toList();
 
         return PageNoticeResponse.create(content, notices);
     }
@@ -67,13 +63,25 @@ public class ReadNoticeService {
         Specification<NoticeJpaEntity> spec = Keywords.fromValue(searchType).getSpecification(keyword);
         Page<Notice> notices = noticeRepository.findAllByKeyword(spec, pageable);
         List<NoticeSummaryResponse> content = notices.getContent().stream()
-                .map(notice -> {
-                    Emp author = empRepository.findById(notice.getAuthorPk())
-                            .orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
-
-                    return NoticeSummaryResponse.create(notice, author);
-                }).toList();
+                .map(NoticeSummaryResponse::create).toList();
 
         return PageNoticeResponse.create(content, notices);
+    }
+
+    public ReadPaginatedResponse<NoticeSummaryResponse> paginateNotices(ReadNoticePaginationRequest readNoticePaginationRequest) {
+        List<NoticeSummaryResponse> notices = noticeRepository.findAllByPagination(
+                        readNoticePaginationRequest.getKey(),
+                        readNoticePaginationRequest.getOrder__createdAt(),
+                        readNoticePaginationRequest.getTake()
+                ).stream()
+                .map(NoticeSummaryResponse::create)
+                .toList();
+
+        return ReadPaginatedResponse.create(
+                notices,
+                notices.getLast().id(),
+                notices.size(),
+                baseUrl + "/v1/notice/list?order__createdAt=" + readNoticePaginationRequest.getOrder__createdAt() + "&take=" + readNoticePaginationRequest.getTake() + "&key=" + notices.getLast().id()
+        );
     }
 }
