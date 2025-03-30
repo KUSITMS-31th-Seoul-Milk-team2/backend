@@ -115,7 +115,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     }
 
     @Override
-    public List<Notice> findAllByPagination(Long key, Order order__createdAt, Long take) {
+    public List<Notice> findAllByCursorPagination(Long key, Order order__createdAt, Long take) {
         try {
             if (order__createdAt == Order.DESC) {
                 return noticeJpaRepository.findAllByPaginationDesc(key, take)

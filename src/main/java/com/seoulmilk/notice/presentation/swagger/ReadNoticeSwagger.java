@@ -5,11 +5,9 @@ import com.seoulmilk.core.exception.error.GlobalErrorCode;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.emp.exception.EmpErrorCode;
-import com.seoulmilk.notice.dto.request.ReadNoticePaginationRequest;
 import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
 import com.seoulmilk.notice.dto.response.PageNoticeResponse;
 import com.seoulmilk.notice.dto.response.ReadNoticeResponse;
-import com.seoulmilk.notice.dto.response.ReadPaginatedResponse;
 import com.seoulmilk.notice.exception.NoticeErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,9 +39,9 @@ public interface ReadNoticeSwagger {
             operationId = "/v1/notice/list"
     )
     @ApiErrorCode({GlobalErrorCode.class, EmpErrorCode.class})
-    ResponseEntity<RestResponse<ReadPaginatedResponse<NoticeSummaryResponse>>> getNoticesByPage(
+    ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> getNoticesByPage(
             @ParameterObject
-            ReadNoticePaginationRequest readNoticePaginationRequest);
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable);
 
     @Operation(
             summary = "내가 쓴 공지사항 목록 조회 API",

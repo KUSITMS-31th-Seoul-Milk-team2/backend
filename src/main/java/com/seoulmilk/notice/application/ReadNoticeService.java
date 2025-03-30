@@ -68,8 +68,8 @@ public class ReadNoticeService {
         return PageNoticeResponse.create(content, notices);
     }
 
-    public ReadPaginatedResponse<NoticeSummaryResponse> paginateNotices(ReadNoticePaginationRequest readNoticePaginationRequest) {
-        List<NoticeSummaryResponse> notices = noticeRepository.findAllByPagination(
+    public ReadPaginatedResponse<NoticeSummaryResponse> cursorPaginateNotices(ReadNoticePaginationRequest readNoticePaginationRequest) {
+        List<NoticeSummaryResponse> notices = noticeRepository.findAllByCursorPagination(
                         readNoticePaginationRequest.getKey(),
                         readNoticePaginationRequest.getOrder__createdAt(),
                         readNoticePaginationRequest.getTake()
