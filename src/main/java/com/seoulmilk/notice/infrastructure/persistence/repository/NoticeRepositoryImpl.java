@@ -4,6 +4,7 @@ import com.seoulmilk.core.exception.error.GlobalErrorCode;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.notice.domain.entity.Notice;
 import com.seoulmilk.notice.domain.repository.NoticeRepository;
+import com.seoulmilk.notice.dto.request.Order;
 import com.seoulmilk.notice.dto.request.UpdateNoticeRequest;
 import com.seoulmilk.notice.exception.NoticeErrorCode;
 import com.seoulmilk.notice.infrastructure.mapper.NoticeMapper;
@@ -102,13 +103,33 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     }
 
     @Override
-    public  void deleteAllNoticesByEmps(List<Emp> emps) {
+    public void deleteAllNoticesByEmps(List<Emp> emps) {
         try {
             noticeJpaRepository.deleteAllByAuthorPk(emps.stream()
                     .map(Emp::getId)
                     .toList());
         } catch (Exception e) {
             log.error("[NoticeRepositoryImpl] deleteAllByEmps 쿼리 실행 중 에러 발생 : {}", e.getMessage());
+            throw GlobalErrorCode.INTERNAL_SERVER_ERROR.toException();
+        }
+    }
+
+    @Override
+    public List<Notice> findAllByPagination(Long key, Order order__createdAt, Long take) {
+        try {
+            if (order__createdAt == Order.DESC) {
+                return noticeJpaRepository.findAllByPaginationDesc(key, take)
+                        .stream()
+                        .map(noticeMapper::toDomainEntity)
+                        .toList();
+            } else {
+                return noticeJpaRepository.findAllByPaginationAsc(key, take)
+                        .stream()
+                        .map(noticeMapper::toDomainEntity)
+                        .toList();
+            }
+        } catch (Exception e) {
+            log.error("[NoticeRepositoryImpl] findAllByPagination 쿼리 실행 중 에러 발생 : {}", e.getMessage());
             throw GlobalErrorCode.INTERNAL_SERVER_ERROR.toException();
         }
     }
