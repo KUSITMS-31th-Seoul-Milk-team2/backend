@@ -6,7 +6,6 @@ import com.seoulmilk.notice.dto.request.Order;
 import com.seoulmilk.notice.dto.request.UpdateNoticeRequest;
 import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntity;
 import org.springframework.data.domain.Page;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -34,5 +33,5 @@ public interface NoticeRepository {
 
     void deleteAllNoticesByEmps(List<Emp> emps);
 
-    List<Notice> findAllByPagination(Long key, Order order__createdAt, Long take);
+    List<Notice> findAllByCursorPagination(Long key, Order order__createdAt, Long take);
 }

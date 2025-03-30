@@ -3,11 +3,9 @@ package com.seoulmilk.notice.presentation;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.notice.application.ReadNoticeService;
-import com.seoulmilk.notice.dto.request.ReadNoticePaginationRequest;
 import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
 import com.seoulmilk.notice.dto.response.PageNoticeResponse;
 import com.seoulmilk.notice.dto.response.ReadNoticeResponse;
-import com.seoulmilk.notice.dto.response.ReadPaginatedResponse;
 import com.seoulmilk.notice.presentation.swagger.ReadNoticeSwagger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -37,11 +35,11 @@ public class ReadNoticeController implements ReadNoticeSwagger {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<RestResponse<ReadPaginatedResponse<NoticeSummaryResponse>>> getNoticesByPage(
-            ReadNoticePaginationRequest readNoticePaginationRequest
+    public ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> getNoticesByPage(
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
 
-        ReadPaginatedResponse<NoticeSummaryResponse> readPaginatedResponse = readNoticeService.paginateNotices(readNoticePaginationRequest);
+        PageNoticeResponse<NoticeSummaryResponse> readPaginatedResponse = readNoticeService.getNoticesByPage(pageable);
         return ResponseEntity.ok(new RestResponse<>(readPaginatedResponse));
     }
 
