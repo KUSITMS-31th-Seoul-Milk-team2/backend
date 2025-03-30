@@ -29,7 +29,7 @@ public class CacheConfiguration {
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new Jackson2JsonRedisSerializer<>(objectMapper, PageNoticeResponse.class)
-                        )).entryTtl(Duration.ofMinutes(5));
+                        )).entryTtl(Duration.ofMinutes(10));
     }
 
     @Bean
@@ -38,7 +38,7 @@ public class CacheConfiguration {
         CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
         caffeineCacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(100)
-                .expireAfterWrite(Duration.ofMinutes(10)));
+                .expireAfterWrite(Duration.ofMinutes(5)));
 
         RedisCacheManager redisCacheManager = RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration)
