@@ -18,11 +18,11 @@ public record NoticeSummaryResponse(
         String createdAt
 ) {
 
-    public static NoticeSummaryResponse create(Notice notice, Emp author) {
+    public static NoticeSummaryResponse create(Notice notice) {
         return new NoticeSummaryResponse(
                 notice.getId(),
                 notice.getTitle(),
-                author.getName(),
+                notice.getAuthorName(),
                 notice.getCreatedAt().toString()
         );
     }
