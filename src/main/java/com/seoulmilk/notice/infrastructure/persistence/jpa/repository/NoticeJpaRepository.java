@@ -32,5 +32,36 @@ public interface NoticeJpaRepository extends JpaRepository<NoticeJpaEntity, Long
     @Modifying(clearAutomatically = true)
     @Query("DELETE FROM NoticeJpaEntity n WHERE n.authorPk IN :empPks")
     void deleteAllByAuthorPk(@Param("empPks") List<Long> empPks);
+
+    @Query(value = """
+    SELECT /*+ INDEX_RS_DESC(n idx_notice_id) */
+        n.id,
+        n.author_pk,
+        n.author_name,
+        n.title,
+        n.content,
+        n.file_url,
+        n.created_at,
+        n.updated_at,
+        n.deleted
+    FROM notice n
+    WHERE n.id < ?1
+    ORDER BY n.id DESC
+    FETCH FIRST ?2 ROWS ONLY
+    """, nativeQuery = true)
+    List<NoticeJpaEntity> findAllByPaginationDesc(Long key, Long take);
+
+
+    @Query(value = """
+            SELECT * FROM (
+                SELECT * FROM notice
+                WHERE id > ?1
+                ORDER BY created_at ASC, id ASC
+            ) 
+            WHERE ROWNUM <= ?2
+            """,
+            nativeQuery = true)
+    List<NoticeJpaEntity> findAllByPaginationAsc(Long key, Long take);
+
 }
 
