@@ -133,7 +133,6 @@ class ReadNoticeServiceTest {
             Page<Notice> noticePage = new PageImpl<>(List.of(notice));
 
             when(noticeRepository.findAllOrderByIdDesc(pageable)).thenReturn(noticePage);
-            when(empRepository.findById(1L)).thenReturn(Optional.of(createEmp(1L)));
 
             // when
             PageNoticeResponse<NoticeSummaryResponse> result = readNoticeService.getNoticesByPage(pageable);
@@ -141,7 +140,6 @@ class ReadNoticeServiceTest {
             // then
             assertThat(result.content()).hasSize(1);
             assertThat(result.content().get(0).title()).isEqualTo("테스트 제목");
-            verify(empRepository, times(1)).findById(1L);
         }
 
         @Test
@@ -170,7 +168,6 @@ class ReadNoticeServiceTest {
 
             when(noticeRepository.findAllByKeyword(any(Specification.class), eq(pageable)))
                     .thenReturn(noticePage);
-            when(empRepository.findById(anyLong())).thenReturn(Optional.of(createEmp(1L)));
 
             // When
             PageNoticeResponse<NoticeSummaryResponse> result =
@@ -191,7 +188,6 @@ class ReadNoticeServiceTest {
 
             when(noticeRepository.findAllByKeyword(any(Specification.class), eq(pageable)))
                     .thenReturn(noticePage);
-            when(empRepository.findById(anyLong())).thenReturn(Optional.of(createEmp(1L)));
 
             // When
             PageNoticeResponse<NoticeSummaryResponse> result =
@@ -212,7 +208,6 @@ class ReadNoticeServiceTest {
 
             when(noticeRepository.findAllByKeyword(any(Specification.class), eq(pageable)))
                     .thenReturn(noticePage);
-            when(empRepository.findById(anyLong())).thenReturn(Optional.of(createEmp(1L)));
 
             // When
             PageNoticeResponse<NoticeSummaryResponse> result =
