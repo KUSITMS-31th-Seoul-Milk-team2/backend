@@ -1,4 +1,4 @@
 dependencies {
     // codef 관련 의존성
-    implementation 'io.codef.api:easycodef-java-v2:2.0.0-beta-005'
+//    implementation 'io.codef.api:easycodef-java-v2:2.0.0-beta-005'
 }
