@@ -1,7 +1,6 @@
 package com.seoulmilk.notice.infrastructure.persistence.jpa.repository;
 
 import com.seoulmilk.notice.dto.request.UpdateNoticeRequest;
-import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
 import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +16,34 @@ import java.util.List;
 
 public interface NoticeJpaRepository extends JpaRepository<NoticeJpaEntity, Long>, JpaSpecificationExecutor<NoticeJpaEntity> {
 
+    @Query(value = """
+            SELECT
+                n.id,
+                n.author_pk,
+                n.author_name,
+                n.title,
+                n.content,
+                n.file_url,
+                n.created_at,
+                n.updated_at,
+                n.deleted
+            FROM Notice n
+            WHERE CONTAINS(n.author_name, :keyword) > 0
+            ORDER BY n.id DESC
+            OFFSET :#{#pageable.offset} ROWS FETCH NEXT :#{#pageable.pageSize} ROWS ONLY
+            """,
+            countQuery = """
+                    SELECT COUNT(n.id)
+                    FROM Notice n
+                    WHERE CONTAINS(n.author_name, :keyword) > 0
+                    """,
+            nativeQuery = true)
+    Page<NoticeJpaEntity> findAll(@Param("keyword") String keyword, @Param("pageable") Pageable pageable);
+
     @Query("SELECT n FROM NoticeJpaEntity n WHERE n.authorPk = :empPk")
     Page<NoticeJpaEntity> findAllOrderByIdDescAndId(Pageable pageable, Long empPk);
 
-    @Query("SELECT n FROM NoticeJpaEntity n")
-    Page<NoticeJpaEntity> findAllOrderByIdDesc(Pageable pageable);
+    Page<NoticeJpaEntity> findAllByOrderByIdDesc(Pageable pageable);
 
     @Modifying(clearAutomatically = true)
     @Transactional
