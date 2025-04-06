@@ -6,7 +6,7 @@ import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.emp.exception.EmpErrorCode;
 import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
-import com.seoulmilk.notice.dto.response.PageNoticeResponse;
+import com.seoulmilk.notice.dto.response.PageResponse;
 import com.seoulmilk.notice.dto.response.ReadNoticeResponse;
 import com.seoulmilk.notice.exception.NoticeErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +39,7 @@ public interface ReadNoticeSwagger {
             operationId = "/v1/notice/list"
     )
     @ApiErrorCode({GlobalErrorCode.class, EmpErrorCode.class})
-    ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> getNoticesByPage(
+    ResponseEntity<RestResponse<PageResponse<NoticeSummaryResponse>>> getNoticesByPage(
             @ParameterObject
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable);
 
@@ -49,7 +49,7 @@ public interface ReadNoticeSwagger {
             operationId = "/v1/notice/my-notices"
     )
     @ApiErrorCode({GlobalErrorCode.class, EmpErrorCode.class})
-    ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> getMyNotices(
+    ResponseEntity<RestResponse<PageResponse<NoticeSummaryResponse>>> getMyNotices(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @ParameterObject
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable);
@@ -60,7 +60,7 @@ public interface ReadNoticeSwagger {
             operationId = "/v1/notice/search"
     )
     @ApiErrorCode({GlobalErrorCode.class, EmpErrorCode.class})
-    ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> searchNotices(
+    ResponseEntity<RestResponse<PageResponse<NoticeSummaryResponse>>> searchNotices(
             @Schema(description = "검색 타입", example = "all, title_and_content, author")
             @RequestParam String searchType,
             @Schema(description = "검색 키워드", example = "검색할 키워드")
