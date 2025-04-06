@@ -62,7 +62,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Override
     public Page<Notice> findAllOrderByIdDesc(Pageable pageable) {
-        Page<NoticeJpaEntity> noticeJpaEntities = noticeJpaRepository.findAllOrderByIdDesc(pageable);
+        Page<NoticeJpaEntity> noticeJpaEntities = noticeJpaRepository.findAllByOrderByIdDesc(pageable);
         return noticeJpaEntities.map(noticeMapper::toDomainEntity);
     }
 
@@ -80,6 +80,12 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     public Page<Notice> findAllByKeyword(Specification<NoticeJpaEntity> spec, Pageable pageable) {
         Page<NoticeJpaEntity> noticesByKeyword = noticeJpaRepository.findAll(spec, pageable);
         return noticesByKeyword.map(noticeMapper::toDomainEntity);
+    }
+
+    @Override
+    public Page<Notice> findAllByAuthorName(String keyword, Pageable pageable) {
+        Page<NoticeJpaEntity> noticeJpaEntities = noticeJpaRepository.findAll(keyword, pageable);
+        return noticeJpaEntities.map(noticeMapper::toDomainEntity);
     }
 
     @Override

@@ -27,6 +27,8 @@ public interface NoticeRepository {
 
     Page<Notice> findAllByKeyword(Specification<NoticeJpaEntity> spec, Pageable pageable);
 
+    Page<Notice> findAllByAuthorName(String keyword, Pageable pageable);
+
     List<Notice> findAllByIds(List<Long> ids);
 
     void deleteAll(List<Notice> notices);
