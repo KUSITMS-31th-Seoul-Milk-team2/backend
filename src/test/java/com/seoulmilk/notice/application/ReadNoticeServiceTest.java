@@ -7,7 +7,7 @@ import com.seoulmilk.emp.exception.EmpErrorCode;
 import com.seoulmilk.notice.domain.entity.Notice;
 import com.seoulmilk.notice.domain.repository.NoticeRepository;
 import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
-import com.seoulmilk.notice.dto.response.PageNoticeResponse;
+import com.seoulmilk.notice.dto.response.PageResponse;
 import com.seoulmilk.notice.dto.response.ReadNoticeResponse;
 import com.seoulmilk.notice.exception.NoticeErrorCode;
 import org.junit.jupiter.api.DisplayName;
@@ -139,7 +139,7 @@ class ReadNoticeServiceTest {
             when(noticeRepository.findAllOrderByIdDesc(pageable)).thenReturn(noticePage);
 
             // when
-            PageNoticeResponse<NoticeSummaryResponse> result = readNoticeService.getNoticesByPage(pageable);
+            PageResponse<NoticeSummaryResponse> result = readNoticeService.getNoticesByPage(pageable);
 
             // then
             assertThat(result.content()).hasSize(1);
@@ -156,7 +156,7 @@ class ReadNoticeServiceTest {
             when(noticeRepository.findAllOrderByIdDesc(pageable)).thenReturn(noticePage);
 
             // when
-            PageNoticeResponse<NoticeSummaryResponse> result = readNoticeService.getNoticesByPage(pageable);
+            PageResponse<NoticeSummaryResponse> result = readNoticeService.getNoticesByPage(pageable);
 
             // then
             assertThat(result.content()).isEmpty();
@@ -174,7 +174,7 @@ class ReadNoticeServiceTest {
                     .thenReturn(noticePage);
 
             // When
-            PageNoticeResponse<NoticeSummaryResponse> result =
+            PageResponse<NoticeSummaryResponse> result =
                     readNoticeService.getNoticesByKeyword("title_and_content", "테스트 제목", pageable);
 
             // Then
@@ -194,7 +194,7 @@ class ReadNoticeServiceTest {
                     .thenReturn(noticePage);
 
             // When
-            PageNoticeResponse<NoticeSummaryResponse> result =
+            PageResponse<NoticeSummaryResponse> result =
                     readNoticeService.getNoticesByKeyword("author", "테스트 유저", pageable);
 
             // Then
@@ -214,7 +214,7 @@ class ReadNoticeServiceTest {
                     .thenReturn(noticePage);
 
             // When
-            PageNoticeResponse<NoticeSummaryResponse> result =
+            PageResponse<NoticeSummaryResponse> result =
                     readNoticeService.getNoticesByKeyword("all", "테스트 유저", pageable);
 
             // Then
