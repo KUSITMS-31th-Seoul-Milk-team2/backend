@@ -4,9 +4,8 @@ import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.presentation.RestResponse;
 import com.seoulmilk.notice.application.ReadNoticeService;
 import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
-import com.seoulmilk.notice.dto.response.PageNoticeResponse;
+import com.seoulmilk.notice.dto.response.PageResponse;
 import com.seoulmilk.notice.dto.response.ReadNoticeResponse;
-import com.seoulmilk.notice.presentation.swagger.ReadNoticeSwagger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-@RequestMapping("/v1/notice")
-public class ReadNoticeController implements ReadNoticeSwagger {
+@RequestMapping("/v2/notice")
+public class ReadNoticeController {
 
     private final ReadNoticeService readNoticeService;
 
@@ -35,30 +34,32 @@ public class ReadNoticeController implements ReadNoticeSwagger {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> getNoticesByPage(
+    public ResponseEntity<RestResponse<PageResponse<NoticeSummaryResponse>>> getNoticesByPage(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
 
-        PageNoticeResponse<NoticeSummaryResponse> readPaginatedResponse = readNoticeService.getNoticesByPage(pageable);
+        PageResponse<NoticeSummaryResponse> readPaginatedResponse = readNoticeService.getNoticesByPage(pageable);
         return ResponseEntity.ok(new RestResponse<>(readPaginatedResponse));
     }
 
     @GetMapping("/my-notices")
-    public ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> getMyNotices(
+    public ResponseEntity<RestResponse<PageResponse<NoticeSummaryResponse>>> getMyNotices(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        PageNoticeResponse<NoticeSummaryResponse> response = readNoticeService.getMyNotices(
+        PageResponse<NoticeSummaryResponse> response = readNoticeService.getMyNotices(
                 customUserDetails.getId(),
                 pageable);
         return ResponseEntity.ok(new RestResponse<>(response));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<RestResponse<PageNoticeResponse<NoticeSummaryResponse>>> searchNotices(
+    public ResponseEntity<RestResponse<PageResponse<NoticeSummaryResponse>>> searchNotices(
             @RequestParam String searchType,
             @RequestParam String keyword,
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        PageNoticeResponse<NoticeSummaryResponse> response = readNoticeService.getNoticesByKeyword(searchType, keyword, pageable);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PageResponse<NoticeSummaryResponse> response = readNoticeService.getNoticesByKeyword(searchType, keyword, page, size);
         return ResponseEntity.ok(new RestResponse<>(response));
     }
 }

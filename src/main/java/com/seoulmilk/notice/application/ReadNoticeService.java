@@ -9,7 +9,7 @@ import com.seoulmilk.notice.domain.repository.NoticeRepository;
 import com.seoulmilk.notice.domain.value.Keywords;
 import com.seoulmilk.notice.dto.request.ReadNoticePaginationRequest;
 import com.seoulmilk.notice.dto.response.NoticeSummaryResponse;
-import com.seoulmilk.notice.dto.response.PageNoticeResponse;
+import com.seoulmilk.notice.dto.response.PageResponse;
 import com.seoulmilk.notice.dto.response.ReadNoticeResponse;
 import com.seoulmilk.notice.dto.response.ReadPaginatedResponse;
 import com.seoulmilk.notice.exception.NoticeErrorCode;
@@ -19,7 +19,9 @@ import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,11 +40,11 @@ public class ReadNoticeService {
     @Value("${spring.url.base}")
     private String baseUrl;
 
-    public PageNoticeResponse<NoticeSummaryResponse> getMyNotices(Long empPk, Pageable pageable) {
+    public PageResponse<NoticeSummaryResponse> getMyNotices(Long empPk, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllOrderByIdDescAndEmpPk(empPk, pageable);
         List<NoticeSummaryResponse> content = notices.getContent().stream()
                 .map(NoticeSummaryResponse::create).toList();
-        return PageNoticeResponse.create(content, notices);
+        return PageResponse.create(content, notices);
     }
 
     public ReadNoticeResponse readOneNotice(Long id) {
@@ -60,23 +62,24 @@ public class ReadNoticeService {
             cacheManager = "customCacheManager",
             keyGenerator = "noticePageableKeyGenerator"
     )
-    public PageNoticeResponse<NoticeSummaryResponse> getNoticesByPage(Pageable pageable) {
+    public PageResponse<NoticeSummaryResponse> getNoticesByPage(Pageable pageable) {
         cacheService.checkCacheContent();
         log.info("[ReadNoticeService.getNoticesByPage] 공지사항 페이지를 조회합니다.");
         Page<Notice> notices = noticeRepository.findAllOrderByIdDesc(pageable);
         List<NoticeSummaryResponse> content = notices.getContent().stream()
                 .map(NoticeSummaryResponse::create).toList();
 
-        return PageNoticeResponse.create(content, notices);
+        return PageResponse.create(content, notices);
     }
 
-    public PageNoticeResponse<NoticeSummaryResponse> getNoticesByKeyword(String searchType, String keyword, Pageable pageable) {
+    public PageResponse<NoticeSummaryResponse> getNoticesByKeyword(String searchType, String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Specification<NoticeJpaEntity> spec = Keywords.fromValue(searchType).getSpecification(keyword);
         Page<Notice> notices = noticeRepository.findAllByKeyword(spec, pageable);
         List<NoticeSummaryResponse> content = notices.getContent().stream()
                 .map(NoticeSummaryResponse::create).toList();
 
-        return PageNoticeResponse.create(content, notices);
+        return PageResponse.create(content, notices);
     }
 
     public ReadPaginatedResponse<NoticeSummaryResponse> cursorPaginateNotices(ReadNoticePaginationRequest readNoticePaginationRequest) {

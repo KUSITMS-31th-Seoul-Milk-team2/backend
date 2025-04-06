@@ -2,7 +2,7 @@ package com.seoulmilk.core.configuration.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.seoulmilk.notice.dto.response.PageNoticeResponse;
+import com.seoulmilk.notice.dto.response.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -28,7 +28,7 @@ public class CacheConfiguration {
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                                new Jackson2JsonRedisSerializer<>(objectMapper, PageNoticeResponse.class)
+                                new Jackson2JsonRedisSerializer<>(objectMapper, PageResponse.class)
                         )).entryTtl(Duration.ofMinutes(10));
     }
 
