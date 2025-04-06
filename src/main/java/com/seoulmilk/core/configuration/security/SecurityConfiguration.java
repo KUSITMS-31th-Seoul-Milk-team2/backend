@@ -48,7 +48,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/v1/invoice/**").authenticated()
                                 .requestMatchers("/v1/receipt/**").authenticated()
                                 .requestMatchers("/v1/emp/**").authenticated()
-                                .requestMatchers("/v1/notice/**").authenticated()
+                                .requestMatchers("/v2/notice/**").authenticated()
                                 .requestMatchers("/v1/admin/**").authenticated()
                 )
                 .addFilterBefore(
