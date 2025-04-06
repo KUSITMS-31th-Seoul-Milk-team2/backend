@@ -22,51 +22,27 @@ import java.util.Map;
 @RequestMapping("/v1/receipt")
 @RequiredArgsConstructor
 @Log4j2
-public class TaxReceiptValidationController implements TaxReceiptValidateSwagger {
+public class TaxReceiptValidationController {
     private final TaxReceiptValidationService taxReceiptValidationService;
 
-    @Override
+//    @Override
     @PostMapping("/validation")
     public ResponseEntity<RestResponse<String>> validateTaxReceipts(
             @Parameter(hidden = true)
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody List<ValidationRequest> requests
-    ){
+    ) {
         log.info("[validateTaxReceipts] 컨트롤러 작동");
         return ResponseEntity.ok(
-                new RestResponse<>(
-                        taxReceiptValidationService.requestAdditionalAuthentication(customUserDetails, requests)
-                )
+                new RestResponse<>("ok")
         );
+//        return ResponseEntity.ok(
+//                new RestResponse<>(
+//                        taxReceiptValidationService.requestAdditionalAuthentication(customUserDetails, requests)
+//                )
+//        );
     }
 
-    @Override
-    @PostMapping("/addition")
-    public ResponseEntity<RestResponse<Boolean>> multipleAdditionAuthController(
-            @Parameter(hidden = true)
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestParam String transactionId,
-            @RequestBody List<Long> inValidReceiptPks
-    ){
-        log.info("[multipleAdditionAuthController] 컨트롤러 작동");
-        return ResponseEntity.ok(
-                new RestResponse<>(taxReceiptValidationService.retrieveValidatedTaxReceipts(
-                        customUserDetails, inValidReceiptPks, transactionId)
-                )
-        );
-    }
-
-    @Override
-    @PostMapping("/upload/addition")
-    public ResponseEntity<RestResponse<Boolean>> uploadAdditionAuthController(
-            @Parameter(hidden = true)
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ){
-        log.info("[uploadAdditionAuthController] 컨트롤러 작동");
-        return ResponseEntity.ok(
-                new RestResponse<>(taxReceiptValidationService.retrieveValidatedTaxReceiptsWithTransactionId(customUserDetails))
-        );
-    }
-
+//
 
 }

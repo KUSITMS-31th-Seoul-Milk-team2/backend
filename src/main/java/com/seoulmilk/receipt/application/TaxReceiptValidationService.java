@@ -31,7 +31,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Log4j2
 public class TaxReceiptValidationService {
-    private final TaxReceiptValidationProvider taxReceiptValidationProvider;
+//    private final TaxReceiptValidationProvider taxReceiptValidationProvider;
     private final EmpRepository empRepository;
     private final ReceiptCacheService receiptCacheService;
     private final InValidReceiptRepository invalidReceiptRepository;
@@ -46,147 +46,147 @@ public class TaxReceiptValidationService {
         Long pk = ocrValidationRequestList.getFirst().empPk();
         log.info("현재 사용자 pk - {}", pk);
 
-        Emp emp = getEmployee(pk);
-        log.info("현재 사용자 - {}", emp.getName());
-
-        String uuid = UUID.randomUUID().toString();
-        List<TaxReceiptValidationRequest> taxReceiptValidationRequests = new ArrayList<>();
-
-        for (OcrValidationRequest ocrValidationRequest : ocrValidationRequestList) {
-            TaxReceiptValidationRequest taxReceiptValidationRequest =
-                    createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
-            taxReceiptValidationRequests.add(taxReceiptValidationRequest);
-        }
-
-        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(taxReceiptValidationRequests);
-
-        receiptCacheService.handleTransactionId(emp.getId(), additionalAuthResponse.jti());
-        log.info("저장된 트랜잭션 id key - {}, Value - {}",
-                "transactionId:" + emp.getId(), redisTemplate.opsForValue().get("transactionId:" + emp.getId()));
-
-        receiptCacheService.hadleRequestData(emp.getId(), ocrValidationRequestList);
-        log.info("저장된 데이터 - {}", redisTemplate.opsForValue().get("requestData:" + emp.getId()));
-        long endTime = System.currentTimeMillis();
-        log.info("카프카를 통한 국세청 검증 로직 실행시간 측정 - {}ms", endTime - startTime);
+//        Emp emp = getEmployee(pk);
+//        log.info("현재 사용자 - {}", emp.getName());
+//
+//        String uuid = UUID.randomUUID().toString();
+//        List<TaxReceiptValidationRequest> taxReceiptValidationRequests = new ArrayList<>();
+//
+//        for (OcrValidationRequest ocrValidationRequest : ocrValidationRequestList) {
+//            TaxReceiptValidationRequest taxReceiptValidationRequest =
+//                    createTaxReceiptValidationRequest(emp, ocrValidationRequest, uuid);
+//            taxReceiptValidationRequests.add(taxReceiptValidationRequest);
+//        }
+//
+//        AdditionalAuthResponse additionalAuthResponse = requestAdditionalAuthentication(taxReceiptValidationRequests);
+//
+//        receiptCacheService.handleTransactionId(emp.getId(), additionalAuthResponse.jti());
+//        log.info("저장된 트랜잭션 id key - {}, Value - {}",
+//                "transactionId:" + emp.getId(), redisTemplate.opsForValue().get("transactionId:" + emp.getId()));
+//
+//        receiptCacheService.hadleRequestData(emp.getId(), ocrValidationRequestList);
+//        log.info("저장된 데이터 - {}", redisTemplate.opsForValue().get("requestData:" + emp.getId()));
+//        long endTime = System.currentTimeMillis();
+//        log.info("카프카를 통한 국세청 검증 로직 실행시간 측정 - {}ms", endTime - startTime);
     }
 
-    private AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> taxReceiptValidationRequests) {
-        return taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequests);
-    }
-
-    private Emp getEmployee(Long empPk) {
-        return empRepository.findById(empPk)
-                .orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
-    }
-
-    private TaxReceiptValidationRequest createTaxReceiptValidationRequest(
-            Emp emp, OcrValidationRequest ocrValidationRequest, String uuid
-    ) {
-        return TaxReceiptValidationRequestFactory.create(emp, ocrValidationRequest, uuid);
-    }
-
-    private TaxReceiptValidationRequest createTaxReceiptValidationRequest(
-            Emp emp, ValidationRequest validationRequest, String uuid
-    ) {
-        return TaxReceiptValidationRequestFactory.create(emp, validationRequest, uuid);
-    }
-
-    public Boolean retrieveValidatedTaxReceiptsWithTransactionId(CustomUserDetails customUserDetails){
-        log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 사용자 pk - {}", customUserDetails.getId());
-        Emp emp = getEmployee(customUserDetails.getId());
-        log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 사용자 정보 - {}", emp.getName());
-
-        String transactionCacheKey = "transactionId:" + customUserDetails.getId();
-        String transactionId = receiptCacheService.getTransactionIdInRedis(transactionCacheKey);
-        log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 트랜잭션 id - {}", transactionId);
-
-        String dataCacheKey = "requestData:" + customUserDetails.getId();
-        List<OcrValidationRequest> requestsData = receiptCacheService.getOcrValidationRequestDataInRedis(dataCacheKey);
-
-        List<TaxReceiptValidationResponse> responses = taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
-        Collections.reverse(responses);
-
-        Boolean success = saveRecieptData(emp, requestsData, responses);
-
-        return success;
-    }
-
-    private Boolean saveRecieptData(Emp emp, List<OcrValidationRequest> requestsData, List<TaxReceiptValidationResponse> responses){
-        Boolean flag = true;
-        for(int i = 0; i < responses.size(); i++) {
-            OcrValidationRequest ocrValidationRequest = requestsData.get(i);
-            if(responses.get(i).resAuthenticity().equals("1")){
-                validReceiptRepository.save(ReceiptFactory.validReceiptCreate(emp, ocrValidationRequest));
-            }else if(responses.get(i).resAuthenticity().equals("0")){
-                flag = false;
-                InValidReceipt inValidReceipt = ReceiptFactory.inValidReceiptCreate(emp, ocrValidationRequest);
-                invalidReceiptRepository.save(inValidReceipt);
-            }
-        }
-
-        return flag;
-    }
-
-    // 파일 업로드 하지 않고 5개 정보로 요청을 보낸경우
-    public String requestAdditionalAuthentication(
-            CustomUserDetails customUserDetails,
-            List<ValidationRequest> requests
-    ) {
-        Emp emp = getEmployee(customUserDetails.getId());
-
-        List<TaxReceiptValidationRequest> taxReceiptValidationRequestList = new ArrayList<>();
-        String uuid = UUID.randomUUID().toString();
-        for (ValidationRequest validationRequest : requests) {
-            TaxReceiptValidationRequest taxReceiptValidationRequest =
-                    createTaxReceiptValidationRequest(emp, validationRequest, uuid);
-            taxReceiptValidationRequestList.add(taxReceiptValidationRequest);
-        }
-        log.info("현재 요청 보내는 데이터 - {}", taxReceiptValidationRequestList);
-
-        AdditionalAuthResponse additionalAuthResponse =
-            taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequestList);
-        String key = "taxReceiptValidationRequestList" + customUserDetails.getId();
-        redisTemplate.opsForValue().set(key, taxReceiptValidationRequestList);
-
-        return additionalAuthResponse.jti();
-    }
-
-    public Boolean retrieveValidatedTaxReceipts(
-            CustomUserDetails customUserDetails, List<Long> receiptPks, String transactionId
-    ) {
-        List<TaxReceiptValidationResponse> responses =
-                taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
-
-        Collections.reverse(responses);
-
-        Boolean success = updateInvalidReceiptData(getEmployee(customUserDetails.getId()), receiptPks, responses);
-
-        return success;
-    }
-
-    public Boolean updateInvalidReceiptData(Emp emp, List<Long> receiptPks, List<TaxReceiptValidationResponse> responses){
-        Boolean flag = true;
-        String key = "taxReceiptValidationRequestList" + emp.getId();
-        List<TaxReceiptValidationRequest> taxReceiptValidationRequestList =
-                (List<TaxReceiptValidationRequest>) redisTemplate.opsForValue().getAndDelete(key);
-
-        for(int i = 0; i < responses.size(); i++) {
-            if (i >= receiptPks.size()) {
-                throw new IllegalStateException("receiptPks와 responses의 개수가 일치하지 않습니다.");
-            }
-            Long pk = receiptPks.get(i);
-            if(responses.get(i).resAuthenticity().equals("1")){
-                InValidReceipt inValidReceipt = invalidReceiptRepository.findById(pk)
-                        .orElseThrow(ReceiptErrorCode.NOT_EXIST_RECEIPT::toException);
-                invalidReceiptRepository.deleteById(pk);
-                validReceiptRepository.save(ReceiptFactory.validReceiptCreate(
-                        emp, inValidReceipt, taxReceiptValidationRequestList.get(i)
-                ));
-            }else if(responses.get(i).resAuthenticity().equals("0")){
-                flag = false;
-            }
-        }
-
-        return flag;
-    }
+//    private AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> taxReceiptValidationRequests) {
+//        return taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequests);
+//    }
+//
+//    private Emp getEmployee(Long empPk) {
+//        return empRepository.findById(empPk)
+//                .orElseThrow(EmpErrorCode.NOT_EXIST_EMPLOYEE::toException);
+//    }
+//
+//    private TaxReceiptValidationRequest createTaxReceiptValidationRequest(
+//            Emp emp, OcrValidationRequest ocrValidationRequest, String uuid
+//    ) {
+//        return TaxReceiptValidationRequestFactory.create(emp, ocrValidationRequest, uuid);
+//    }
+//
+//    private TaxReceiptValidationRequest createTaxReceiptValidationRequest(
+//            Emp emp, ValidationRequest validationRequest, String uuid
+//    ) {
+//        return TaxReceiptValidationRequestFactory.create(emp, validationRequest, uuid);
+//    }
+//
+//    public Boolean retrieveValidatedTaxReceiptsWithTransactionId(CustomUserDetails customUserDetails){
+//        log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 사용자 pk - {}", customUserDetails.getId());
+//        Emp emp = getEmployee(customUserDetails.getId());
+//        log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 사용자 정보 - {}", emp.getName());
+//
+//        String transactionCacheKey = "transactionId:" + customUserDetails.getId();
+//        String transactionId = receiptCacheService.getTransactionIdInRedis(transactionCacheKey);
+//        log.info("[retrieveValidatedTaxReceiptsWithTransactionId] 현재 트랜잭션 id - {}", transactionId);
+//
+//        String dataCacheKey = "requestData:" + customUserDetails.getId();
+//        List<OcrValidationRequest> requestsData = receiptCacheService.getOcrValidationRequestDataInRedis(dataCacheKey);
+//
+//        List<TaxReceiptValidationResponse> responses = taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
+//        Collections.reverse(responses);
+//
+//        Boolean success = saveRecieptData(emp, requestsData, responses);
+//
+//        return success;
+//    }
+//
+//    private Boolean saveRecieptData(Emp emp, List<OcrValidationRequest> requestsData, List<TaxReceiptValidationResponse> responses){
+//        Boolean flag = true;
+//        for(int i = 0; i < responses.size(); i++) {
+//            OcrValidationRequest ocrValidationRequest = requestsData.get(i);
+//            if(responses.get(i).resAuthenticity().equals("1")){
+//                validReceiptRepository.save(ReceiptFactory.validReceiptCreate(emp, ocrValidationRequest));
+//            }else if(responses.get(i).resAuthenticity().equals("0")){
+//                flag = false;
+//                InValidReceipt inValidReceipt = ReceiptFactory.inValidReceiptCreate(emp, ocrValidationRequest);
+//                invalidReceiptRepository.save(inValidReceipt);
+//            }
+//        }
+//
+//        return flag;
+//    }
+//
+//    // 파일 업로드 하지 않고 5개 정보로 요청을 보낸경우
+//    public String requestAdditionalAuthentication(
+//            CustomUserDetails customUserDetails,
+//            List<ValidationRequest> requests
+//    ) {
+//        Emp emp = getEmployee(customUserDetails.getId());
+//
+//        List<TaxReceiptValidationRequest> taxReceiptValidationRequestList = new ArrayList<>();
+//        String uuid = UUID.randomUUID().toString();
+//        for (ValidationRequest validationRequest : requests) {
+//            TaxReceiptValidationRequest taxReceiptValidationRequest =
+//                    createTaxReceiptValidationRequest(emp, validationRequest, uuid);
+//            taxReceiptValidationRequestList.add(taxReceiptValidationRequest);
+//        }
+//        log.info("현재 요청 보내는 데이터 - {}", taxReceiptValidationRequestList);
+//
+//        AdditionalAuthResponse additionalAuthResponse =
+//            taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequestList);
+//        String key = "taxReceiptValidationRequestList" + customUserDetails.getId();
+//        redisTemplate.opsForValue().set(key, taxReceiptValidationRequestList);
+//
+//        return additionalAuthResponse.jti();
+//    }
+//
+//    public Boolean retrieveValidatedTaxReceipts(
+//            CustomUserDetails customUserDetails, List<Long> receiptPks, String transactionId
+//    ) {
+//        List<TaxReceiptValidationResponse> responses =
+//                taxReceiptValidationProvider.retrieveValidatedTaxReceipts(transactionId);
+//
+//        Collections.reverse(responses);
+//
+//        Boolean success = updateInvalidReceiptData(getEmployee(customUserDetails.getId()), receiptPks, responses);
+//
+//        return success;
+//    }
+//
+//    public Boolean updateInvalidReceiptData(Emp emp, List<Long> receiptPks, List<TaxReceiptValidationResponse> responses){
+//        Boolean flag = true;
+//        String key = "taxReceiptValidationRequestList" + emp.getId();
+//        List<TaxReceiptValidationRequest> taxReceiptValidationRequestList =
+//                (List<TaxReceiptValidationRequest>) redisTemplate.opsForValue().getAndDelete(key);
+//
+//        for(int i = 0; i < responses.size(); i++) {
+//            if (i >= receiptPks.size()) {
+//                throw new IllegalStateException("receiptPks와 responses의 개수가 일치하지 않습니다.");
+//            }
+//            Long pk = receiptPks.get(i);
+//            if(responses.get(i).resAuthenticity().equals("1")){
+//                InValidReceipt inValidReceipt = invalidReceiptRepository.findById(pk)
+//                        .orElseThrow(ReceiptErrorCode.NOT_EXIST_RECEIPT::toException);
+//                invalidReceiptRepository.deleteById(pk);
+//                validReceiptRepository.save(ReceiptFactory.validReceiptCreate(
+//                        emp, inValidReceipt, taxReceiptValidationRequestList.get(i)
+//                ));
+//            }else if(responses.get(i).resAuthenticity().equals("0")){
+//                flag = false;
+//            }
+//        }
+//
+//        return flag;
+//    }
 }
