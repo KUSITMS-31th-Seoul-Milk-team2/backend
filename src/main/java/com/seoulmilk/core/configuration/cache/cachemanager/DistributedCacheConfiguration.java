@@ -1,18 +1,14 @@
-package com.seoulmilk.core.configuration.cache;
+package com.seoulmilk.core.configuration.cache.cachemanager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.seoulmilk.notice.dto.response.PageResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -20,30 +16,23 @@ import java.time.Duration;
 
 @Configuration
 @EnableCaching
-@RequiredArgsConstructor
-public class CacheConfiguration {
+public class DistributedCacheConfiguration {
+
+    @Bean
+    public CacheManager distributedCacheManager(RedisConnectionFactory redisConnectionFactory, RedisCacheConfiguration redisCacheConfiguration) {
+        return RedisCacheManager.builder(redisConnectionFactory)
+                .cacheDefaults(redisCacheConfiguration)
+                .build();
+    }
+
     @Bean
     RedisCacheConfiguration redisCacheConfiguration(ObjectMapper objectMapper) {
+        GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
         return RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                                new Jackson2JsonRedisSerializer<>(objectMapper, PageResponse.class)
+                                genericJackson2JsonRedisSerializer
                         )).entryTtl(Duration.ofMinutes(10));
-    }
-
-    @Bean
-    public CacheManager customCacheManager(RedisConnectionFactory redisConnectionFactory, RedisCacheConfiguration redisCacheConfiguration) {
-
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
-        caffeineCacheManager.setCaffeine(Caffeine.newBuilder()
-                .maximumSize(100)
-                .expireAfterWrite(Duration.ofMinutes(5)));
-
-        RedisCacheManager redisCacheManager = RedisCacheManager.builder(redisConnectionFactory)
-                .cacheDefaults(redisCacheConfiguration)
-                .build();
-
-        return new CustomCacheManager(caffeineCacheManager, redisCacheManager);
     }
 }
