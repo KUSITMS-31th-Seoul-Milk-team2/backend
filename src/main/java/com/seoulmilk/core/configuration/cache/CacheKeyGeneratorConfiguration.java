@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 @Configuration
 public class CacheKeyGeneratorConfiguration {
 
-    @Bean("noticePageableKeyGenerator")
+    @Bean("pageableCacheKeyGenerator")
     public KeyGenerator keyGenerator() {
         return (target, method, params) -> {
             Pageable pageable = (Pageable) params[0];
