@@ -1,6 +1,6 @@
 package com.seoulmilk.notice.application;
 
-import com.seoulmilk.core.application.CacheService;
+import com.seoulmilk.core.configuration.cache.annotation.cacheable.LocalCacheOnly;
 import com.seoulmilk.emp.domain.entity.Emp;
 import com.seoulmilk.emp.domain.repository.EmpRepository;
 import com.seoulmilk.emp.exception.EmpErrorCode;
@@ -17,7 +17,6 @@ import com.seoulmilk.notice.infrastructure.persistence.jpa.entity.NoticeJpaEntit
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +34,6 @@ import java.util.List;
 public class ReadNoticeService {
     private final NoticeRepository noticeRepository;
     private final EmpRepository empRepository;
-    private final CacheService cacheService;
 
     @Value("${spring.url.base}")
     private String baseUrl;
@@ -57,13 +55,17 @@ public class ReadNoticeService {
         return ReadNoticeResponse.create(notice, author);
     }
 
-    @Cacheable(
-            value = "notice",
-            cacheManager = "customCacheManager",
-            keyGenerator = "noticePageableKeyGenerator"
-    )
+    @LocalCacheOnly
+    public PageResponse<NoticeSummaryResponse> getFirstPage(Pageable pageable) {
+        log.info("[ReadNoticeService.getNoticesByPage] 공지사항 페이지를 조회합니다.");
+        Page<Notice> notices = noticeRepository.findAllOrderByIdDesc(pageable);
+        List<NoticeSummaryResponse> content = notices.getContent().stream()
+                .map(NoticeSummaryResponse::create).toList();
+
+        return PageResponse.create(content, notices);
+    }
+
     public PageResponse<NoticeSummaryResponse> getNoticesByPage(Pageable pageable) {
-        cacheService.checkCacheContent();
         log.info("[ReadNoticeService.getNoticesByPage] 공지사항 페이지를 조회합니다.");
         Page<Notice> notices = noticeRepository.findAllOrderByIdDesc(pageable);
         List<NoticeSummaryResponse> content = notices.getContent().stream()
