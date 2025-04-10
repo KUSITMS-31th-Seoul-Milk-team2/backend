@@ -1,5 +1,6 @@
 package com.seoulmilk.notice.application;
 
+import com.seoulmilk.core.configuration.cache.annotation.evict.LocalCacheEvict;
 import com.seoulmilk.core.infrastructure.security.CustomUserDetails;
 import com.seoulmilk.core.util.fileUtil.FileUtil;
 import com.seoulmilk.notice.domain.entity.Notice;
@@ -11,7 +12,6 @@ import com.seoulmilk.notice.dto.response.PostNoticeResponse;
 import com.seoulmilk.notice.exception.NoticeErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
@@ -43,11 +43,7 @@ public class PostNoticeService {
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @CacheEvict(
-            value = "notice",
-            cacheManager = "customCacheManager",
-            allEntries = true
-    )
+    @LocalCacheEvict
     public void evictNoticePageableCache(PostNoticeEvent postNoticeEvent) {
         log.info("[PostNoticeService.evictNoticePageableCache] 공지사항 페이지 캐시를 삭제합니다.");
     }

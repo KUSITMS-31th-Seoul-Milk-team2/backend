@@ -37,6 +37,10 @@ public class ReadNoticeController {
     public ResponseEntity<RestResponse<PageResponse<NoticeSummaryResponse>>> getNoticesByPage(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
+        if (pageable.getPageNumber() == 0) {
+            PageResponse<NoticeSummaryResponse> firstPage = readNoticeService.getFirstPage(pageable);
+            return ResponseEntity.ok(new RestResponse<>(firstPage));
+        }
 
         PageResponse<NoticeSummaryResponse> readPaginatedResponse = readNoticeService.getNoticesByPage(pageable);
         return ResponseEntity.ok(new RestResponse<>(readPaginatedResponse));
