@@ -2,16 +2,20 @@ package com.seoulmilk.core.configuration.kafka.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
+import org.apache.kafka.common.errors.SerializationException;
+import org.apache.kafka.common.serialization.Deserializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OcrValidationRequestListDeserializer extends StdDeserializer<List<OcrValidationRequest>> {
+public class OcrValidationRequestListDeserializer extends StdDeserializer<List<OcrValidationRequest>> implements Deserializer<List<OcrValidationRequest>> {
 
     public OcrValidationRequestListDeserializer() {
         this(null);
@@ -19,6 +23,16 @@ public class OcrValidationRequestListDeserializer extends StdDeserializer<List<O
 
     public OcrValidationRequestListDeserializer(Class<?> vc) {
         super(vc);
+    }
+
+    @Override
+    public List<OcrValidationRequest> deserialize(String topic, byte[] data) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(data, new TypeReference<List<OcrValidationRequest>>() {});
+        } catch (Exception e) {
+            throw new SerializationException(e);
+        }
     }
 
     @Override
@@ -33,17 +47,13 @@ public class OcrValidationRequestListDeserializer extends StdDeserializer<List<O
                     result.add(deserializeSingleRequest(p, ctxt));
                 }
                 p.nextToken();
-            }
-
-            else {
+            } else {
                 while (p.currentToken() != JsonToken.END_ARRAY) {
                     result.add(deserializeSingleRequest(p, ctxt));
                     p.nextToken();
                 }
             }
-        }
-
-        else if (p.currentToken() == JsonToken.START_OBJECT) {
+        } else if (p.currentToken() == JsonToken.START_OBJECT) {
             result.add(deserializeSingleRequest(p, ctxt));
         }
 
