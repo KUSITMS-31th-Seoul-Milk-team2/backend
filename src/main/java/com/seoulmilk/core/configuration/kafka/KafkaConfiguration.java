@@ -1,7 +1,8 @@
 package com.seoulmilk.core.configuration.kafka;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.seoulmilk.core.configuration.kafka.deserializer.OcrValidationRequestListDeserializer;
 import com.seoulmilk.receipt.dto.request.OcrValidationRequest;
+import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -12,8 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 @Configuration
 @EnableKafka
+@Log4j2
 public class KafkaConfiguration {
 
     @Value("${spring.kafka.bootstrap-servers}")
@@ -28,12 +31,6 @@ public class KafkaConfiguration {
 
     @Value("${spring.kafka.consumer.group-id}")
     private String CONSUMER_GROUP_ID;
-
-    @Value("${spring.kafka.consumer.properties.spring.json.trusted.packages}")
-    private String TRUSTED_PACKAGES;
-
-    @Value("${spring.kafka.consumer.value-deserializer}")
-    private String CONSUMER_VALUE_DESERIALIZER;
 
     @Bean
     public ProducerFactory<String, List<OcrValidationRequest>> producerFactory() {
@@ -56,19 +53,11 @@ public class KafkaConfiguration {
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
         config.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CONSUMER_VALUE_DESERIALIZER);
+        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, OcrValidationRequestListDeserializer.class);
 
-        JsonDeserializer<List<OcrValidationRequest>> deserializer = new JsonDeserializer<>();
-        deserializer.addTrustedPackages(TRUSTED_PACKAGES);
-        deserializer.setUseTypeHeaders(true);
-        deserializer.setTypeFunction((topic, data) ->
-                TypeFactory.defaultInstance().constructCollectionType(List.class, OcrValidationRequest.class)
-        );
 
         return new DefaultKafkaConsumerFactory<>(
-                config,
-                new StringDeserializer(),
-                deserializer
+                config
         );
     }
 
@@ -79,6 +68,15 @@ public class KafkaConfiguration {
         factory.setConsumerFactory(consumerFactory());
         factory.setBatchListener(false);
         factory.setConcurrency(3);
+        factory.setCommonErrorHandler(errorHandler());
         return factory;
+    }
+
+    @Bean
+    public DefaultErrorHandler errorHandler() {
+        FixedBackOff fixedBackOff = new FixedBackOff(0L, 0L);
+        return new DefaultErrorHandler(((consumerRecord, e) -> {
+            log.error("Kafka 리스너 에러 발생: {}, 메시지: {}", e.getMessage(), consumerRecord, e);
+        }), fixedBackOff);
     }
 }

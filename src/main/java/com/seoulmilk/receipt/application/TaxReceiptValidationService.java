@@ -31,14 +31,14 @@ import java.util.*;
 @RequiredArgsConstructor
 @Log4j2
 public class TaxReceiptValidationService {
-//    private final TaxReceiptValidationProvider taxReceiptValidationProvider;
+    //    private final TaxReceiptValidationProvider taxReceiptValidationProvider;
     private final EmpRepository empRepository;
     private final ReceiptCacheService receiptCacheService;
     private final InValidReceiptRepository invalidReceiptRepository;
     private final ValidReceiptRepository validReceiptRepository;
     private final RedisTemplate redisTemplate;
 
-    @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}", concurrency = "3", errorHandler = "noRetryErrorHandler")
+    @KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.group-id}", concurrency = "3")
     public void listen(List<OcrValidationRequest> ocrValidationRequestList) {
         long startTime = System.currentTimeMillis();
         log.info("이벤트 결과 - {} ", ocrValidationRequestList);
@@ -69,7 +69,6 @@ public class TaxReceiptValidationService {
 //        long endTime = System.currentTimeMillis();
 //        log.info("카프카를 통한 국세청 검증 로직 실행시간 측정 - {}ms", endTime - startTime);
     }
-
 //    private AdditionalAuthResponse requestAdditionalAuthentication(List<TaxReceiptValidationRequest> taxReceiptValidationRequests) {
 //        return taxReceiptValidationProvider.requestAdditionalAuthentication(taxReceiptValidationRequests);
 //    }
